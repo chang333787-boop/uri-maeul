@@ -19,7 +19,7 @@ import { placeParked, TRUCK } from './town_fire.js?v=1';
 import { createJobs, JOBK } from './town_jobs.js?v=22';
 import { createBake } from './town_bake.js?v=3'; import { createTable, GAMES as TBG, LV_NAME as TBLV } from './town_table.js?v=13';
 import { createGame, ITEMS, itemName, DISHES, shopOf, won, RECIPES, CAL_LEN, SHOPS, RW_GEN, readSave, claimSave, slotKey, delSave, restoreSave, oldSave, saveSize } from './town_game.js?v=50';
-import { createStory, CHAPTERS, VEG, parkSim, parkSlot } from './town_story.js?v=29';
+import { createStory, CHAPTERS, VEG, parkSim, parkSlot } from './town_story.js?v=30';
 import { attachLook, lookHTML, bindLook, setLook as setMyLook, getLook, lookColors } from '../js/look.js?v=1'; import { buildKid } from '../js/kid.js?v=5';
 import { startKeyText, stopKeyText } from '../js/keytext.js?v=1';
 import { createFriends } from './town_friends.js?v=1';
