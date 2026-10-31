@@ -1,4 +1,4 @@
-import { CHAPTERS } from './town_story.js?v=30';
+import { CHAPTERS } from './town_story.js?v=31';
 import { tsum, tsumDays } from './town_tsum.js?v=2';
 import { pickLabel, dayKey } from './town_rec.js?v=18';
 import { cloudTeach, cloudOn } from './town_cloud.js?v=4';
