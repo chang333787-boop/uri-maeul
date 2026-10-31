@@ -17,7 +17,7 @@ export const ROWS = {
 };
 const SLOTS = [[570, 750], [810, 1060]];
 const LIVE = 300;
-export const EMSTY = { go: null, info: null, stop: null };
+export const EMSTY = { go: null, info: null, stop: null, tide: null, tideOk: null, ev: null };
 
 const WORKC = {
   saltpan: [T2('바닷물을 햇볕에 말려서 하얀 알갱이를 모아요', 'We dry seawater in the sun and rake up white grains'), T2('염전', 'salt pans')],
@@ -273,6 +273,7 @@ export function createEmerg(A) {
     return { st: EV.st, walk: sw, to: sw && EV.sty.home ? { x: EV.sty.home.x, z: EV.sty.home.z, name: EV.sty.home.name } : { x: EV.x, z: EV.z, name: EV.place }, cell: EV.cell, place: EV.place }; }
   function styStop() { if (EV && EV.sty) end(false, 'abort'); kidLook(false); STY.st = null; }
   EMSTY.go = styGo; EMSTY.info = styInfo; EMSTY.stop = styStop;
+  EMSTY.tide = () => (dead ? false : EV ? EV.k === 'tide' : spawn('tide')); EMSTY.tideOk = () => !!(CAN.tide() && A.shoreSpots && A.shoreSpots().length); EMSTY.ev = () => (EV ? { k: EV.k, st: EV.st, x: EV.x, z: EV.z } : null);
 
   function hurtPlan() { const m0 = me(), C = placesNear(40, 200).map(q => q.p); for (let k = 0; k < 4; k++) { const a = k * 1.571 + 0.4, r = 70 + k * 20; C.push({ door: [m0.x + Math.cos(a) * r, m0.z + Math.sin(a) * r], name: null }); }     const R9 = rng('hurt:' + A.GAME.S.day + ':' + (S().n.hurt || 0)), wx = A.wx(), hot = A.season() === 'summer' && wx === 'clear' && (A.GAME.S.min | 0) >= 690 && (A.GAME.S.min | 0) < 930, v = hot ? 'heat' : wx === 'rain' || wx === 'snow' ? 'slip' : 'trip';
     for (let t = 0; t < Math.min(8, C.length); t++) { const pl = C[(t + Math.floor(R9() * Math.max(1, C.length - 4))) % C.length], sp = v === 'heat' ? sunNear(pl.door[0], pl.door[1], pl.name ? 4 : 0, 14) : spotNear(pl.door[0], pl.door[1], pl.name ? 4 : 0, 14); if (!sp) continue; const cs = spotNear(sp[0], sp[1], 2.2, 4); if (!cs) continue;

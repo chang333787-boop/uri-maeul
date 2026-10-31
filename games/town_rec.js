@@ -1,5 +1,5 @@
-import { CHAPTERS } from './town_story.js?v=33';
-import { BANK, DIR8 } from './town_quiz.js?v=13';
+import { CHAPTERS } from './town_story.js?v=34';
+import { BANK, DIR8 } from './town_quiz.js?v=14';
 import { tsum } from './town_tsum.js?v=2';
 export const REC_V = 1, REC_DAYS = 14, REC_MAX = 80 * 1024;
 const T2 = (ko, en) => [ko, en];
