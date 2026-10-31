@@ -2076,7 +2076,7 @@ export function buildWorld(scene) {
       dBox(0.04, 1.4, L, 0x2f6e4f, hx0 + 0.02, 1.0, c);
       for (let k = 0; k < 3; k++) { const pc = a + 0.1 + PW / 2 + k * (PW + 0.1), q0 = pc - PW / 2 - 0.05, q1 = pc + PW / 2 + 0.05, X9 = hx0 + 0.045;
         atQ(1, [[X9, 1.03, q0], [X9, 1.03, q1], [X9, 2.12, q1], [X9, 2.12, q0]], [1, 0, 0], [1, 0, 0, 1]); }
-      sign('창의지성을 갖춘 건강한 휴먼리더', hx0 + 0.08, 2.24, c, Math.PI / 2, 0.12, { bg: '#e8efd6', fg: '#3a5a3a' }); }
+      sign('서로 돕고 함께 자라는 우리', hx0 + 0.08, 2.24, c, Math.PI / 2, 0.12, { bg: '#e8efd6', fg: '#3a5a3a' }); }
 
     { const zc = hz1 - 0.37, xm = hx0 + 0.175;
       objScope('shelf', () => {
@@ -2483,7 +2483,7 @@ export function buildWorld(scene) {
       dBox(0.05, 2.6, 0.15, 0xb9bec4, FX - 0.025, 0, -36.525);
       dBox(0.03, 0.8, 0.5, 0xe8e0f0, FX - 0.075, 1.2, -37.95); dBox(0.03, 0.8, 0.5, 0xf0e6d6, FX - 0.075, 1.2, -35.25);
       patWall('kidsArt', 'z', -38.15, -37.75, 1.25, 1.95, FX - 0.091, -1); patWall('kidsArt', 'z', -35.45, -35.05, 1.25, 1.95, FX - 0.091, -1);
-      sign('슬기샘 도서관', FX - 0.08, 2.845, -36.6, Math.PI / 2, 0.3, { bg: 'none', fg: '#f3ead8' }); }
+      sign('꿈터 도서관', FX - 0.08, 2.845, -36.6, Math.PI / 2, 0.3, { bg: 'none', fg: '#f3ead8' }); }
 
     const pz = (wz0 + 0.15 + LOB_Z - 0.15) / 2, pd = (LOB_Z - 0.15) - (wz0 + 0.15);
     addBox(0.3, FH, pd, INNER, narae.span[0], 0, pz);

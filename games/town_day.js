@@ -21,7 +21,7 @@ export function createDay(A) {
   function ensure() { if (!css) { css = document.createElement('style'); css.textContent = CSS; document.head.appendChild(css); } if (!el) { el = document.createElement('div'); el.className = 'twn-day'; el.style.display = 'none'; el.onclick = e => { e.stopPropagation(); click(); }; document.body.appendChild(el); } }
 
   const plc = (icon, name, at) => (at ? { icon, name, door: [at[0], at[1]] } : null);
-  function build(d) { const out = [], e = en(), w = A.wx(), put = (m, g, ic, s, t, p) => { if (m >= 0 && m < 1440) out.push({ m, g, ic, s, t: t || s, p: p || null }); };
+  function build(d) { const out = [], e = en(), w = A.wx(), put = (m, g, ic, s, t, p, e9) => { if (m >= 0 && m < 1440) out.push({ m, g, ic, s, t: t || s, p: p || null, e: e9 > m ? e9 : 0 }); };
 
     const isl = A.seenIsle() ? A.isle() : null, sh = A.shore(), LW = (isl || sh) ? lowsOf(d) : [];
     for (const [a, b] of LW) { if (isl) { const p = { ...isl, icon: '🏝' }; if (a > 360) put(a, 'tide', '🏝', T2('썰물섬 열림', 'Isle path opens'), T2('썰물섬 바닷길이 열려요', 'The sea path to Ebb-Tide Isle opens'), p); if (b < 1440) put(b, 'tide', '🌊', T2('썰물섬 닫힘', 'Isle path closes'), T2('바닷물이 차서 썰물섬 바닷길이 닫혀요', 'The sea comes in and the isle path closes'), p); }
@@ -40,7 +40,7 @@ export function createDay(A) {
     const G = new Map(); for (const q of A.shops()) { if (!(q.h1 < 24)) continue; const a = G.get(q.h1) || []; a.push(q); G.set(q.h1, a); }
     for (const [h, a] of G) { const nm = a.map(q => q.name), s9 = nm.length > 1 ? (e ? nm[0] + ' +' + (nm.length - 1) : nm[0] + ' 외 ' + (nm.length - 1) + '곳') : nm[0]; put(h * 60, 'shop' + h, '🏪', T2(s9 + ' 닫음', s9 + ' closes'), T2('가게 문 닫음: ' + nm.join(', '), 'Shops close: ' + nm.join(', ')), plc('🏪', a[0].name, a[0].door)); }
     for (const q of A.offices()) put(q.h1 * 60, 'off:' + q.name, q.ic, T2(q.name + ' 닫음', q.name + ' closes'), T2(q.name + ' 창구가 문을 닫아요', 'The ' + q.name + ' counter closes'), plc(q.ic, q.name, q.door));
-    if (A.nightRows) for (const c of A.nightRows(d) || []) put(c.m, c.g, c.ic, c.s, c.t, c.p);
+    if (A.nightRows) for (const c of A.nightRows(d) || []) put(c.m, c.g, c.ic, c.s, c.t, c.p, c.e);
     { const c = A.caseDue && A.caseDue(d); if (c) put(c.m, 'case', c.ic, c.s, c.t, c.p); }
     { const c = A.bagDue && A.bagDue(d); if (c) put(c.m, 'req', c.ic, c.s, c.t, c.p); }
     out.sort((a, b) => a.m - b.m); return out; }
@@ -51,7 +51,7 @@ export function createDay(A) {
   function openToday() { const e = en(), m = now(), L9 = list(), FL = L9.filter(q => q.g === 'film'), done = new Set(); let i0 = 0;
     const rows = []; for (const q of L9) { if (q.g === 'film') { if (done.has('film')) continue; done.add('film'); const nx = FL.find(f => f.m > m) || FL[FL.length - 1];
         rows.push({ m: nx.m, ic: '🎬', h: (e ? 'Films: ' : '영화 상영: ') + FL.map(f => '<span class="' + (f.m <= m ? 'past' : '') + '">' + hm(f.m) + '</span>').join(' '), p: nx.p, past: FL.every(f => f.m <= m), sub: L(nx.t) }); continue; }
-      rows.push({ m: q.m, ic: q.ic, h: esc(L(q.t)), p: q.p, past: q.m <= m }); }
+      rows.push({ m: q.m, ic: q.ic, h: esc(L(q.t)), p: q.p, past: (q.e || q.m) <= m }); }
     rows.sort((a, b) => a.m - b.m); for (let i = 0; i < rows.length; i++) if (!rows[i].past) { i0 = i; break; }
     const P = [];
     const h = '<h3>⏰ ' + (e ? 'Today’s times' : '오늘 시간표') + '</h3><div class="sm">' + esc(e ? 'Now ' + hm(m) + '. The day ends when you sleep (or at midnight). Grey = already past.' : '지금 ' + hm(m) + '. 자거나 자정이 되면 하루가 끝나요. 흐린 줄은 지난 때예요.') + '</div>'

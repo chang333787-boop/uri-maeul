@@ -118,16 +118,17 @@ export function rwCheck(S, kind, src, n, k, day) { rwCheck.last = ''; if (!(n > 
   const fam = String(src).split(':')[0]; if (fam === 'mv' || fam === 'story') return n;
   const d0 = day != null ? day : S.day, rd = rdNow(); let R = S.rw; if (!R || typeof R !== 'object') R = S.rw = {}; if (R.d !== d0 || !R.c) { R.d = d0; R.c = {}; } if (R.rd !== rd || !R.r) { R.rd = rd; R.r = { v: 0, x: {}, h: {}, said: {} }; }
   const C = R.c, Q = R.r, lim = kind === 'xp' ? (RW_XP[fam] != null ? RW_XP[fam] : fam === '?' ? 16 : RW_XP_DEF) : kind === 'heart' ? (fam === 'card' ? RW_GEN.card : null) : RW_GEN[fam];
-  if (lim != null) { const ck = kind[0] + '|' + src; if ((C[ck] || 0) >= lim) { rwCheck.last = 'day'; return 0; } C[ck] = (C[ck] || 0) + 1; }
+  const ck0 = kind[0] + '|' + src; if (lim != null && (C[ck0] || 0) >= lim) { rwCheck.last = 'day'; return 0; }
+  const bump = () => { if (lim != null) C[ck0] = (C[ck0] || 0) + 1; };
   if (kind === 'heart') { const ck = 'h|' + k, H0 = (S.hearts || {})[k] || 0, L0 = Math.min(5, (H0 / 3) | 0), HD = S.hd && typeof S.hd === 'object' ? S.hd : (S.hd = {}), top = HD[k] === d0 ? L0 * 3 + 2 - H0 : 99;
-    const a = Math.min(n, RW_HEART - (C[ck] || 0), RW_DAY.h * RW_RD - (Q.h[k] || 0), top); if (a <= 0) { rwCheck.last = top <= 0 || (C[ck] || 0) >= RW_HEART ? 'day' : 'rd'; return 0; } C[ck] = (C[ck] || 0) + a; Q.h[k] = (Q.h[k] || 0) + a; if (Math.min(5, ((H0 + a) / 3) | 0) > L0) HD[k] = d0; if (a < n) rwCheck.last = 'day'; return a; }
-  if (kind === 'xp') { const a = Math.min(n, RW_DAY.x * RW_RD - (Q.x[k] || 0)); if (a <= 0) { rwCheck.last = 'rd'; return 0; } Q.x[k] = (Q.x[k] || 0) + a; if (a < n) rwCheck.last = 'rd'; return a; }
-  const u = kind === 'bag' ? rwVal(k) : 1; if (!u) return n; const left = RW_DAY.v * RW_RD - Q.v, a = Math.max(0, Math.min(n, Math.floor(left / u))); if (a < n) rwCheck.last = 'rd'; Q.v += a * u; return a; }
+    const a = Math.min(n, RW_HEART - (C[ck] || 0), RW_DAY.h * RW_RD - (Q.h[k] || 0), top); if (a <= 0) { rwCheck.last = top <= 0 || (C[ck] || 0) >= RW_HEART ? 'day' : 'rd'; return 0; } bump(); C[ck] = (C[ck] || 0) + a; Q.h[k] = (Q.h[k] || 0) + a; if (Math.min(5, ((H0 + a) / 3) | 0) > L0) HD[k] = d0; if (a < n) rwCheck.last = 'day'; return a; }
+  if (kind === 'xp') { const a = Math.min(n, RW_DAY.x * RW_RD - (Q.x[k] || 0)); if (a <= 0) { rwCheck.last = 'rd'; return 0; } bump(); Q.x[k] = (Q.x[k] || 0) + a; if (a < n) rwCheck.last = 'rd'; return a; }
+  const u = kind === 'bag' ? rwVal(k) : 1; if (!u) { bump(); return n; } const left = RW_DAY.v * RW_RD - Q.v, a = Math.max(0, Math.min(n, Math.floor(left / u))); if (a < n) rwCheck.last = 'rd'; if (a > 0) bump(); Q.v += a * u; return a; }
 rwCheck.off = false; rwCheck.last = '';
 
 export function createGame(id, opt) {
   const KEY = 'sm-town-game:' + id;
-  const fresh = () => ({ v: SAVE_V, day: 1, min: 7 * 60, bag: {}, money: 0, earned: 0, dex: {}, ate: {}, cooked: {}, shared: 0, picked: {}, uses: {}, tasks: null, cells: {}, album: [], fridge: {}, hearts: {}, today: null, clock: true, cal: { d0: 1, on: true, s: 'now' }, bundles: {}, unlock: {}, farm: [], diary: [], wx: { auto: true }, bought: {}, res: {}, rw: {}, hd: {}, deeds: [], nbt: {}, home: { v: 1, id: null, h: '', x: 0, z: 0, pots: [null, null], met: 0, gift: null }, yday: null, lad: {}, news: { d: 0, lines: [], rum: [], last: {} }, gen: { id: genNew(), t: Date.now(), dead: [] } });
+  const fresh = () => ({ v: SAVE_V, day: 1, min: 7 * 60, bag: {}, money: 0, earned: 0, dex: {}, ate: {}, cooked: {}, shared: 0, picked: {}, uses: {}, tasks: null, cells: {}, album: [], fridge: {}, hearts: {}, today: null, clock: true, cal: { d0: 1, on: true, s: 'now' }, bundles: {}, unlock: {}, farm: [], diary: [], wx: { auto: true }, bought: {}, res: {}, rw: {}, hd: {}, deeds: [], nbt: {}, home: { v: 1, id: null, h: '', x: 0, z: 0, pots: [null, null], met: 0, gift: null }, owe: {}, yday: null, lad: {}, news: { d: 0, lines: [], rum: [], last: {} }, gen: { id: genNew(), t: Date.now(), dead: [] } });
   let S = fresh(); const RS = readSave(KEY); let raw9 = RS.broken, prevRaw = RS.src === 'main' ? LS.get(KEY) : null, migFrom = 0;
   try { const j = RS.j; if (j) { migFrom = migrate(j); j.gen = genOf(j);     const F9 = fresh(), T9 = Object.assign(fresh(), j); for (const k of Object.keys(F9)) { const f = F9[k], t = T9[k]; if (f && typeof f === 'object' ? (!t || typeof t !== 'object' || Array.isArray(t) !== Array.isArray(f)) : typeof f === 'number' && !Number.isFinite(t)) T9[k] = f; }     S = T9; if (!(j.cal && j.cal.d0 >= 1)) S.cal = { d0: S.day, on: true, s: 'now' };     for (const k of Object.keys(S.bag)) if (!(S.bag[k] > 0)) delete S.bag[k]; } } catch (e) { S = fresh(); raw9 = raw9 || LS.get(KEY); }
   if (raw9) LS.set('sm-town-game-bak:' + id, raw9);
@@ -187,10 +188,10 @@ export function createGame(id, opt) {
     setCal(on, s) { if (on) S.cal.on = true; else { S.cal.on = false; S.cal.s = s; } dirty = true; },
     lastDay: null, tally(k, n = 1) { if (!S.today) S.today = T0(); S.today[k] = (S.today[k] || 0) + n; dirty = true; },
 
-      rw(kind, src, n, k) { const a = rwCheck(S, kind, src, n, k); if (rwCheck.last) { dirty = true; if (rwCheck.last === 'rd' && S.rw.r && !S.rw.r.said[kind]) { S.rw.r.said[kind] = 1; emit('cap'); } } else if (a > 0 && n > 0) dirty = true; return a; },
+      rw(kind, src, n, k) { const a = rwCheck(S, kind, src, n, k); G.rwWhy = rwCheck.last; if (rwCheck.last) { dirty = true; if (rwCheck.last === 'rd' && S.rw.r && !S.rw.r.said[kind]) { S.rw.r.said[kind] = 1; emit('cap'); } } else if (a > 0 && n > 0) dirty = true; return a; },
     rwLeft(kind, src) { const R = S.rw, fam = String(src).split(':')[0], lim = kind === 'xp' ? (RW_XP[fam] != null ? RW_XP[fam] : RW_XP_DEF) : RW_GEN[fam]; if (lim == null || rwCheck.off) return 99; const c = R && R.d === S.day && R.c ? R.c[kind[0] + '|' + src] || 0 : 0; return lim - c; },
     rwOff(v) { rwCheck.off = !!v; },
-    lastN: 0, add(e, n = 1, src) { n = G.rw('bag', src, n, e); G.lastN = n; if (!(n > 0)) return false; S.bag[e] = (S.bag[e] || 0) + n; const neu = G.found(e); if (S.today) S.today.got[e] = (S.today.got[e] || 0) + n; dirty = true; return neu; },
+    lastN: 0, rwWhy: '', add(e, n = 1, src) { n = G.rw('bag', src, n, e); G.lastN = n; if (!(n > 0)) return false; S.bag[e] = (S.bag[e] || 0) + n; const neu = G.found(e); if (S.today) S.today.got[e] = (S.today.got[e] || 0) + n; dirty = true; return neu; },
 
     stamp9: null, found(k) { if (S.dex[k] != null) return false; S.dex[k] = G.stamp9 ? G.stamp9() : S.day; if (S.today) S.today.dex++; dirty = true; return true; },
     take(e, n = 1) { if ((S.bag[e] || 0) < n) return false; S.bag[e] -= n; if (S.bag[e] <= 0) delete S.bag[e]; const B8 = S.bought; if (B8 && B8[e]) { const r = Math.max(0, Math.min(B8[e] - n, S.bag[e] || 0)); if (r) B8[e] = r; else delete B8[e]; } dirty = true; return true; },
@@ -199,7 +200,9 @@ export function createGame(id, opt) {
     picked: k => S.picked[k] === S.day,
     pick(k) { S.picked[k] = S.day; dirty = true; },
 
-    earn(n, src) { n = Math.round(n); if (n > 0) n = G.rw('money', src, n); if (!n) return 0; S.money += n; S.earned += n; if (S.today) S.today.earned += n; dirty = true; return n; },
+    earn(n, src, once) { n = Math.round(n); const n0 = n; if (n > 0) n = G.rw('money', src, n); if (once && n0 > 0 && n < n0) { const O = S.owe && typeof S.owe === 'object' ? S.owe : (S.owe = {}); O[src] = (O[src] | 0) + n0 - Math.max(0, n); dirty = true; } if (!n) return 0; S.money += n; S.earned += n; if (S.today) S.today.earned += n; dirty = true; return n; },
+    owed() { const O = S.owe; let v = 0; if (O && typeof O === 'object') for (const k in O) v += O[k] | 0; return v; },
+    payOwe() { const O = S.owe; if (!O || typeof O !== 'object') return 0; let v = 0; for (const k of Object.keys(O)) { const want = O[k] | 0; if (!(want > 0)) { delete O[k]; continue; } const got = G.earn(want, k); v += got; if (got >= want) delete O[k]; else O[k] = want - got; } if (v) dirty = true; return v; },
     spend(n) { if (S.money < n) return false; S.money -= n; dirty = true; return true; },
 
     visit(c) { if (S.cells[c]) return false; S.cells[c] = S.day; if (S.today) S.today.cells++; dirty = true; return true; },
@@ -220,7 +223,7 @@ export function createGame(id, opt) {
       for (const id of ['new', 'only']) { const c = ctx[id]; if (!c || !c.t || !c.ev || list.some(q => q.id === c.disc)) continue; const T = TASKS[id];     list.push({ id, why: c.why || null, ev: c.ev, t: c.t[en ? 1 : 0], tp: c.tp ? c.tp[en ? 1 : 0] : c.t[en ? 1 : 0], cell: c[0] || '', at: c.at || null, need: 1, n: 0, rew: T[3], done: false, disc: c.disc || '', isle: !!c.isle, nm: c.nm || '' }); }
       S.tasks = { day: S.day, list, all: false }; dirty = true; return list; },
 
-    taskEv(ev, n = 1) { const T = S.tasks; if (!T || T.day !== S.day) return null; let out = null; for (const t of T.list) { if (t.done || t.ev !== ev) continue; t.n = Math.min(t.need, t.n + n); if (t.n >= t.need) { t.done = true; const r9 = G.rw('money', 'task:' + t.id, t.rew); S.money += r9; S.earned += r9; S.tasksDone = (S.tasksDone || 0) + 1; if (S.today) { S.today.tasks++; S.today.earned += r9; } (out = out || []).push(t); } }
+    taskEv(ev, n = 1) { const T = S.tasks; if (!T || T.day !== S.day) return null; let out = null; for (const t of T.list) { if (t.done || t.ev !== ev) continue; t.n = Math.min(t.need, t.n + n); if (t.n >= t.need) { t.done = true; const r9 = G.rw('money', 'task:' + t.id, t.rew); t.got = r9;     S.money += r9; S.earned += r9; S.tasksDone = (S.tasksDone || 0) + 1; if (S.today) { S.today.tasks++; S.today.earned += r9; } (out = out || []).push(t); } }
       if (out && !T.all && T.list.every(t => t.done)) { T.all = true; out.all = true; }     if (out) dirty = true; return out; },
 
     reset() { G.why = ''; if (ro) { G.why = 'ro'; return false; } { let cur = ''; try { cur = JSON.stringify(S); } catch (e) { cur = LS.get(KEY) || ''; } if (cur && !keepOld(KEY, cur)) { G.why = 'full'; return false; } }     const b = S.bag, og = genOf(S); for (const k of Object.keys(b)) delete b[k]; const f = fresh(); f.bag = b; f.gen.dead = genKill(og, og.id);     for (const k of Object.keys(S)) delete S[k]; Object.assign(S, f); acc = 0; ph = phaseOf(S.min); dirty = true; G.flush(); emit('clock'); emit('phase'); return true; },
