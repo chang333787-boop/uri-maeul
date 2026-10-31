@@ -1,5 +1,18 @@
-export const FEAST_V = 1, FIRST_DAY = 14, GAP = 14, PER = 2, CAP = 2;
+import { regName } from './town_region.js?v=1';
+export const FEAST_V = 1, FIRST_DAY = 14, GAP = 14, PER = 2, CAP = 2, KEEP_MIN = 2, MEM_N = 6;
+
+export const STORY_DAY = 28;
 const T2 = (ko, en) => [ko, en];
+
+export const GUESTS = { 바다: { bring: '🐟', like: '🍄' }, 산: { bring: '🍄', like: '🧂' }, 들: { bring: '🍓', like: '🌿' }, 강: { bring: '🥒', like: '🍯' }, 시내: { bring: '🍞', like: '🍐' }, 관광: { bring: '🍦', like: '🍓' } };
+export const GUEST_ORDER = ['바다', '산', '들', '강', '시내', '관광'];
+
+export const KEEPS = { tree: { t: T2('첫 잔치 기념 나무', 'first-feast tree'), why: T2('첫 잔치를 기억하려고 잔치 마당에 나무를 심었어요.', 'A tree was planted in the feast yard to remember the first feast.') },
+  flower: { t: T2('진달래 화단', 'azalea bed'), why: T2('꽃 잔치 때 화전을 부친 진달래를 화단으로 남겼어요.', 'The azaleas from the flower feast stay on as a flower bed.') },
+  homi: { t: T2('호미 걸이', 'hoe rack'), why: T2('호미씻이 날 씻은 호미를 걸어 두던 걸이예요.', 'The rack where the hoes washed on homi-ssisi day hang.') },
+  harvest: { t: T2('볏짚 노적가리', 'rice-straw stack'), why: T2('가을걷이를 마치고 볏짚을 둥글게 쌓아 두었어요.', 'After the autumn harvest, rice straw was stacked in a round pile.') },
+  dongji: { t: T2('새해 달력 판', 'new-year calendar board'), why: T2('옛날엔 동지에 새해 달력을 나눠 주었어요.', 'Long ago, new-year calendars were handed out on Dongji.') } };
+const MEM_AT = [[-8.6, -8.0], [8.2, -8.4], [-11.6, -7.6], [11.6, -8.0], [-12.2, 4.8], [12.6, 2.8]];
 const FONT = '"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic","NanumGothic",sans-serif';
 const keys = o => (o && typeof o === 'object' && !Array.isArray(o) ? Object.keys(o) : []);
 const NK = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟', '열아홉', '스무'];
@@ -47,7 +60,8 @@ export const GIVE = { food: e => e, deco: ['🌰', '🍂', '🧶', '🌻', '🎐
 
 export function srcOf(k, o) { o = o || {};
   if (k === 'tally:cooked' || k === 'tally:shared' || k === 'tally:farmW' || k === 'help' || k === 'give:food') return 'food';
-  if (k === 'tally:gift' || k === 'st:cells') return 'guest';
+  if (k === 'tally:gift' || k === 'st:cells' || k === 'give:guest') return 'guest';
+  if (k === 'trade') return o.ev === 'done' ? 'guest' : null;
   if (k === 'st:deco' || k === 'give:deco') return 'deco';
   if (k === 'st:typh') return 'safe';
   if (k === 'job') { if (o.k === 'bake') return o.ph === 'order-end' ? 'food' : null; if (o.k === 'kitchen') return null;     if (o.k === 'rhy:mo') return 'show'; if (o.k === 'passreq') return o.ph === 'done' ? 'guest' : null; return o.done === 1 ? 'guest' : null; }
@@ -82,8 +96,12 @@ export function createFeast(A) {
   const G = () => A.GAME.S, day = () => G().day | 0, min = () => G().min | 0, mark = () => A.GAME.mark();
   const zero = () => ({ food: 0, deco: 0, show: 0, guest: 0, safe: 0 });
   const S = () => { const g = G(); let s = g.feast; if (!s || typeof s !== 'object' || s.v !== FEAST_V) s = g.feast = { v: FEAST_V, n: 0, fd: 0, d0: 0, th: 'homi', lv: zero(), dc: null, ann: -1, ann0: -1, fx: {}, cn: null, past: [] };
-    if (!s.lv || typeof s.lv !== 'object') s.lv = zero(); if (!s.fx || typeof s.fx !== 'object') s.fx = {}; if (!Array.isArray(s.past)) s.past = []; return s; };
-  let css = null, dead = false, SITE = null, VIS = {}, HOT = {}, BKEY = '', PKEY = '', LIT = null, GAT = 0, NLN = null, chipK = '', chipT = 0, tally0 = null, metT = 0; const DBG = [];
+    if (!s.lv || typeof s.lv !== 'object') s.lv = zero(); if (!s.fx || typeof s.fx !== 'object') s.fx = {}; if (!Array.isArray(s.past)) s.past = []; if (!Array.isArray(s.mem)) s.mem = []; return s; };
+  let HOMEK = null, css = null, dead = false, SITE = null, VIS = {}, HOT = {}, BKEY = '', PKEY = '', LIT = null, GAT = 0, NLN = null, chipK = '', chipT = 0, tally0 = null, metT = 0, metT2 = 0; const DBG = [];
+
+  const keptNames = () => { const s = S(), k = s.keep || {}; return s.n > 0 ? B_ORDER.filter(b => k[b] && st(b) >= 1).map(b => L(BR[b].things[0])) : []; };
+  const guestOf = () => { const s = S(); return s.n > 0 && s.gu && GUESTS[s.gu] ? { r: s.gu, nm: regName(s.gu, en()) || s.gu, ...GUESTS[s.gu] } : null; };
+  const itemNm = e9 => ((A.item && A.item(e9)) || [e9, e9])[en() ? 1 : 0];
   const log = t => { DBG.push(t); if (DBG.length > 40) DBG.shift(); };
   if (!document.getElementById('fst-css')) { css = document.createElement('style'); css.id = 'fst-css'; css.textContent = CSS; document.head.appendChild(css); }
 
@@ -99,7 +117,7 @@ export function createFeast(A) {
   const left = () => S().fd - day();
   const thingsOf = b => BR[b].things.slice(0, st(b)).map(L);
 
-  function site() { if (SITE) return SITE; const P = (A.spots && A.spots()) || {}, c = P.pav ? P.pav.c : P.stall ? P.stall : P.hall ? P.hall.door : [16.5, 50]; const sp = A.site ? A.site(c[0], c[1]) : null; if (!sp) return null;
+  function site() { if (SITE) return SITE; const P = (A.spots && A.spots()) || {}, H9 = A.home ? A.home() : null, c0 = P.pav ? P.pav.c : P.stall ? P.stall : P.hall ? P.hall.door : [16.5, 50]; let sp = H9 && A.site ? A.site(H9[0], H9[1]) : null; if (!sp && A.site) sp = A.site(c0[0], c0[1]); if (!sp) return null;
     const ry = sp.ry, cs = Math.cos(ry), sn = Math.sin(ry); SITE = { x: sp.x, z: sp.z, ry, Q: (lx, lz) => [sp.x + lx * cs + lz * sn, sp.z - lx * sn + lz * cs] }; log('site ' + sp.x.toFixed(1) + ',' + sp.z.toFixed(1) + ' ry ' + ry.toFixed(2)); return SITE; }
   const toDoor = () => { const P = site(); if (!P) return null; const [x, z] = P.Q(-6.5, 10); return { icon: '🎉', name: en() ? 'feast yard' : '잔치 마당', door: [x, z] }; };
 
@@ -150,8 +168,18 @@ export function createFeast(A) {
     else if (id === 'safe:1') { for (const [lx, lz] of [[9.0, -5.9], [12.6, -5.9]]) piece(v, lx, lz, p => fireCol(p, 0xd8402e)); piece(v, 0, -3.3, p => { for (const x of [-5.4, -4.6, 4.6, 5.4]) { p('k', x, 0, 0, 0.17, 0.5, 0, 0xf28a2a); p('b', x, 0.22, 0, 0.21, 0.07, 0.21, 0xffffff); p('b', x, 0, 0, 0.36, 0.03, 0.36, 0x2b2420); } }); }
     else if (id === 'safe:2') { piece(v, 10.9, -4.4, p => { for (const [a, b] of [[-1.6, -1.2], [1.6, -1.2], [-1.6, 1.2], [1.6, 1.2]]) p('b', a, 0, b, 0.08, 2.3, 0.08, 0xd8d4ca); p('k', 0, 2.3, 0, 2.7, 1.0, 0, 0xf6f4ee); p('b', 0, 2.32, 1.2, 3.2, 0.2, 0.03, 0x2f8a4e); p('c', 0, 3.3, 0, 0.03, 0.9, 0, 0x6b4a2f); p('b', 0.26, 3.85, 0, 0.5, 0.34, 0.02, 0xffffff); p('b', 0.26, 3.85, 0.012, 0.3, 0.08, 0.004, 0xe0453a); p('b', 0.26, 3.85, 0.014, 0.08, 0.26, 0.004, 0xe0453a); });
       v.B = standB(v, 13.0, -2.2, 1.2, 0.6, 0.8, (g, W, H) => { const e = en(); g.fillStyle = '#2f8a4e'; g.fillRect(0, 0, W, H); g.fillStyle = '#fbf7ec'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '900 ' + (e ? 50 : 66) + 'px ' + FONT; g.fillText(e ? 'Safety tent' : '안전 쉼터', W / 2, H * 0.42); g.font = '800 26px ' + FONT; g.fillText(e ? 'Lost child? Come here' : '길 잃은 어린이는 여기로', W / 2, H * 0.78); }, 0x1f5a34); }
+    else if (id === 'mem') { if (!s.mem.length) { drop(id); return; } const y0 = A.gy(P.x, P.z);
+      piece(v, 0, 0, p => { s.mem.slice(-MEM_N).forEach(q => { const [lx, lz] = MEM_AT[(q.n | 0) % MEM_N], [wx, wz] = P.Q(lx, lz), y = A.gy(wx, wz) - y0;
+        if (q.k === 'tree') { p('c', lx, y, lz, 0.13, 1.5, 0, 0x7a5232); p('s', lx, y + 1.95, lz, 0.85, 1, 0, 0x5f9a46); p('s', lx + 0.35, y + 1.6, lz + 0.2, 0.5, 1, 0, 0x6aa84f); p('b', lx + 0.55, y, lz + 0.55, 0.42, 0.26, 0.2, 0x9a958a); }
+        else if (q.k === 'flower') { p('b', lx, y, lz, 1.5, 0.22, 0.9, 0x8a6a4a); p('b', lx, y + 0.22, lz, 1.4, 0.03, 0.8, 0x5a3e28); for (let j = 0; j < 5; j++) { const x = lx - 0.55 + j * 0.27, z = lz + (j % 2 ? 0.18 : -0.15); p('s', x, y + 0.42, z, 0.2, 1, 0, 0x4f8a3a); p('s', x + 0.04, y + 0.6, z, 0.11, 1, 0, j % 2 ? 0xe48aa6 : 0xd9628a); } }
+        else if (q.k === 'homi') { for (const sx of [-0.55, 0.55]) p('b', lx + sx, y, lz, 0.09, 1.35, 0.09, 0x6b4a2f); p('b', lx, y + 1.25, lz, 1.24, 0.07, 0.07, 0x6b4a2f); for (let j = 0; j < 3; j++) { const x = lx - 0.32 + j * 0.32; p('b', x, y + 0.82, lz + 0.05, 0.04, 0.43, 0.04, 0x9b6a3c); p('b', x + 0.05, y + 0.74, lz + 0.05, 0.15, 0.1, 0.03, 0x8a8f99); } }
+        else if (q.k === 'harvest') { p('c', lx, y, lz, 0.75, 0.55, 0, 0xc9a14a); p('k', lx, y + 0.55, lz, 0.8, 1.05, 0, 0xd8b65a); p('c', lx, y + 1.55, lz, 0.1, 0.18, 0, 0xb08a3a); }
+        else { p('b', lx - 0.62, y, lz, 0.08, 1.5, 0.08, 0x6b4a2f); p('b', lx + 0.62, y, lz, 0.08, 1.5, 0.08, 0x6b4a2f); p('b', lx, y + 0.62, lz - 0.02, 1.28, 0.86, 0.05, 0x8a6a4a); p('b', lx, y + 0.68, lz + 0.01, 1.14, 0.74, 0.02, 0xfbf7ec);
+          for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) p('b', lx - 0.39 + c * 0.26, y + 0.78 + r * 0.2, lz + 0.025, 0.2, 0.14, 0.006, (r * 4 + c) % 5 ? 0xe8dcc0 : 0xc8423a); } });
+      });
+      s.mem.slice(-MEM_N).forEach(q => { const [lx, lz] = MEM_AT[(q.n | 0) % MEM_N]; if (q.k === 'tree') col(v, lx, lz, 0.2, 0.2, 1.6); else if (q.k === 'harvest') col(v, lx, lz, 0.75, 0.75, 1.5); else if (q.k === 'flower') col(v, lx, lz, 0.75, 0.45, 0.25); else if (q.k === 'dongji') col(v, lx, lz, 0.7, 0.1, 1.5); }); }
     log('build ' + id); }
-  function buildAll() { if (!site()) return; build('board'); build('plaque'); for (const b of B_ORDER) for (let i = 0; i < 3; i++) { const id = b + ':' + i; if (i < st(b)) { if (!VIS[id]) build(id); } else drop(id); } lightNow(true); }
+  function buildAll() { if (!site()) return; build('board'); build('plaque'); build('mem'); for (const b of B_ORDER) for (let i = 0; i < 3; i++) { const id = b + ':' + i; if (i < st(b)) { if (!VIS[id]) build(id); } else drop(id); } lightNow(true); }
   function lightNow(force) { const m = min(), on = m >= 18 * 60 + 30 || m < 5 * 60 + 30; if (!force && on === LIT) return; LIT = on; const c = on ? 0xffa53a : 0xd8c8a0; for (const id of ['deco:1']) { const v = VIS[id]; if (v && v.lan) v.lan.material.color.setHex(c); } if (NLN) NLN.material.color.setHex(c); }
 
   const HOTL = {}, hot = (id, lx, lz, label, use, r) => { if (HOT[id]) HOT[id].remove(); const P = site(); if (!P) return; const [x, z] = P.Q(lx, lz); HOT[id] = map.interact.add({ kind: 'game', x, z, y: A.gy(x, z), r: r || 1.7, label, use }); HOTL[id] = label; };
@@ -164,8 +192,8 @@ export function createFeast(A) {
     const dc = S().dc && S().dc.d === day() ? S().dc.b : {}; if ((dc[b] | 0) >= CAP) { add(b, 'give:' + b, true); return false; }
     if (st(b) >= 3) { A.say(e ? '🎉 ' + BR[b].t[1] + ' is all set up already. Keep it for yourself.' : '🎉 ' + BR[b].t[0] + jo(BR[b].t[0], '은', '는') + ' 셋 다 섰어요. 가방에 그대로 둬요.', 2.6); return false; }
     if (!A.take(e9)) return false; add(b, 'give:' + b, true); A.sfx('ding'); return true; }
-  function giveRow(b) { const B9 = A.bag() || {}, e = en(); const L9 = keys(B9).filter(k => (B9[k] | 0) > 0 && (b === 'food' ? ['dish', 'food'].includes((A.item(k) || [])[2]) : GIVE.deco.includes(k))).slice(0, 6);
-    if (!L9.length) return '<div class="fst-how">' + esc(b === 'food' ? (e ? 'No dish or ingredient in your bag.' : '가방에 요리나 재료가 없어요.') : (e ? 'No pine cone, twigs, wool, pot or wind chime in your bag.' : '가방에 솔방울, 마른 가지, 양털, 화분, 풍경이 없어요.')) + '</div>';
+  function giveRow(b) { const B9 = A.bag() || {}, e = en(), G9 = guestOf(); const L9 = keys(B9).filter(k => (B9[k] | 0) > 0 && (b === 'food' ? ['dish', 'food'].includes((A.item(k) || [])[2]) : b === 'guest' ? !!(G9 && k === G9.like) : GIVE.deco.includes(k))).slice(0, 6);
+    if (!L9.length) return '<div class="fst-how">' + esc(b === 'food' ? (e ? 'No dish or ingredient in your bag.' : '가방에 요리나 재료가 없어요.') : b === 'guest' ? (G9 ? (e ? 'Guests from ' + G9.nm + ' would love ' + itemNm(G9.like) + '. None in your bag yet.' : G9.nm + ' 손님들은 ' + itemNm(G9.like) + jo(itemNm(G9.like), '을', '를') + ' 반가워해요. 아직 가방에 없어요.') : '') : (e ? 'No pine cone, twigs, wool, pot or wind chime in your bag.' : '가방에 솔방울, 마른 가지, 양털, 화분, 풍경이 없어요.')) + '</div>';
     return '<div class="fst-give">' + L9.map(k => '<button class="sub" data-gb="' + b + '" data-ge="' + esc(k) + '">' + esc(k + ' ' + ((A.item(k) || [])[e ? 1 : 0] || '') + (e ? ' — give' : ' 드리기')) + '</button>').join('') + '</div>'; }
   async function share() { const s = S(), e = en(), n = st('food'), B9 = A.bag() || {}, d9 = keys(B9).find(k => (B9[k] | 0) > 0 && (A.item(k) || [])[2] === 'dish');
     const what = BR.food.things.slice(0, n).map(t => t[e ? 1 : 0]).join(e ? ', ' : ', ');
@@ -197,37 +225,44 @@ export function createFeast(A) {
   function counters() { const g = G(), d = day(), ty = g.typh && Array.isArray(g.typh.reqs) ? g.typh.reqs.filter(q => q && q.st === 'done').length : 0, cn = { cells: keys(g.cells).length, typ: ty, deco: (Array.isArray(g.deeds) ? g.deeds : []).filter(q => q && q.t === 'deco' && q.d === d).length, d };
     const s = S(), o = s.cn; s.cn = cn; if (!o) return; if (cn.cells > o.cells) add('guest', 'st:cells'); if (cn.typ > o.typ) add('safe', 'st:typh'); if (o.d === d && cn.deco > o.deco) add('deco', 'st:deco'); }
 
-  function plan(force) { const s = S(), d = day(); if (s.fd > 0 && !force) return; const th = themeOf(A.season ? A.season(Math.max(FIRST_DAY, d + 7)) : 'now');
-    Object.assign(s, { n: 0, fd: Math.max(FIRST_DAY, d + 7), d0: d, th, lv: zero(), dc: null, fx: {}, ann: -1, ann0: -1 }); mark(); log('plan fd ' + s.fd + ' ' + th); }
+  function plan(force) { const s = S(), d = day(); if (s.fd > 0 && !force) return; const f0 = A.storyOn && A.storyOn() ? STORY_DAY : FIRST_DAY, th = themeOf(A.season ? A.season(Math.max(f0, d + 7)) : 'now');
+    Object.assign(s, { n: 0, fd: Math.max(f0, d + 7), d0: d, th, lv: zero(), dc: null, fx: {}, ann: -1, ann0: -1 }); mark(); log('plan fd ' + s.fd + ' ' + th); }
+
+  function nextGuest(s) { const have = A.regions ? A.regions() : null, C = GUEST_ORDER.filter(r => !have || have.includes(r)), L9 = C.length ? C : GUEST_ORDER; let g = L9[(s.n | 0) % L9.length]; if (g === s.gu && L9.length > 1) g = L9[((s.n | 0) + 1) % L9.length]; return g; }
   function finish() { const s = S(), d = day(), e = en(); if (!(s.fd > 0 && d > s.fd)) return false; const stg = stages();
-    s.past.push({ n: s.n, d: s.fd, th: s.th, st: stg, met: s.fx.met | 0, show: s.fx.show | 0, ate: s.fx.ate | 0, ph: s.fx.ph | 0 }); while (s.past.length > 12) s.past.shift();
+    const keep = Object.fromEntries(B_ORDER.map(b => [b, stg[b] >= KEEP_MIN ? 1 : 0])), ks = s.n === 0 ? 'tree' : KEEPS[s.th] ? s.th : 'homi';
+    s.past.push({ n: s.n, d: s.fd, th: s.th, st: stg, met: s.fx.met | 0, show: s.fx.show | 0, ate: s.fx.ate | 0, ph: s.fx.ph | 0, gu: s.gu || '', ks }); while (s.past.length > 12) s.past.shift();
+    s.mem.push({ n: s.n, th: s.th, k: ks, d: s.fd }); while (s.mem.length > MEM_N) s.mem.shift();
     const got = B_ORDER.filter(b => stg[b] > 0).map(b => BR[b].t[e ? 1 : 0]), nm = s.n === 0 ? (e ? 'First town feast' : '첫 마을 잔치') : (THEMES[s.th] || THEMES.homi).t[e ? 1 : 0];
-    if (A.diary) A.diary(e ? nm + ': ' + (got.length ? got.join(', ') : 'a quiet feast') : nm + ': ' + (got.length ? got.join(', ') + ' 준비가 잔치 마당에 나왔어요' : '조용히 지나갔어요'));
-    let fd = s.fd + GAP; while (fd < d + 7) fd += GAP; const th = themeOf(A.season ? A.season(fd) : 'now');
-    Object.assign(s, { n: s.n + 1, fd, d0: d, th, lv: zero(), dc: null, fx: {}, ann: -1 }); mark(); A.rec('feast', { ev: 'end', n: s.n - 1, got: got.length });
-    for (const b of B_ORDER) for (let i = 0; i < 3; i++) drop(b + ':' + i); build('plaque'); if (VIS.board && VIS.board.B) VIS.board.B.redraw(); PKEY = ''; log('finish → next ' + fd + ' ' + th); return true; }
+    if (A.diary) A.diary(e ? nm + ': ' + (got.length ? got.join(', ') : 'a quiet feast') + '. A ' + KEEPS[ks].t[1] + ' now stands in the feast yard' : nm + ': ' + (got.length ? got.join(', ') + ' 준비가 잔치 마당에 나왔어요' : '조용히 지나갔어요') + '. 잔치 마당에 ' + KEEPS[ks].t[0] + jo(KEEPS[ks].t[0], '이', '가') + ' 남았어요');
+    let fd = s.fd + GAP; while (fd < d + 7) fd += GAP; const th = themeOf(A.season ? A.season(fd) : 'now'), gu = nextGuest(s);
+    Object.assign(s, { n: s.n + 1, fd, d0: d, th, lv: Object.fromEntries(B_ORDER.map(b => [b, keep[b] * PER])), keep, gu, dc: null, fx: {}, ann: -1 }); mark(); A.rec('feast', { ev: 'end', n: s.n - 1, got: got.length, keep: B_ORDER.filter(b => keep[b]).length, ks, gu });
+    for (const b of B_ORDER) for (let i = 0; i < 3; i++) { if (i < st(b)) build(b + ':' + i); else drop(b + ':' + i); } build('plaque'); build('mem'); if (VIS.board && VIS.board.B) VIS.board.B.redraw(); PKEY = ''; log('finish → next ' + fd + ' ' + th + ' keep ' + JSON.stringify(keep) + ' gu ' + gu + ' mem ' + ks); return true; }
   function bestAsk() { const d = day(); let best = null; B_ORDER.forEach((b, i) => { const s9 = st(b); if (s9 >= 3) return; const sc = s9 * 10 + ((i + d) % 5); if (!best || sc < best.sc) best = { b, sc }; }); return best ? best.b : null; }
   const allDone = () => B_ORDER.every(b => st(b) >= 3);
   function notice(first) { const s = S(), e = en(), b = bestAsk(), n = left(), p = toDoor();
     if (isDay()) { A.say('🎉 ' + (e ? 'Today is the ' + title() + '! Neighbours gather in the feast yard from 10:00.' : '오늘은 ' + title() + ' 날이에요! 10시부터 잔치 마당에 이웃들이 모여요.'), 5, 1); }
     else if (!b) A.say('🎉 ' + (e ? 'Feast prep is all done. Now we wait for the feast day — ' + nightsW(n, 1) + ' to go.' : title() + ' 준비 끝! 이제 잔칫날을 기다려요. ' + nightsW(n) + ' 남았어요.'), 4.5, 1);
+    else if (first && s.n > 0) { A.banner('🎉 ' + (e ? title() + ' in ' + nightsW(n, 1) : title() + '까지 ' + nightsW(n)), 5); A.say(afterLine() + ' ' + (e ? BR[b].ask[1] : BR[b].ask[0]), 6, 1); }
     else if (first) { A.banner('🎉 ' + (e ? title() + ' in ' + nightsW(n, 1) : title() + '까지 ' + nightsW(n)), 5); A.say(e ? BR[b].who[1].replace(/^./, c => c.toUpperCase()) + ' put up the feast board: five kinds of preparation. ' + BR[b].ask[1] : BR[b].who[0] + jo(BR[b].who[0], '이', '가') + ' 잔치 준비 게시판을 세웠어요. 준비 다섯 갈래가 있어요. ' + BR[b].ask[0], 5, 1); }
     else A.say('🎉 ' + (e ? nightsW(n, 1).replace(/^./, c => c.toUpperCase()) + ' until the feast. Today, how about ' + BR[b].t[1].toLowerCase() + ' for ' + BR[b].who[1] + '?' : title() + '까지 ' + nightsW(n) + '이에요. 오늘은 ' + BR[b].who[0] + jo(BR[b].who[0], '이', '가') + ' 맡긴 ' + BR[b].t[0] + jo(BR[b].t[0], '을', '를') + ' 해 볼까요?'), 4.5, 1);
     if (p) { chipK = 'go'; chipT = performance.now(); A.chip('twn-fst', '🎉 ' + (e ? 'Feast board' : '잔치 게시판') + (isDay() ? '' : ' · ' + (e ? nightsW(n, 1) : nightsW(n))), { onClick: () => { A.chip('twn-fst', null); chipK = ''; A.route(p); } }); } log('notice ' + (first ? 'first' : '') + ' ' + b); }
 
   function gatherSpots(n) { const P = site(); if (!P) return []; const out = [], [sx, sz] = P.Q(0, -6.6); for (let i = 0; i < n; i++) { const row = i < 6 ? 0 : 1, k = row ? i - 6 : i, cnt = row ? 5 : 6, lx = (k - (cnt - 1) / 2) * 1.5, lz = row ? 0.9 : -1.6, [x, z] = P.Q(lx + (row ? 0.4 : 0), lz); out.push([x, z, Math.atan2(sx - x, sz - z)]); } return out; }
   function feastSec() { const s = S(), e = en(), on = festOn(), m = min();
-    const want = on ? Math.min(11, 4 + B_ORDER.reduce((a, b) => a + st(b), 0) / 2 | 0) : 0; if (want !== GAT) { const got = A.gather(want ? gatherSpots(want) : null); GAT = want; log('gather ' + want + ' → ' + got); }
+    const want = on ? Math.min(11, 4 + B_ORDER.reduce((a, b) => a + st(b), 0) / 2 | 0) : 0; if (want !== GAT) { const got = A.gather(want ? gatherSpots(want) : null); GAT = want && !got ? 0 : want; log('gather ' + want + ' → ' + got); }
     if (on && !s.fx.met && A.me) { const me = A.me(), P = site(); if (P && Math.hypot(me.x - P.x, me.z - P.z) < 16) { s.fx.met = 1; mark(); const mk = B_ORDER.filter(b => st(b) > 0), ms = B_ORDER.filter(b => st(b) === 0);
         A.bubbleW(0, L(mk.length ? BR[mk[(day() + mk.length) % mk.length]].made : T2('준비는 조금 모자랐어도 이렇게 모이니 좋다.', 'We were not fully ready, but it is good to be together.')));
         const t2 = ms.length ? L(BR[ms[day() % ms.length]].miss) : L(T2('오늘 잔치 마당이 가득 찼어. 다섯 갈래 준비가 다 나왔네.', 'The feast yard is full today. All five kinds of preparation came out.'));
-        metT = setTimeout(() => { if (!dead) A.bubbleW(1, t2); }, 4200); A.rec('feast', { ev: 'met', d: day(), miss: ms.length }); } }
+        metT = setTimeout(() => { if (!dead) A.bubbleW(1, t2); }, 4200); A.rec('feast', { ev: 'met', d: day(), miss: ms.length });
+        const G9 = guestOf(); if (G9 && GAT >= 3) metT2 = setTimeout(() => { if (!dead) A.bubbleW(2, e ? 'Guests from ' + G9.nm + ' brought ' + itemNm(G9.bring).toLowerCase() + ' to share with everyone.' : G9.nm + '에서 온 손님들이 ' + itemNm(G9.bring) + jo(itemNm(G9.bring), '을', '를') + ' 가져와서 같이 나눠요.'); }, 8400); } }
     if (on && m >= 18 * 60 && !NLN && A.nightMkt && A.lampLine) { const to = A.nightMkt(), P = site(); if (to && P && Math.hypot(to[0] - P.x, to[1] - P.z) < 700) { const L9 = A.lampLine(P.Q(0, 9.5), to, 14); if (L9.length) { NLN = lanterns(L9.map(([x, z]) => [x, A.gy(x, z) + 2.3, z])); lightNow(true); if (!s.fx.nm) { s.fx.nm = 1; mark(); A.banner('🏮 ' + (e ? 'Lanterns now run from the feast yard to the night market' : '잔치 마당에서 야시장까지 등불 길이 켜졌어요'), 4.5); A.chip('twn-fst', '🏮 ' + (e ? 'Night market' : '야시장 가기'), { onClick: () => { A.chip('twn-fst', null); chipK = ''; A.route({ icon: '🏮', name: e ? 'night market' : '야시장', door: to }); } }); chipK = 'nm'; chipT = performance.now(); } } } }
     if (s.fx.bk === 1 && !(A.jgOn && A.jgOn())) { s.fx.bk = 2; mark(); A.cheer(); }
     if (!on && NLN) { map.remove(NLN); NLN.geometry.dispose(); NLN.material.dispose(); NLN = null; }
     if (on && m >= 20 * 60 && !s.fx.ph && !s.fx.phc && !A.busy() && !A.panel()) { s.fx.phc = 1; mark(); A.say('📷 ' + (e ? 'Before the feast ends, take this year’s feast photo at the board.' : '잔치가 끝나기 전에 게시판에서 올해 잔치 사진을 찍어요.'), 4, 1); chipK = 'ph'; chipT = performance.now(); A.chip('twn-fst', '📷 ' + (e ? 'Feast photo' : '잔치 사진'), { onClick: () => { A.chip('twn-fst', null); chipK = ''; const p = toDoor(); if (p) A.route(p); } }); } }
   function sec(force) { if (dead || !A.on()) return; const s = S(), d = day();
     if (!(s.fd > 0)) plan(); if (d > s.fd) finish();
+    { const hk = A.home ? String(A.home() || '') : ''; if (HOMEK === null) HOMEK = hk; else if (hk !== HOMEK) { HOMEK = hk; if (SITE && !festOn()) { rebuild(); log('home → ' + hk); } } }
     if (isDay() && A.storm && A.storm() && min() < 600) { s.fd++; s.ann = -1; mark(); const t9 = '🌀 ' + (en() ? 'A typhoon is here, so the feast moves to tomorrow.' : '태풍이 와서 잔치를 하루 미뤄요.'); if (!(A.stormNote && A.stormNote(t9))) A.say(t9, 4, 1); log('storm → ' + s.fd); }
     if (!VIS.board) buildAll(); counters();
     if (A.ready() && !A.busy() && !A.panel()) { if (s.ann0 !== s.n) { s.ann0 = s.n; s.ann = d; mark(); notice(true); } else if (s.ann !== d && min() >= 6 * 60) { s.ann = d; mark(); notice(false); } }
@@ -235,9 +270,16 @@ export function createFeast(A) {
     const bk = [left(), isDay(), JSON.stringify(stages()), en()].join('|'); if (bk !== BKEY) { BKEY = bk; if (VIS.board && VIS.board.B) VIS.board.B.redraw(); }
     if (chipK && performance.now() - chipT > 90000) { A.chip('twn-fst', null); chipK = ''; } }
 
+  function afterLine() { const s = S(), e = en(), K = keptNames(), last = s.past[s.past.length - 1], ks = last && KEEPS[last.ks], G9 = guestOf(), out = [];
+    if (K.length) out.push(e ? 'From the last feast, ' + K.join(', ') + (K.length > 1 ? ' are' : ' is') + ' still standing.' : '지난 잔치에서 ' + K.join(', ') + jo(K[K.length - 1], '이', '가') + ' 그대로 남았어요.');
+    else if (last) out.push(e ? 'Nothing was left from the last feast, so we start from the beginning.' : '지난 잔치에서 남은 것이 없어서 처음부터 준비해요.');
+    if (ks) out.push(e ? 'A ' + ks.t[1] + ' now stands in the feast yard.' : '잔치 마당에 ' + ks.t[0] + jo(ks.t[0], '이', '가') + ' 섰어요.');
+    if (G9) out.push(e ? 'Guests from ' + G9.nm + ' are coming. They would love ' + itemNm(G9.like).toLowerCase() + '.' : '이번 손님은 ' + G9.nm + ' 사람들이에요. ' + itemNm(G9.like) + jo(itemNm(G9.like), '을', '를') + ' 반가워해요.');
+    return (s.n > 0 ? '🎉 ' : '') + out.join(' '); }
+
   function storyLine() { const s = S(), e = en(), Q = G().story || {}, F = Q.fest || {}, n = left(), when = isDay() ? (e ? 'It is today.' : '오늘이 그날이에요.') : (e ? nightsW(n, 1).replace(/^./, c => c.toUpperCase()) + ' to go.' : nightsW(n) + ' 남았어요.');
-    if (s.n === 0) return '📜 ' + (e ? 'The feast the prologue note asked helpers for is this one. ' : '프롤로그 쪽지가 도우미를 찾던 그 첫 잔치가 바로 이 잔치예요. ') + when;
-    const fin = F.site && !F.done ? (e ? ' The feast at ' + F.site + ' you chose in the story opens at the end of the story.' : ' 이야기에서 고른 ' + F.site + ' 잔치는 이야기 마지막 장에서 열려요.') : '';
+    const D = Q.done || {}; if (s.n === 0) return '📜 ' + (e ? 'The feast the prologue note asked helpers for is this one. ' + (D.f1 ? '' : 'Finishing Act 4 of the story moves it to the next day. ') : '프롤로그 쪽지가 도우미를 찾던 그 첫 잔치가 바로 이 잔치예요. ' + (D.f1 ? '' : '이야기 4막을 마치면 그다음 날로 당겨져요. ')) + when;
+    const fin = F.site && !D.f1 ? (e ? ' The story finale uses the next feast, at ' + F.site + '.' : ' 이야기 마지막 장은 ' + F.site + '에서 여는 다음 잔치를 써요.') : '';
     return '📜 ' + (e ? 'After the first feast, a town feast comes back every two weeks. ' : '첫 잔치 뒤로 두 이레마다 돌아오는 마을 잔치예요. ') + when + fin; }
 
   function open(atBoard) { const s = S(), e = en(), th = THEMES[s.th] || THEMES.homi, on = isDay(), pre = prepOn(), dc = s.dc && s.dc.d === day() ? s.dc.b : {};
@@ -245,10 +287,10 @@ export function createFeast(A) {
       const nx = n >= 3 ? (e ? 'All three are up in the feast yard.' : '셋 다 잔치 마당에 섰어요.') : on ? L(R.miss) : (e ? 'Next: ' : '다음: ') + L(R.things[n]);
       const today = !pre ? '' : cap ? (e ? 'Today’s share is done. You can help again tomorrow.' : '오늘 몫은 했어요. 내일 또 도울 수 있어요.') : (dc[b] | 0) ? (e ? 'You can help once more today.' : '오늘 한 번 더 도울 수 있어요.') : (e ? 'You can help today.' : '오늘 도울 수 있어요.');
       return '<div class="fst-row" style="--fc:' + R.col + '" data-br="' + b + '"><h4>' + R.ic + ' ' + esc(L(R.t)) + ' <span class="who">' + esc((e ? 'asked by ' : '맡긴 이: ') + L(R.who)) + '</span></h4><div class="fst-pics">' + pics + '</div><div class="fst-nx">' + esc(nx) + '</div>'
-        + (pre ? '<div class="fst-how">' + esc((e ? 'How: ' : '하는 법: ') + L(R.how)) + '</div><div class="fst-day">' + esc(today) + '</div>' : '') + (atBoard && pre && !cap && n < 3 && (b === 'food' || b === 'deco') ? giveRow(b) : '') + '</div>'; }).join('');
+        + (pre ? '<div class="fst-how">' + esc((e ? 'How: ' : '하는 법: ') + L(R.how)) + '</div><div class="fst-day">' + esc(today) + '</div>' : '') + (atBoard && pre && !cap && n < 3 && (b === 'food' || b === 'deco' || (b === 'guest' && guestOf())) ? giveRow(b) : '') + '</div>'; }).join('');
     const head = !on && pre && allDone() ? (e ? 'Prep is all done — every kind is up in the feast yard. Now we wait for the feast day: ' + nightsW(left(), 1) + ' to go.' : '준비 끝! 다섯 갈래가 다 잔치 마당에 섰어요. 이제 잔칫날을 기다려요. ' + nightsW(left()) + ' 남았어요.') : on ? (e ? 'Today is the feast. Neighbours gather in the feast yard from 10:00. What you prepared is out there.' : '오늘이 잔치 날이에요. 10시부터 잔치 마당에 이웃이 모여요. 준비한 것이 그대로 나와 있어요.') : (e ? nightsW(left(), 1).replace(/^./, c => c.toUpperCase()) + ' until the feast. Five neighbours asked for help. Each kind can move up to one thing a day.' : '잔치까지 ' + nightsW(left()) + '. 이웃 다섯이 준비를 맡겼어요. 갈래마다 하루에 한 가지씩 생길 수 있어요.');
     const past = s.past.slice(-3).reverse().map(q => { const T = THEMES[q.th] || THEMES.homi, got = B_ORDER.filter(b => (q.st || {})[b] > 0).map(b => BR[b].t[e ? 1 : 0]); return '<div class="fst-past">' + esc((q.n === 0 ? (e ? 'First town feast' : '첫 마을 잔치') : T.t[e ? 1 : 0]) + ' — ' + (got.length ? got.join(', ') : (e ? 'a quiet feast' : '조용한 잔치')) + (q.ph ? (e ? ' · photo in the album' : ' · 앨범에 사진') : '')) + '</div>'; }).join('');
-    const h = '<h3>🎉 ' + esc(title()) + '</h3>' + (storyLine() ? '<div class="fst-story">' + esc(storyLine()) + '</div>' : '') + '<div class="sm">' + esc(head) + '</div><div class="sm" style="margin:4px 0">' + esc(L(th.fact)) + '</div>' + rows + (past ? '<div class="grp">' + (e ? 'Past feasts' : '지난 잔치') + '</div>' + past : '')
+    const h = '<h3>🎉 ' + esc(title()) + '</h3>' + (storyLine() ? '<div class="fst-story">' + esc(storyLine()) + '</div>' : '') + '<div class="sm">' + esc(head) + '</div>' + (s.n > 0 && !on ? '<div class="sm fst-after" style="margin:4px 0;font-weight:800">' + esc(afterLine()) + '</div>' : '') + '<div class="sm" style="margin:4px 0">' + esc(L(th.fact)) + '</div>' + rows + (past ? '<div class="grp">' + (e ? 'Past feasts' : '지난 잔치') + '</div>' + past : '')
       + '<div class="row"><button class="sub" data-a="go">🧭 ' + (e ? 'Go to the feast yard' : '잔치 마당 가기') + '</button><button class="sub" data-a="x">' + (e ? 'Close' : '닫기') + '</button></div>';
     const W = A.openP(h, false, 'feast'); W.onclick = ev => { const b9 = ev.target.closest('button'); if (!b9) return; if (b9.dataset.gb) { if (give(b9.dataset.gb, b9.dataset.ge)) open(atBoard); return; } if (b9.dataset.a === 'go') { A.closeP(); const p = toDoor(); if (p) A.route(p); return; } if (b9.dataset.a === 'x') A.closeP(); }; log('open ' + (atBoard ? 'board' : 'nb')); return W; }
 
@@ -258,7 +300,7 @@ export function createFeast(A) {
     const t = n === 0 ? T2(title() + ' 날이에요. 10시부터 잔치 마당에 이웃이 모여요', 'It is the ' + title() + '. Neighbours gather in the feast yard from 10:00') : !b ? T2(title() + '까지 ' + nightsW(n) + '. 준비는 다 끝났어요. 잔칫날을 기다려요', nightsW(n, 1) + ' until the feast. Everything is ready — just wait for the day') : T2(title() + '까지 ' + nightsW(n) + '. ' + BR[b].who[0] + jo(BR[b].who[0], '이', '가') + ' 맡긴 ' + BR[b].t[0] + jo(BR[b].t[0], '이', '가') + ' 아직 모자라요', nightsW(n, 1) + ' until the feast. ' + BR[b].t[1] + ' for ' + BR[b].who[1] + ' still needs help');
     return { k: 'feast', ic: '🎉', s: T2(n === 0 ? '잔치 날' : '잔치까지 ' + nightsW(n), n === 0 ? 'Feast day' : nightsW(n, 1) + ' to the feast'), t, p: p ? { ...p } : null }; }
   function news(d) { const s = S(); if (!(s.fd > 0)) return []; const P = site(), at = P ? P.Q(-6.5, 9.4) : null, b = bestAsk(), last = s.past[s.past.length - 1];
-    if (last && last.d === d - 1) { const T = THEMES[s.th] || THEMES.homi; return [{ k: 'feast', t: ['🎉 어제 잔치가 끝났어요. 다음은 ' + T.t[0] + ', ' + nightsW(s.fd - d) + ' 남았어요', '🎉 Yesterday’s feast is over. Next is the ' + T.t[1] + ', ' + nightsW(s.fd - d, 1) + ' away'], at }]; }
+    if (last && last.d === d - 1) { const T = THEMES[s.th] || THEMES.homi, G9 = guestOf(), K9 = last.ks && KEEPS[last.ks]; return [{ k: 'feast', t: ['🎉 어제 잔치가 끝났어요. 다음은 ' + T.t[0] + ', ' + nightsW(s.fd - d) + ' 남았어요' + (K9 ? '. 잔치 마당에 ' + K9.t[0] + jo(K9.t[0], '이', '가') + ' 섰어요' : '') + (G9 ? '. 손님은 ' + G9.nm + ' 사람들' : ''), '🎉 Yesterday’s feast is over. Next is the ' + T.t[1] + ', ' + nightsW(s.fd - d, 1) + ' away' + (K9 ? '. A ' + K9.t[1] + ' stands in the feast yard' : '') + (G9 ? '. Guests from ' + G9.nm : '')], at }]; }
     if (d === s.fd) return [{ k: 'feast', t: ['🎉 오늘은 ' + title() + ' 날! 10시부터 잔치 마당에 이웃이 모여요', '🎉 Today is the ' + title() + '! Neighbours gather from 10:00'], at }];
     if (d < s.fd && !b) return [{ k: 'feast', t: ['🎉 ' + title() + '까지 ' + nightsW(s.fd - d) + '. 준비는 다 끝났어요. 잔칫날을 기다려요', '🎉 ' + nightsW(s.fd - d, 1) + ' to the feast. Everything is ready — wait for the day'], at }];
     if (d < s.fd) return [{ k: 'feast', t: ['🎉 ' + title() + '까지 ' + nightsW(s.fd - d) + '. ' + BR[b].who[0] + jo(BR[b].who[0], '이', '가') + ' ' + BR[b].t[0] + ' 준비를 부탁했어요', '🎉 ' + nightsW(s.fd - d, 1) + ' to the feast. ' + BR[b].who[1].replace(/^./, c => c.toUpperCase()) + ' asked for help with ' + BR[b].t[1].toLowerCase()], at }];
@@ -266,11 +308,14 @@ export function createFeast(A) {
   const calLine = () => { const s = S(); if (!(s.fd > 0)) return ''; return '🎉 ' + (isDay() ? (en() ? 'Today is the ' + title() : '오늘은 ' + title() + ' 날') : (en() ? title() + ' in ' + nightsW(left(), 1) : title() + '까지 ' + nightsW(left()))); };
   const festNear = me => { if (!festOn()) return false; const P = site(); return !!P && Math.hypot(me.x - P.x, me.z - P.z) < 120; };
 
-  function dispose() { dead = true; clearTimeout(metT); for (const id of keys(VIS)) drop(id); for (const id of keys(HOT)) HOT[id].remove(); HOT = {}; if (NLN) { map.remove(NLN); NLN.geometry.dispose(); NLN.material.dispose(); NLN = null; } if (GAT) { A.gather(null); GAT = 0; } A.chip('twn-fst', null);
+  function dispose() { dead = true; clearTimeout(metT); clearTimeout(metT2); for (const id of keys(VIS)) drop(id); for (const id of keys(HOT)) HOT[id].remove(); HOT = {}; if (NLN) { map.remove(NLN); NLN.geometry.dispose(); NLN.material.dispose(); NLN = null; } if (GAT) { A.gather(null); GAT = 0; } A.chip('twn-fst', null);
     const g = A.GAME; if (g.tally && g.tally.fst && tally0) g.tally = tally0; if (css) { css.remove(); css = null; } }
+
+  function pull() { const s = S(), d = day(); if (!(s.fd > 0)) plan(); if (s.fd <= d + 1) return s.fd; s.fd = d + 1; s.th = themeOf(A.season ? A.season(s.fd) : 'now'); s.ann = -1; mark(); PKEY = ''; BKEY = ''; log('story pull → ' + s.fd); return s.fd; }
   function rebuild() { SITE = null; for (const id of keys(VIS)) drop(id); for (const id of keys(HOT)) HOT[id].remove(); HOT = {}; PKEY = ''; if (GAT) { A.gather(null); GAT = 0; } buildAll(); }
-  return { sec, open, tap, dayRow, wait, news, calLine, festNear, dispose, rebuild, has: () => true,
-    info: () => { const s = S(), P = site(); return { fd: s.fd, n: s.n, th: s.th, d0: s.d0, day: day(), left: left(), lv: { ...s.lv }, st: stages(), dc: s.dc, fx: { ...s.fx }, past: s.past.slice(), prep: prepOn(), on: festOn(), gat: GAT, lit: LIT, nln: NLN ? NLN.count : 0, chip: chipK,
+  return { sec, open, tap, dayRow, wait, news, calLine, festNear, dispose, rebuild, has: () => true, pull, yard: () => { const p = toDoor(), P = site(); return p && P ? { door: p.door, stage: P.Q(0, -3.9), table: P.Q(-8.6, -0.6), x: P.x, z: P.z } : null; },
+    title: () => title(), afterLine: () => (S().n > 0 ? afterLine() : ''),
+    info: () => { const s = S(), P = site(); return { fd: s.fd, n: s.n, th: s.th, d0: s.d0, day: day(), left: left(), lv: { ...s.lv }, st: stages(), dc: s.dc, fx: { ...s.fx }, past: s.past.slice(), prep: prepOn(), on: festOn(), gat: GAT, lit: LIT, nln: NLN ? NLN.count : 0, chip: chipK, keep: { ...(s.keep || {}) }, gu: s.gu || '', mem: s.mem.map(q => q.k),
       site: P ? [+P.x.toFixed(1), +P.z.toFixed(1), +P.ry.toFixed(2)] : null, vis: keys(VIS), vat: Object.fromEntries(keys(VIS).map(id => [id, VIS[id].g.map(g => [+g.position.x.toFixed(1), +g.position.z.toFixed(1), +g.position.y.toFixed(2), !!g.parent])])), hot: Object.fromEntries(keys(HOT).map(k => [k, HOTL[k] || ''])) }; },
     dbg: { add: (b, src) => add(b, src || 'dbg', true), tap: (k, o) => tap(k, o), finish: () => finish(), plan: () => plan(true), log: () => DBG.slice(), at: (lx, lz) => { const P = site(); return P ? P.Q(lx, lz) : null; }, photo: () => photo(), share: () => share(), perform: () => perform() } };
 }
