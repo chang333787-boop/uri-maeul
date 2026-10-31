@@ -1,0 +1,175 @@
+export function makeMeta(SCHOOL) {
+  const KINDS = ['classroom', 'special', 'office', 'corridor', 'hall', 'stair', 'toilet', 'storage', 'service', 'gym', 'stage', 'yard', 'path', 'field', 'play', 'garden'];
+  const M = (id, kind, bldg, tags = [], opts = {}) => ({ id, kind, bldg, tags, opts });
+  const ZONE_META = {
+
+    '현관 앞': M('entrance-porch', 'hall', 'main', ['entry', 'covered'], { indoor: false }),
+    '원무실': M('kinder-office', 'office', 'main', ['staff', 'kinder']),
+    '유치원': M('kinder', 'classroom', 'main', ['kinder']),
+    '사랑반': M('sarang', 'classroom', 'main'),
+    '돌봄교실': M('care', 'classroom', 'main'),
+    '행정실': M('admin', 'office', 'main', ['staff']),
+    '교장실': M('principal', 'office', 'main', ['staff']),
+    '교무실': M('teachers', 'office', 'main', ['staff']),
+    '현관': M('entrance', 'hall', 'main', ['entry']),
+    '현관 전실': M('entrance-vestibule', 'hall', 'main', ['entry']),
+    '화장실': M('toilet-main', 'toilet', 'main'),
+    '컴퓨터실': M('computer', 'special', 'main'),
+    '1학년': M('grade1', 'classroom', 'main'),
+    '3학년': M('grade3', 'classroom', 'main'),
+    '본관 복도': M('corridor-main', 'corridor', 'main'),
+
+    '보건실': M('nurse', 'special', 'west'),
+    '나래반': M('narae', 'classroom', 'west'),
+    '문서고': M('archive', 'storage', 'west', ['staff']),
+    '도서실': M('library', 'special', 'west'),
+    '계단': M('stair-west', 'stair', 'west', [], { yr: [-0.3, 3.35] }),
+    '계단참': M('stair-landing', 'stair', 'west'),
+    '2층 계단': M('stair-west-2f', 'stair', 'west'),
+    '계단 밑 창고': M('stair-store', 'storage', 'west'),
+    '서측 로비': M('west-lobby', 'hall', 'west'),
+    '측문': M('west-door', 'hall', 'west', ['entry']),
+    '6학년': M('grade6', 'classroom', 'west'),
+    '5학년': M('grade5', 'classroom', 'west'),
+    '소담실': M('sodam', 'special', 'west'),
+    '2층 복도': M('corridor-2f', 'corridor', 'west'),
+
+    '악기실': M('music-passage', 'corridor', 'cafe'),
+    '영양사실': M('nutrition', 'office', 'cafe', ['staff']),
+    '당직실': M('duty', 'office', 'cafe', ['staff']),
+    '급식실': M('cafeteria', 'special', 'cafe'),
+    '조리실': M('kitchen', 'service', 'cafe', ['staff']),
+    '급식 창고': M('cafe-store', 'storage', 'cafe', ['staff']),
+
+    '가운데 로비': M('center-lobby', 'hall', 'link'),
+    '세로복도': M('link-corridor', 'corridor', 'link'),
+
+    '동관 복도': M('corridor-east', 'corridor', 'east'),
+    '2학년': M('grade2', 'classroom', 'east'),
+    '4학년': M('grade4', 'classroom', 'east'),
+    '과학실': M('science', 'special', 'east'),
+    '과학준비실': M('science-prep', 'storage', 'east', ['staff']),
+    '창고': M('east-store', 'storage', 'east', ['staff']),
+
+    '체육관': M('gym', 'gym', 'gym'),
+    '체육관 무대': M('gym-stage', 'stage', 'gym'),
+    '체육관 방송실': M('gym-booth', 'service', 'gym', ['staff']),
+    '체육관 준비실': M('gym-prep', 'service', 'gym', ['staff']),
+    '체육관 전실': M('gym-lobby', 'hall', 'gym', ['entry']),
+    '체육관 남자 화장실': M('gym-toilet-s', 'toilet', 'gym'),
+    '무대 통로': M('gym-ramp', 'corridor', 'gym', ['staff'], { multi: true }),
+    '체육관 남쪽 길': M('gym-south-path', 'path', null, [], { multi: true }),
+    '체육관 서쪽 길': M('gym-west-path', 'path', null),
+    '체육관 북쪽 길': M('gym-north-path', 'path', null),
+    '체육 창고(바깥)': M('gym-shed', 'storage', null, ['staff']),
+    '체육관 현관': M('gym-porch', 'hall', 'gym', ['entry', 'covered'], { indoor: false }),
+    '체육관 옆길': M('gym-side-path', 'path', null),
+    '체육관 앞 마당': M('gym-front-yard', 'yard', null, [], { multi: true }),
+
+    '가운데 마당': M('court', 'yard', null),
+    '마당 동쪽 입구': M('court-east', 'yard', null),
+    '앞뜰 산책로': M('front-walk', 'path', null),
+    '앞뜰 남쪽 화단': M('front-bed-south', 'yard', null),
+    '구령대': M('podium', 'stage', null),
+    '놀이터': M('playground', 'play', null, [], { yr: [-2.55, 1.0] }),
+    '무지개 쉼터': M('shelter', 'yard', null, ['covered']),
+    '놀이마당': M('play-yard', 'play', null),
+    '모래 놀이터': M('sandpit', 'play', null),
+    '버스 타는 곳': M('bus-stop', 'path', null, ['car']),
+    '버스 안': M('bus-inside', 'hall', null, ['car'], { indoor: true, yr: [SCHOOL.terrain.field + 0.15, SCHOOL.terrain.field + 2.25] }),
+    '정문': M('gate', 'path', null, ['entry']),
+    '유치원 놀이터': M('kinder-playground', 'play', null, ['kinder'], { yr: [-2.55, 0.6] }),
+    '체육관 계단': M('gym-steps', 'stair', null),
+    '숲놀이터': M('forest-play', 'play', null),
+    '개수대': M('sink', 'yard', null, ['water']),
+    '주차장': M('parking', 'yard', null, ['car']),
+    '주차장(북쪽)': M('parking-north', 'yard', null, ['car']),
+    '뒷길': M('back-lane', 'path', null),
+    '텃밭': M('garden', 'garden', null, [], { multi: true }),
+    '텃밭 길': M('garden-path', 'path', null),
+    '큰 나무 잔디밭': M('big-tree-lawn', 'yard', null),
+    '노란 창고': M('shed', 'storage', null, [], { indoor: false }),
+    '텃밭 쉼터': M('garden-deck', 'yard', null, ['covered']),
+    '동관 뒤뜰': M('east-yard', 'yard', null),
+    '운동장': M('field', 'field', null, [], { multi: true }),
+    '동쪽 통학로': M('east-path', 'path', null),
+    '농구장': M('bball-sand', 'play', null),
+  };
+
+  const T = SCHOOL.terrain, B = SCHOOL.building, G = SCHOOL.gym, YD = T.yard, FD = T.field;
+  const X = (x0, x1, z0, z1, y, label, id, kind, bldg = null, tags = [], opts = {}) => ({ x0, x1, z0, z1, y, label, meta: M(id, kind, bldg, tags, opts) });
+  const EXTRA_ZONES = [
+    X(-42.5, 53.5, SCHOOL.frontYard.walkS, T.fieldZ, (YD + FD) / 2, '앞뜰 잔디 둔덕', 'front-slope', 'yard', null, [], { yr: [FD - 0.4, YD + 1.0] }),
+    X(-86, B.front.x[0], -86, T.westZ, YD, '서쪽 대지', 'west-yard', 'yard'),
+    X(-86, SCHOOL.garden.x[0], -86, SCHOOL.parking.z[0], YD, '북쪽 둘레길', 'north-lane', 'path'),
+    X(SCHOOL.garden.x[0], SCHOOL.garden.x[1], -86, SCHOOL.garden.z[0], YD, '북쪽 둘레길', 'north-lane-e', 'path'),
+    X(B.wings[0].x[1], B.kitchen.x[0], B.wings[0].z[0] - 12, B.wings[0].z[0], YD, '뒷길', 'back-lane-n', 'path'),
+    X(B.kitchen.x[0], SCHOOL.garden.x[0], B.wings[0].z[0] - 12, B.kitchen.z[0], YD, '급식동 뒤', 'cafe-back', 'path'),
+    X(SCHOOL.parking.x[1], SCHOOL.garden.x[0], SCHOOL.parking.z[0], B.wings[0].z[0] - 12, YD, '노란 창고 옆', 'shed-side', 'yard'),
+    X(SCHOOL.garden.x[0] - 5, 60, SCHOOL.garden.z[1], B.eastWing.z[0], YD, '텃밭 앞 길', 'garden-lane', 'path'),
+    X(SCHOOL.garden.x[1], 60, SCHOOL.garden.east[1], SCHOOL.garden.z[1], YD, '텃밭 동쪽', 'garden-east', 'yard'),
+    X(B.front.x[1], 60, B.front.z[0], T.fieldZ, YD, '본관 동쪽 끝', 'main-east', 'yard'),
+    X(SCHOOL.eastFenceX, SCHOOL.eastPath.x[0], T.fieldZ, SCHOOL.gate[1] - 2, FD, '동쪽 통학로', 'east-path-verge', 'path'),
+    X(SCHOOL.eastPath.x[1] + 3, 60, T.fieldZ, 50, FD, '동쪽 가장자리', 'east-strip', 'yard'),
+    X(-50.5, T.westX, T.westZ, SCHOOL.southFenceZ, FD, '운동장 서쪽 띠', 'field-west', 'field'),
+    X(-50.5, SCHOOL.eastPath.x[0], SCHOOL.southFenceZ, 63.5, FD, '남쪽 마당', 'south-plaza', 'yard'),
+    X(SCHOOL.gate[0] - 8, SCHOOL.gate[0] + 8, 44, SCHOOL.gate[1], FD, '정문 앞', 'gate-front', 'path', null, ['entry']),
+
+    X(G.annex.x[0], G.annex.x[1], G.annex.z[0], G.doorZ - 1.4, G.floorY, '체육관 화장실', 'gym-toilet-n', 'toilet', 'gym'),
+
+    X(B.kitchen.dutyRoom.x[1], B.kitchen.hallX0, B.kitchen.dutyRoom.z[0], B.kitchen.dutyRoom.z[1], 0, '조리실 앞', 'kitchen-entry', 'service', 'cafe', ['staff']),
+
+    X(B.wings[0].rooms.find(r => r.type === 'stair').span[0], B.wings[0].x[1], B.wings[0].z[0], B.wings[0].z[1] - B.upper.corridorDepth, B.floorHeight + 0.3, '2층 계단홀', 'stair-west-2f-hall', 'stair', 'west'),
+  ];
+
+  const SPAWNS = {
+    default: { x: 13.4, z: -6, h: 0, label: '운동장(구령대 앞)' },
+    gate: { x: SCHOOL.gate[0], z: SCHOOL.gate[1] - 3.5, h: 0, label: '정문 안' },
+    'front-walk': { x: 12.5, z: -18.6, h: 0, label: '앞뜰 산책로(현관 앞)' },
+    'field-center': { x: 0, z: 14, h: 0, label: '운동장 가운데' },
+    'center-lobby': { x: 12.5, z: -34.9, h: 0, label: '가운데 로비' },
+    gym: { x: -67, z: -12, h: 0, label: '체육관' },
+    'corridor-2f': { x: -25, z: -35.3, h: 270, floor: 2, label: '2층 복도' },
+    playground: { x: -40, z: 47, h: 180, label: '놀이터 앞' },
+    red: { x: -25, z: 14, h: 90, label: '운동장 서쪽(빨강 팀)' },
+    blue: { x: 25, z: 14, h: 270, label: '운동장 동쪽(파랑 팀)' },
+    garden: { x: 32.5, z: -56, h: 180, label: '텃밭 앞' },
+    'corridor-main': { x: 0, z: -32.8, h: 90, label: '본관 복도' },
+  };
+
+  const rectC = R => [(R.x[0] + R.x[1]) / 2, (R.z[0] + R.z[1]) / 2];
+  const LANDMARKS = [
+    { id: 'gate', label: '정문', at: SCHOOL.gate, r: 4 },
+    { id: 'bus', label: '셔틀버스', at: SCHOOL.bus, r: 6.5 },
+    { id: 'big-tree', label: '큰 나무', at: SCHOOL.bigTree, r: 5 },
+    { id: 'flag-pole', label: '게양대', at: SCHOOL.flagPole, r: 3 },
+    { id: 'sink', label: '운동장 개수대', at: SCHOOL.sink, r: 3 },
+    { id: 'playground', label: '놀이터', at: SCHOOL.playground.center, r: 7 },
+    { id: 'garden-deck', label: '텃밭 쉼터', at: SCHOOL.gardenDeck.center, r: 4 },
+    { id: 'court-pots', label: '가운데 마당 향나무 화분 길', at: [36.8, -37.45], r: 3 },
+    { id: 'court-pole', label: '마당 동쪽 전봇대', at: [48.5, -35.9], r: 2.5 },
+    { id: 'shed', label: '노란 창고', at: SCHOOL.shed.center, r: 6 },
+    { id: 'shelter', label: '무지개 쉼터', at: SCHOOL.shelter.center, r: 4, rect: [SCHOOL.shelter.center[0] - SCHOOL.shelter.length / 2, SCHOOL.shelter.center[1] - 2.2, SCHOOL.shelter.center[0] + SCHOOL.shelter.length / 2, SCHOOL.shelter.center[1] + 2.2] },
+    { id: 'podium', label: '구령대', at: [(SCHOOL.porch.x[0] + SCHOOL.porch.x[1]) / 2, T.fieldZ - 2.5], r: 3.5 },
+    { id: 'forest-play', label: '숲놀이터', at: rectC(SCHOOL.forestPlay), r: 6 },
+    { id: 'kinder-playground', label: '유치원 놀이터', at: rectC(SCHOOL.kinderPlayground), r: 5 },
+    { id: 'plaza', label: '남쪽 놀이 마당', at: rectC(SCHOOL.plaza), r: 8 },
+    { id: 'garden', label: '텃밭', at: rectC(SCHOOL.garden), r: 10 },
+    { id: 'parking', label: '주차장', at: rectC(SCHOOL.parking), r: 10 },
+
+    { id: 'toilet-front', label: '화장실 앞', at: [20.85, B.front.z[0] + 1.25], r: 2.2 },
+    { id: 'cafe-front', label: '급식실 앞', at: [B.kitchen.doorC, B.front.z[0] + 1.0], r: 2 },
+    { id: 'teachers-front', label: '교무실 앞', at: [B.front.rooms.find(r => r.name === '교무실').span[0] + 1.9, B.front.z[0] + 1.5], r: 2 },
+    { id: 'east-glass-door', label: '동쪽 끝 유리문', at: [B.front.x[1] - 0.8, B.front.z[0] + 1.25], r: 2 },
+  ];
+
+  const FL = { x0: T.westX, x1: SCHOOL.bballSand ? SCHOOL.bballSand.x : SCHOOL.eastFenceX, z0: T.fieldZ, z1: SCHOOL.southFenceZ };
+  const PLAY = {
+    field: { x: [FL.x0 + 0.5, SCHOOL.eastFenceX - 0.4], z: [FL.z0 + 0.2, FL.z1 - 0.5] },
+    ball: { x: [FL.x0 + 4, FL.x1 - 5.2], z: [FL.z0 + 0.9, FL.z1 - 5] },
+    track: { c: [(FL.x0 + FL.x1) / 2, (FL.z0 + FL.z1) / 2], a: (FL.x1 - FL.x0) / 2 - 9.75, b: (FL.z1 - FL.z0) / 2 - 7.95, half: 1.5, gates: 8 },
+    redlight: { startZ: FL.z1 - 5.5, finish: { x: SCHOOL.porch.x.slice(), z: [FL.z0 + 0.3, FL.z0 + 1.5] } },
+    y: T.field,
+  };
+  return { KINDS, ZONE_META, EXTRA_ZONES, SPAWNS, LANDMARKS, PLAY };
+}

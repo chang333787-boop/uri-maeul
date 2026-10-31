@@ -1,0 +1,305 @@
+const PC = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+const midiOf = (s) => { const m = /^([a-g])(#|b)?(\d)$/.exec(s); return m ? 12 * (+m[3] + 1) + PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) : null; };
+const CHQ = { '': [0, 4, 7], m: [0, 3, 7], 7: [0, 4, 7, 10], maj7: [0, 4, 7, 11], m7: [0, 3, 7, 10], sus: [0, 5, 7], sus2: [0, 2, 7], 6: [0, 4, 7, 9] };
+const chordOf = (s) => { const m = /^([A-G])(#|b)?(.*)$/.exec(s), iv = m && CHQ[m[3]]; if (!iv) throw new Error('화음 이름 ' + s); return { r: (PC[m[1].toLowerCase()] + (m[2] === '#' ? 1 : m[2] === 'b' ? 11 : 0)) % 12, iv }; };
+const into = (pc, lo) => lo + (((pc - lo) % 12) + 12) % 12;
+
+export const SONGS = {
+  day: { name: ['햇살 골목', 'Sunny Lane'], bpm: 112, key: 5, swing: 0.16, lead: 'region', bassI: 'bass', compI: 'keys', echo: 0.16,
+    sec: {
+      I: { ch: 'Fmaj7 Gm7,C7', mel: '', dr: 'i' },
+      A: { ch: 'Fmaj7 Dm7 Gm7 C7 Fmaj7 Am7 Bb C',
+        mel: 'a4 c5 f5 - e5 - c5 . | d5 - a4 - . f4 a4 c5 | bb4 - d5 - c5 bb4 a4 g4 | a4 - g4 - c5 - . . | a4 c5 f5 - e5 - c5 . | e5 - g5 - e5 c5 a4 . | d5 - f5 - d5 c5 bb4 d5 | c5 - - - . . e4 g4' },
+      A2: { ch: 'Fmaj7 Dm7 Gm7 C7 Fmaj7 Am7 Gm7,C7 F',
+        mel: 'a4 c5 f5 - e5 - c5 . | d5 - a4 - . f4 a4 c5 | bb4 - d5 - c5 bb4 a4 g4 | a4 - g4 - e4 - . . | a4 c5 f5 - e5 - c5 . | e5 - g5 - a5 g5 e5 c5 | d5 - c5 bb4 a4 - g4 - | f4 - - - . . . .' },
+      B: { ch: 'Bb C Am7 Dm7 Gm7 C7 F,D7 Gm7,C7', bs: 'b', cp: 'b',
+        mel: 'f5 - - - d5 - f5 - | g5 - - - e5 - c5 - | e5 - - - c5 - e5 - | f5 - e5 - d5 - a4 - | bb4 - d5 - g5 - f5 - | e5 - g5 - bb5 - a5 g5 | a5 - - f5 f#5 - a5 - | g5 - f5 - e5 - c5 -' },
+      K: { ch: 'Bbmaj7 Am7 Gm7 Csus,C7', bs: 'k', cp: 'k', dr: 'k', lead: 'bell',
+        mel: 'd5 - - - . . f5 - | e5 - - - . . c5 - | d5 - - - bb4 - - - | c5 - - - . . . .' } },
+    form: [['I'], ['A', null, { dr: 'b' }], ['A2', null, { harm: 1 }], ['B', { fill: 1 }], ['A', { harm: 1, dr: 'b' }, { harm: 0, lead: 'glock' }], ['B', { harm: 1, dr: 'b', fill: 1 }], ['K']], loopTo: 1,
+    bass: { a: [[0, 'r', 3], [6, '5', 2, 0.75], [8, 'r', 3, 0.9], [12, '5', 2, 0.75], [14, 'a', 2, 0.65]], b: [[0, 'r', 3], [4, '5', 2, 0.75], [6, '8', 2, 0.7], [8, 'r', 3, 0.9], [12, '3', 2, 0.75], [14, '5', 2, 0.7]], k: [[0, 'r', 7, 0.8], [8, '5', 6, 0.7]] },
+    comp: { a: [[4, 2, 0.8], [10, 1, 0.5], [12, 2, 0.8]], b: [[2, 2, 0.7], [6, 2, 0.7], [10, 2, 0.7], [14, 2, 0.7]], k: [[0, 14, 0.55]] },
+    drums: { i: { k: 'x.......x.......', h: '..o...o...o...o.' }, a: { k: 'x.......x.x.....', s: '....x.......x...', h: '..x...x...x...x.' },
+      b: { k: 'x.....x.x.......', s: '....x.......x..o', h: '..x.o.x...x.o.x.' }, k: { k: 'x...............', s: '............o...', h: '..o.......o.....' } },
+    fill: { s: '........x.x.xxxx' } },
+
+  dusk: { name: ['노을 정자', 'Sunset Pavilion'], bpm: 100, key: 2, swing: 0.1, lead: 'epiano', bassI: 'bass', compI: 'keys', echo: 0.2, lv: 0.9,
+    sec: {
+      A: { ch: 'Dmaj7 Bm7 Gmaj7 Asus,A7 Dmaj7 F#m7 Gmaj7 Em7,A7',
+        mel: 'f#5 - - e5 d5 - a4 - | b4 - - - d5 - f#5 - | e5 - - d5 b4 - - - | a4 - - - . . c#5 e5 | f#5 - - e5 d5 - a4 - | c#5 - - - e5 - a5 - | g5 - f#5 - e5 - d5 - | e5 - - - c#5 - - -' },
+      B: { ch: 'Gmaj7 F#m7 Em7 Dmaj7 Gmaj7 F#m7,Bm7 Em7 Asus,A7',
+        mel: 'd5 - b4 - d5 - g5 - | f#5 - - - e5 - c#5 - | d5 - - - b4 - g4 - | a4 - - - . . f#4 a4 | b4 - - - d5 - g5 - | a5 - - f#5 d5 - f#5 - | e5 - - - d5 - b4 - | a4 - - - . . . .' } },
+    form: [['A', null, { dr: 'b' }], ['B'], ['A', { harm: 1, dr: 'b' }], ['B', { fill: 1, dr: 'b' }, { lead: 'piano', fill: 1, dr: 'b' }]], loopTo: 0,
+    bass: { a: [[0, 'r', 6, 0.85], [6, '5', 2, 0.6], [8, 'r', 4, 0.8], [12, '3', 4, 0.6]] },
+    comp: { a: [[0, 4, 0.5], [6, 2, 0.42], [8, 4, 0.5], [14, 2, 0.4]] },
+    drums: { a: { k: 'x.......x.......', r: '....o.......o...', z: 'o.oo..o.o.oo..o.' }, b: { k: 'x.....x.x.......', r: '....o.......o..o', z: 'o.ooo.o.o.ooo.oo' } },
+    fill: { r: '........o.o.oooo' } },
+
+  night: { name: ['별빛 마루', 'Starlit Porch'], bpm: 100, key: 0, swing: 0, lead: 'bell', bassI: 'sub', compI: 'piano', arp: 1, poly: { lead: 2, ch1: 2 }, echo: 0.3, lv: 0.8,
+    sec: {
+      A: { ch: 'Cmaj7 Am7 Fmaj7 G Cmaj7 Em7 Fmaj7 Gsus,G',
+        mel: 'g5 - - - e5 - - - | a5 - - - g5 - e5 - | f5 - - - e5 - c5 - | d5 - - - - - . . | g5 - - - e5 - - - | b5 - - - g5 - e5 - | a5 - - - c6 - a5 - | g5 - - - - - . .' },
+      B: { ch: 'Am7 Em7 Fmaj7 Cmaj7 Dm7 Em7 Fmaj7 Gsus,G', cp: 'b', dr: 'b',
+        mel: 'e5 - - - a5 - - - | g5 - - - b5 - - - | c6 - - - a5 - f5 - | e5 - - - - - . . | f5 - - - a5 - - - | g5 - - - b5 - - - | a5 - - - g5 - f5 - | f5 - - - d5 - - -' } },
+    form: [['A'], ['B'], ['A', { harm: 1 }], ['B', null, { lead: 'glock' }]], loopTo: 0,
+    bass: { a: [[0, 'r', 8, 0.75], [8, 'r', 8, 0.6]] },
+    comp: { a: [[0, 0, 3], [2, 1, 3], [4, 2, 3], [6, 3, 3], [8, 4, 3], [10, 3, 3], [12, 2, 3], [14, 1, 3]], b: [[0, 0, 4], [3, 2, 3], [6, 3, 4], [8, 1, 4], [11, 4, 3], [14, 2, 2]] },
+    drums: { a: {}, b: { z: '....o.......o...' } } },
+
+  rain: { name: ['빗방울 창가', 'Raindrop Window'], bpm: 100, key: 0, swing: 0.08, lead: 'piano', bassI: 'sub', compI: 'pad', echo: 0.24, lv: 0.85,
+    sec: {
+      A: { ch: 'Am7 Fmaj7 Cmaj7 G Am7 Fmaj7 Dm7 Esus,E',
+        mel: 'e5 - - - c5 - d5 e5 | c5 - - - a4 - - - | g4 - - - e5 - d5 c5 | d5 - - - b4 - - - | e5 - - - g5 - e5 - | a5 - - - g5 - e5 - | f5 - - - e5 - d5 - | e5 - - - g#4 - b4 -' },
+      B: { ch: 'Fmaj7 G Em7 Am7 Dm7 G Cmaj7 Esus,E',
+        mel: 'c5 - - - f5 - - - | d5 - - - g5 - - - | b4 - - - e5 - g5 - | a5 - - - - - . . | a4 - - - d5 - f5 - | g5 - - - f5 - d5 - | e5 - - - c5 - - - | b4 - - - - - . .' } },
+    form: [['A'], ['B', null, { dr: 'b' }], ['A', { harm: 1, dr: 'b' }], ['B', { fill: 1 }]], loopTo: 0,
+    bass: { a: [[0, 'r', 6, 0.8], [6, '5', 2, 0.5], [8, 'r', 8, 0.7]] },
+    comp: { a: [[0, 8, 0.55], [8, 8, 0.5]] },
+    drums: { a: { k: 'x...............', r: '........o.......', z: '..o...o...o...o.' }, b: { k: 'x.........x.....', r: '........o.......', z: '..o.o.o...o.o.o.' } },
+    fill: { r: '........o...o.oo' } },
+
+  play: { name: ['바쁜 손', 'Busy Hands'], bpm: 120, key: 7, swing: 0, lead: 'marimba', bassI: 'bass', compI: 'keys', echo: 0.1,
+    sec: {
+      A: { ch: 'G Em C D G Em Am7 D7',
+        mel: 'd5 g5 b5 g5 d5 - b4 - | e5 g5 b5 g5 e5 - b4 - | c5 e5 g5 e5 c5 - e5 g5 | f#5 - a5 - f#5 e5 d5 - | d5 g5 b5 g5 d5 - b4 - | e5 g5 b5 g5 e5 - g5 - | a5 - g5 - e5 - c5 - | d5 - f#5 - a5 - c6 -' },
+      B: { ch: 'C D Bm7 Em Am7 D G,Em Am7,D7',
+        mel: 'e5 - . e5 g5 - e5 - | f#5 - . f#5 a5 - f#5 - | d5 - . d5 f#5 - a5 - | g5 - - - e5 - b4 - | c5 - . c5 e5 - a5 - | a5 - f#5 - d5 - a4 - | b4 - d5 - e5 - g5 - | a5 - - - f#5 - - -' } },
+    form: [['A'], ['B', null, { dr: 'b' }], ['A', { harm: 1, dr: 'b' }], ['B', { dr: 'b', fill: 1 }]], loopTo: 0,
+    bass: { a: [[0, 'r', 1], [2, '8', 1, 0.7], [4, 'r', 1], [6, '8', 1, 0.7], [8, 'r', 1], [10, '8', 1, 0.7], [12, '5', 1, 0.8], [14, '8', 1, 0.7]] },
+    comp: { a: [[2, 1, 0.6], [6, 1, 0.6], [10, 1, 0.6], [14, 1, 0.6]] },
+    drums: { a: { k: 'x.......x.......', s: '....x.......x...', h: 'x.x.x.x.x.x.x.x.' }, b: { k: 'x.....x.x.......', s: '....x.......x.x.', h: 'xoxoxoxoxoxoxoxo' } },
+    fill: { s: '........x.xxx.xx' } },
+
+  fest: { name: ['첫 잔치', 'First Festival'], bpm: 116, key: 7, swing: 0.12, lead: 'flute', bassI: 'bass', compI: 'keys', echo: 0.14, lv: 1.05,
+    sec: {
+      A: { ch: 'G G C G Em C D G',
+        mel: 'd5 - e5 d5 b4 - a4 - | g4 - a4 b4 d5 - - - | e5 - g5 e5 d5 - e5 - | d5 - b4 - g4 - - - | e5 - - g5 e5 - d5 - | e5 - g5 - a5 - g5 - | a5 - - - d5 - e5 - | g4 - - - . . d5 e5' },
+      B: { ch: 'C G Em D C G Am7,D G', cp: 'b',
+        mel: 'g5 - - - e5 - g5 - | d5 - - - b4 - d5 - | e5 - d5 - b4 - g4 - | a4 - - - . . a4 b4 | e5 - g5 - a5 - g5 - | d5 - b4 - d5 - e5 - | e5 - - - d5 - b4 a4 | g4 - - - . . . .' } },
+    form: [['A'], ['B'], ['A', { harm: 1, dr: 'b' }], ['B', { dr: 'b', fill: 1 }]], loopTo: 0,
+    bass: { a: [[0, 'r', 3], [4, '5', 2, 0.75], [8, 'r', 3, 0.9], [12, '5', 2, 0.75], [14, '8', 2, 0.6]] },
+    comp: { a: [[4, 2, 0.6], [12, 2, 0.6]], b: [[2, 1, 0.55], [6, 1, 0.55], [10, 1, 0.55], [14, 1, 0.55]] },
+    drums: { a: { b: 'x.....x.x.......', g: '...o.......o....', d: '....x.o.....x.o.' }, b: { b: 'x.....x.x.....x.', g: '...o.......o....', d: '..o...o...o...o.', w: '....x.......x...' } },
+    fill: { d: '........x.x.xxxx' } },
+};
+for (const k in SONGS) SONGS[k].id = k;
+
+export const MOODS = { day: ['day'], dusk: ['dusk'], snow: ['dusk', { lead: 'bell', soft: 1 }], night: ['night'], rain: ['rain'], play: ['play'], fest: ['fest'] };
+const MLV = { day: 1, dusk: 0.95, snow: 0.9, night: 0.85, rain: 0.9, play: 1, fest: 0.95 };
+export function moodOf(s) { return s.fest ? 'fest' : s.play ? 'play' : s.night >= 1 ? 'night' : s.wx === 'rain' ? 'rain' : s.wx === 'snow' ? 'snow' : s.night > 0 ? 'dusk' : 'day'; }
+const REGL = { 읍내: 'pluck', 시내: 'epiano', 산: 'flute', 들: 'ocarina', 강: 'marimba', 바다: 'steel', 관광: 'glock' };
+const BASE = 0.32;
+
+const WAVES = { soft: [1, 0.42, 0.22, 0.12, 0.07, 0.04, 0.02], flute: [1, 0.22, 0.07, 0.03], ocar: [1, 0.06, 0.1, 0.02], mar: [1, 0, 0, 0.3, 0, 0, 0, 0, 0, 0.06],
+  steel: [1, 0.55, 0.12, 0.28, 0.06], round: [1, 0.32, 0.12, 0.05], piano: [1, 0.55, 0.28, 0.18, 0.09, 0.07, 0.03, 0.02], bass: [1, 0.45, 0.16, 0.07, 0.03],
+  voice: [1, 0.62, 0.42, 0.24, 0.12, 0.07, 0.04], choir: [1, 0.3, 0.2, 0.08, 0.04] };
+const INST = {
+  pluck: { w: 'soft', a: 0.004, d: 0.18, s: 0.3, r: 0.07, lv: 1 }, epiano: { w: 'sine', fm: [1, 1.4, 0.3], a: 0.003, d: 0.5, s: 0.35, r: 0.15, lv: 1.05 },
+  flute: { w: 'flute', a: 0.035, d: 0.6, s: 0.8, r: 0.06, vib: [5.2, 14, 0.12], lv: 0.85 }, ocarina: { w: 'ocar', a: 0.025, d: 0.5, s: 0.75, r: 0.05, vib: [5.8, 10, 0.1], lv: 0.9 },
+  marimba: { w: 'mar', a: 0.002, d: 0.11, s: 0, r: 0.05, lv: 1.25 }, steel: { w: 'steel', a: 0.003, d: 0.22, s: 0.12, r: 0.1, bend: 0.15, lv: 0.95 },
+  glock: { w: 'sine', fm: [4, 0.9, 0.12], a: 0.002, d: 0.35, s: 0, r: 0.1, lv: 0.75 }, bell: { w: 'sine', fm: [3.5, 2, 0.5], a: 0.002, d: 0.9, s: 0, r: 0.4, lv: 0.85 },
+  piano: { w: 'piano', a: 0.003, d: 0.45, s: 0.12, r: 0.2, lv: 0.85 }, bass: { w: 'bass', a: 0.005, d: 0.25, s: 0.55, r: 0.05, lv: 1 },
+  sub: { w: 'round', a: 0.02, d: 0.9, s: 0.6, r: 0.15, lv: 0.85 }, keys: { w: 'piano', a: 0.004, d: 0.2, s: 0.25, r: 0.06, lv: 1 },
+  pad: { w: 'triangle', a: 0.18, d: 1.4, s: 0.75, r: 0.35, lv: 0.75 },
+  voice: { w: 'voice', a: 0.06, d: 0.9, s: 0.82, r: 0.12, vib: [5.3, 20, 0.16], bend: -0.5, lv: 0.85 }, choir: { w: 'choir', a: 0.09, d: 1.2, s: 0.8, r: 0.16, vib: [4.8, 12, 0.2], lv: 0.8 }, shout: { w: 'voice', a: 0.03, d: 0.35, s: 0.55, r: 0.1, bend: -3, lv: 0.9 } };
+const PART = { lead: 0.16, bass: 0.2, ch1: 0.075, ch2: 0.075 };
+const DCH = { k: 'dk', s: 'dk', r: 'dk', b: 'dk', g: 'dk', h: 'dh', o: 'dh', z: 'dh', d: 'dh', w: 'dh' };
+const DLV = { k: 0.32, s: 0.16, r: 0.1, h: 0.055, o: 0.045, z: 0.05, b: 0.28, g: 0.16, d: 0.12, w: 0.035, G: 0.4, D: 0.3, P: 0.22 };
+
+function parseMel(str, n) { const bars = str ? str.split('|') : [], out = [], bad = [];
+  for (let b = 0; b < n; b++) { const ev = [], tk = (bars[b] || '').trim().split(/\s+/).filter(Boolean); let cur = null;
+    if (str && tk.length !== 8) bad.push(b + 1);
+    tk.forEach((t, i) => { const sub = t.split('/');
+      sub.forEach((u, j) => { const s = i * 2 + j, w = sub.length === 1 ? 2 : 1;
+        if (u === '-') { if (cur) cur[2] += w; } else if (u === '.') cur = null; else { const m = midiOf(u); if (m == null) { bad.push(b + 1 + ':' + u); cur = null; return; } cur = [s, m, w]; ev.push(cur); } }); });
+    out.push(ev); }
+  return { out, bad }; }
+function shell(c) { const iv = c.iv, t = [iv[1], iv[iv.length >= 4 ? 3 : 2]].map((x) => into(c.r + x, 57)); return t.sort((a, b) => a - b); }
+function bassNote(c, d, nr) { const B = into(c.r, 40); if (d === 'r') return B; if (d === '5') return B + 7 > 52 ? B - 5 : B + 7; if (d === '8') return B + 12; if (d === '3') return B + c.iv[1]; const N = into(nr, 40); return d === 'a' ? (N - 1 >= 39 ? N - 1 : N + 1) : B; }
+function arpNote(c, k) { const R = into(c.r, 48), iv = c.iv; return [R, R + iv[2], R + 12, R + 12 + iv[1], R + 12 + (iv[3] || iv[2])][k % 5]; }
+function below(m, key) { const sc = [0, 2, 4, 5, 7, 9, 11].map((x) => (key + x) % 12), i = sc.indexOf(m % 12); if (i < 0) return null; return m - (((m % 12) - sc[(i + 5) % 7] + 12) % 12); }
+function section(song, fi, odd) {
+  const key = fi + ':' + odd, C0 = song._c || (song._c = {}); if (C0[key]) return C0[key];
+  const fe = song.form[fi], S = song.sec[fe[0]], v = Object.assign({}, S, fe[1] || {}, odd ? fe[2] || {} : {});
+  const chs = S.ch.trim().split(/\s+/).map((tok) => tok.split(',').map(chordOf)), { out: mel, bad } = parseMel(S.mel, chs.length), bars = [];
+  for (let b = 0; b < chs.length; b++) {
+    const at = new Array(16), put = (s, e) => (at[s] || (at[s] = [])).push(e), C = (s) => chs[b][s < 8 || chs[b].length < 2 ? 0 : 1], nr = chs[(b + 1) % chs.length][0].r;
+    for (const [s, m, l] of mel[b]) { put(s, { c: 'lead', m, l, v: s % 4 === 0 ? 1 : 0.86 }); if (v.harm) { const h = below(m, song.key); if (h != null) put(s, { c: 'ch2', m: h, l, v: 0.55, i: 1 }); } }
+    for (const [s, d, l, vv = 0.85] of song.bass[v.bs || 'a'] || song.bass.a) put(s, { c: 'bass', m: bassNote(C(s), d, nr), l, v: vv });
+    const cp = song.comp[v.cp || 'a'] || song.comp.a;
+    if (song.arp) for (const [s, k, l] of cp) put(s, { c: 'ch1', m: arpNote(C(s), k), l, v: s % 4 === 0 ? 0.75 : 0.55 });
+    else for (const [s, l, vv] of cp) { const sh = shell(C(s)); put(s, { c: 'ch1', m: sh[1], l, v: vv }); if (!v.harm) put(s, { c: 'ch2', m: sh[0], l, v: vv }); }
+    let rows = song.drums[v.dr || 'a'] || song.drums.a || {};
+    if (v.fill && song.fill && b === chs.length - 1) { rows = { ...rows }; const fch = new Set(Object.keys(song.fill).map((k) => DCH[k]));
+      for (const k in rows) if (fch.has(DCH[k])) rows[k] = rows[k].slice(0, 8) + '........';
+      for (const k in song.fill) rows[k] = (rows[k] || '................').slice(0, 8) + song.fill[k].slice(8); }
+    for (const k in rows) for (let s = 0; s < 16; s++) { const x = rows[k][s]; if (x === 'x' || x === 'o') put(s, { c: DCH[k], d: k, v: x === 'x' ? 1 : 0.55 }); }
+    bars.push({ at }); }
+  return (C0[key] = { name: fe[0], bars, v, bad }); }
+
+export function check() { const out = [];
+  for (const id in SONGS) { const S = SONGS[id], slots = (c) => (S.poly && S.poly[c]) || 1;
+    for (let fi = 0; fi < S.form.length; fi++) for (const odd of [0, 1]) { let sec; try { sec = section(S, fi, odd); } catch (e) { out.push(id + ' ' + fi + ': ' + e.message); continue; }
+      if (sec.bad.length) out.push(id + ' ' + sec.name + ': 칸 수·음 이름 ' + sec.bad.join(','));
+      const used = new Set(); for (const B of sec.bars) for (const evs of B.at) if (evs) for (const e of evs) used.add(e.c);
+      const n = [...used].reduce((a, c) => a + slots(c), 0); if (n > 6) out.push(id + ' ' + sec.name + ': 소리 칸 ' + n + ' > 6'); } }
+  return out; }
+
+function engine(ac) {
+  const E = { ac, n: 0, vmax: 0, decks: [], f: 15000, pt: 0, pc: 0 }, W = {};
+  for (const k in WAVES) { const h = WAVES[k], re = new Float32Array(h.length + 1), im = new Float32Array(h.length + 1); h.forEach((x, i) => { im[i + 1] = x; }); W[k] = ac.createPeriodicWave(re, im); }
+  const NZ = ac.createBuffer(1, ac.sampleRate, ac.sampleRate), nd = NZ.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  E.inp = ac.createGain(); E.lp = ac.createBiquadFilter(); E.lp.type = 'lowpass'; E.lp.frequency.value = E.f; E.lp.Q.value = 0.5; const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 38; hp.Q.value = 0.5;
+  E.inp.connect(E.lp); E.lp.connect(hp); hp.connect(ac.destination);
+  E.dl = ac.createDelay(1.5); const fb = ac.createGain(), dlp = ac.createBiquadFilter(); E.dl.delayTime.value = 0.4; fb.gain.value = 0.3; dlp.type = 'lowpass'; dlp.frequency.value = 2600;
+  E.dl.connect(dlp); dlp.connect(fb); fb.connect(E.dl); dlp.connect(E.inp);
+  const pan = (x, to) => { const p = ac.createStereoPanner ? ac.createStereoPanner() : ac.createGain(); if (p.pan) p.pan.value = x; p.connect(to); return p; };
+  E.deck = (id, opt, T0, fi) => { const song = SONGS[id], sd = 60 / song.bpm / 4, fade = ac.createGain(), send = ac.createGain(); fade.connect(E.inp); send.gain.value = song.echo; send.connect(E.dl);
+    const lead = ac.createGain(); lead.connect(fade); lead.connect(send);
+    const D = { song, opt: opt || {}, sd, t: T0, s: 0, bi: 0, fi: fi % song.form.length, loop: 0, last: {}, lead: null, leadNext: null, bus: { lead, bass: fade, ch1: pan(-0.28, fade), ch2: pan(0.28, fade), dk: fade, dh: pan(0.18, fade) }, fade, send };
+    D.sec = section(song, D.fi, 0); D.lead = D.sec.v.lead || D.opt.lead || (song.lead === 'region' ? 'pluck' : song.lead); E.dl.delayTime.setValueAtTime(Math.min(1.2, sd * 3), T0); E.decks.push(D); return D; };
+
+  const cut = (vv, t) => { if (!vv || vv.t1 <= t) return; const p = vv.g.gain, pre = vv.t0 >= t;
+    try { if (pre) { p.cancelScheduledValues(0); p.setValueAtTime(0, 0); } else { if (p.cancelAndHoldAtTime) p.cancelAndHoldAtTime(t); else p.cancelScheduledValues(t); p.setTargetAtTime(0, t, 0.012); } } catch (e) {   }
+    for (const s of vv.src) try { s.stop(Math.max(t, vv.t0) + 0.08); } catch (e) {   } vv.t1 = pre ? t : t + 0.08; };
+
+  const slot = (D, ch, t) => { const n = (D.song.poly && D.song.poly[ch]) || 1, L = D.last[ch] || (D.last[ch] = []); let k = 0;
+    if (L.length >= n) { for (let i = 1; i < L.length; i++) if (L[i].t0 < L[k].t0) k = i; cut(L[k], t); } else k = L.length;
+    let c = 1; for (const DD of E.decks) for (const c9 in DD.last) for (const vv of DD.last[c9]) if (vv && vv.t1 > t + 0.06 && !(DD === D && c9 === ch && vv === L[k])) c++;
+    if (c > E.vmax) E.vmax = c; E.n++; return (vv) => { L[k] = vv; }; };
+  function note(D, ch, iname, m, t, dur, v) {
+    const I = INST[iname] || INST.pluck, f = 440 * Math.pow(2, (m - 69) / 12), g = ac.createGain(), o1 = ac.createOscillator(), src = [o1], keep = slot(D, ch, t);
+    if (W[I.w]) o1.setPeriodicWave(W[I.w]); else o1.type = I.w;
+    o1.frequency.setValueAtTime(I.bend ? f * Math.pow(2, I.bend / 12) : f, t); if (I.bend) o1.frequency.exponentialRampToValueAtTime(f, t + 0.05);
+    if (I.fm) { const mo = ac.createOscillator(), mg = ac.createGain(); mo.frequency.value = f * I.fm[0]; mg.gain.setValueAtTime(f * I.fm[1], t); mg.gain.setTargetAtTime(f * I.fm[1] * 0.08, t, I.fm[2]); mo.connect(mg); mg.connect(o1.frequency); src.push(mo); }
+    if (I.vib) { const lo = ac.createOscillator(), lg = ac.createGain(); lo.frequency.value = I.vib[0]; lg.gain.setValueAtTime(0, t); lg.gain.setValueAtTime(0, t + I.vib[2]); lg.gain.linearRampToValueAtTime(I.vib[1], t + I.vib[2] + 0.2); lo.connect(lg); lg.connect(o1.detune); src.push(lo); }
+    const pk = v * I.lv; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(pk, t + I.a); g.gain.setTargetAtTime(pk * I.s, t + I.a, I.d);
+    let t1; if (I.s === 0) t1 = t + I.a + Math.min(4, I.d * 5); else { const rel = t + Math.max(I.a + 0.02, dur * 0.92); g.gain.setTargetAtTime(0, rel, I.r); t1 = rel + I.r * 5; }
+    o1.connect(g); g.connect(D.bus[ch]); for (const s of src) { s.start(t); s.stop(t1 + 0.02); } keep({ g, src, t0: t, t1 }); }
+  function drum(D, ch, k, t, v, p = 0) {
+    const g = ac.createGain(), src = [], keep = slot(D, ch, t); let t1 = t + 0.3;
+    const noise = (type, f, q) => { const n = ac.createBufferSource(), fl = ac.createBiquadFilter(); n.buffer = NZ; fl.type = type; fl.frequency.value = f; fl.Q.value = q; n.connect(fl); fl.connect(g); src.push(n); };
+    const tone = (f0, f1, dt, type) => { const o = ac.createOscillator(); if (type) o.type = type; o.frequency.setValueAtTime(f0, t); if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dt); o.connect(g); src.push(o); };
+    const env = (a, tc) => { g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * DLV[k], t + a); g.gain.setTargetAtTime(0, t + a, tc); t1 = t + a + tc * 6; };
+    if (k === 'k') { tone(165, 52, 0.11); env(0.003, 0.075); } else if (k === 's') { noise('bandpass', 1900, 0.9); env(0.002, 0.045); } else if (k === 'r') { tone(830, 0, 0, 'triangle'); env(0.001, 0.025); }
+    else if (k === 'h') { noise('highpass', 7600, 0.7); env(0.001, 0.018); } else if (k === 'o') { noise('highpass', 7000, 0.6); env(0.002, 0.11); } else if (k === 'z') { noise('bandpass', 5600, 1.3); env(0.012, 0.03); }
+    else if (k === 'b') { tone(96, 58, 0.18); noise('lowpass', 400, 0.7); env(0.004, 0.13); } else if (k === 'g') { tone(185, 128, 0.1); env(0.003, 0.09); } else if (k === 'd') { noise('bandpass', 2700, 1.6); env(0.001, 0.03); }
+    else if (k === 'w') { tone(1320, 0, 0); tone(1987, 0, 0); env(0.001, 0.05); }
+    else if (k === 'P') { const f = 330 * Math.pow(2, p / 12); tone(f, f * 1.7, 0.07); noise('bandpass', 1100 + p * 60, 1.1); env(0.002, 0.055); }
+    else if (k === 'G') { tone(150, 92, 0.14); noise('lowpass', 320, 0.8); env(0.003, 0.17); } else if (k === 'D') { noise('bandpass', 2300, 1.3); tone(560, 0, 0, 'triangle'); env(0.001, 0.05); }
+    g.connect(D.bus[ch]); for (const s of src) { if (s.buffer) s.start(t, Math.random() * 0.5); else s.start(t); s.stop(t1 + 0.02); } keep({ g, src, t0: t, t1 }); }
+
+  E.step = (D, fire) => {
+    if (D.s === 0) D.lead = D.sec.v.lead || D.opt.lead || D.leadNext || (D.song.lead === 'region' ? 'pluck' : D.song.lead);
+    const evs = D.sec.bars[D.bi].at[D.s];
+    if (fire && evs) { const t = D.t + (D.s % 4 === 2 ? D.song.swing * D.sd : 0);
+      for (const e of evs) { if (e.d) { if (!(D.opt.soft && e.c === 'dk')) drum(D, e.c, e.d, t + (Math.random() - 0.5) * 0.004, e.v); continue; }
+        const inst = e.c === 'lead' || e.i ? D.lead : e.c === 'bass' ? D.song.bassI : D.song.compI;
+        note(D, e.c, inst, e.m, t + (Math.random() - 0.5) * 0.008, e.l * D.sd, e.v * (e.i ? PART.lead : PART[e.c]) * (0.96 + Math.random() * 0.08)); } }
+    D.t += D.sd; if (++D.s === 16) { D.s = 0; if (++D.bi >= D.sec.bars.length) { D.bi = 0; if (++D.fi >= D.song.form.length) { D.fi = D.song.loopTo || 0; D.loop++; } D.sec = section(D.song, D.fi, D.loop & 1); } } };
+
+  E.fadeOut = (D, now, T0) => { try { D.fade.gain.setTargetAtTime(0, now, 0.33); D.send.gain.setTargetAtTime(0, now, 0.33); } catch (e) {   } for (const c in D.last) for (const vv of D.last[c]) cut(vv, Math.max(now, T0 - 0.1));
+    D.drop = T0 + 0.5; };
+  E.sweep = (now) => { for (let i = E.decks.length - 1; i >= 0; i--) { const D = E.decks[i]; if (D.drop && now > D.drop) { E.decks.splice(i, 1); try { D.fade.disconnect(); D.send.disconnect(); for (const k in D.bus) D.bus[k].disconnect(); } catch (e) {   } } } };
+
+  E.jdeck = (T0) => { const fade = ac.createGain(), send = ac.createGain(), lead = ac.createGain(); fade.connect(E.inp); send.gain.value = 0.06; send.connect(E.dl); lead.connect(fade); lead.connect(send); fade.gain.value = JLV;
+    const D = { song: JSONG, opt: {}, sd: 0.1, t: T0, last: {}, bus: { lead, bass: fade, dk: fade, dh: pan(0.14, fade), ab: pan(-0.12, fade) }, fade, send, jg: 1 }; E.decks.push(D); return D; };
+
+  E.rdeck = (T0) => { const fade = ac.createGain(), send = ac.createGain(), lp = ac.createBiquadFilter(), lead = ac.createGain(); lp.type = 'lowpass'; lp.frequency.value = 2600; lp.Q.value = 0.4; lp.connect(fade); fade.connect(E.inp); send.gain.value = 0.07; send.connect(E.dl); lead.connect(lp); lead.connect(send); fade.gain.value = JLV;
+    const D = { song: RSONG, opt: {}, sd: 0.1, t: T0, last: {}, bus: { lead, r1: pan(-0.16, lp), r2: pan(0.2, lp), dk: fade, sp: pan(-0.05, fade) }, fade, send, jg: 1 }; E.decks.push(D); return D; };
+  E.jstop = (D, now) => { if (!D || D.stopped) return; D.stopped = 1; for (const c in D.last) for (const vv of D.last[c]) cut(vv, now); try { D.fade.gain.cancelScheduledValues(now); D.fade.gain.setTargetAtTime(0, now, 0.03); D.send.gain.setTargetAtTime(0, now, 0.03); } catch (e) {   } D.drop = Math.min(D.drop || 1e9, now + 0.35); };
+  E.drum = drum; E.note = note;
+  return E; }
+
+const JSONG = { id: 'janggu', poly: { dk: 1, dh: 1, ab: 1, lead: 1, bass: 1 } }, JLV = 2.2, RSONG = { id: 'rhy', poly: { lead: 1, r1: 1, r2: 1, dk: 1, sp: 1 } };
+const JMEL = [[74, 76, 74, 71], [71, 69, 67, 69]], JMEL3 = [[74, 71, 69], [71, 69, 67]];
+export function jCells(cells) { const out = []; for (const c of String(cells)) { if (c === ' ' || c === '|') continue; out.push(c === 'k' || c === 'd' || c === 'D' ? c : '-'); } return out; }
+function jSched(E, D, cells, bpm, o, T0) { const sub = o.sub || 1, cd = 60 / bpm / sub, reps = Math.max(1, o.reps || 1), C = jCells(cells), beats = Math.max(1, Math.round(C.length / sub)), mel = beats % 3 === 0 && beats % 4 ? JMEL3 : JMEL;
+  let t = T0, n = 0, a = 0; const n0 = E.n;
+  for (let r = 0; r < reps; r++) for (let i = 0; i < C.length; i++, t += cd) { const c = C[i];
+    if (c === 'k' || c === 'D') { E.drum(D, 'dk', 'G', t, c === 'D' ? 1.05 : 1); n++; } if (c === 'd' || c === 'D') { E.drum(D, 'dh', 'D', t, 1); n++; }
+    if (o.acc && i % sub === 0) { const b = i / sub, M = mel[r % 2]; E.drum(D, 'ab', 'b', t, b === 0 ? 0.55 : 0.3); E.note(D, 'lead', 'flute', M[b % M.length], t, cd * sub * 0.9, 0.1); a += 2;
+      if (b === 0) { E.note(D, 'bass', 'sub', r % 2 ? 50 : 43, t, cd * C.length * 0.95, 0.16); a++; } } }
+  return { n, acc: a, notes: E.n - n0, len: C.length * reps, cd, end: t }; }
+
+export function createMusic(o = {}) {
+  const W9 = typeof window !== 'undefined' ? window : {}, promo = !!W9.SM_PROMO, KEY = promo ? 'twn-music-p' : 'twn-music', LOOK = 1.0, TICK = 400;
+  let on = !promo; try { const s = localStorage.getItem(KEY); if (s === '0') on = false; else if (s === '1') on = true; } catch (e) {   }
+  let E = null, D = null, tm = 0, dead = false, mood = '', pend = '', pendN = 0, st = {}, lvl = -1, sw = 0, first = true, held = false, HD = null, JN = 0, JP = 0; const memo = {};
+  const muted = () => !!(o.muted && o.muted());
+  function init() { if (!on) return; boot(); }
+  function boot() { if (E) return true; if (dead || muted() || document.hidden) return false;
+    try { const AC = W9.AudioContext || W9.webkitAudioContext; if (!AC) return; let ac; try { ac = new AC({ latencyHint: 'playback' }); } catch (e) { ac = new AC(); }
+      E = engine(ac); E.inp.gain.value = 0; if (ac.state === 'suspended') ac.resume(); } catch (e) { E = null; return false; }
+    mood = ''; lvl = -1; first = true; HD = null; run(); return true; }
+  function run() { if (!tm && E) { tm = setInterval(pump, TICK); pump(); } }
+  function halt() { if (tm) { clearInterval(tm); tm = 0; } }
+  function off(fast) { halt(); if (!E) return; const e = E; E = null; D = null; HD = null; mood = ''; try { const n = e.ac.currentTime; e.inp.gain.cancelScheduledValues(n); e.inp.gain.setTargetAtTime(0, n, 0.1); } catch (x) {   }
+    setTimeout(() => { try { e.ac.close(); } catch (x) {   } }, fast ? 0 : 600); }
+  function go(m, now) { const [sid, opt] = MOODS[m]; mood = m; sw++;
+    if (D && D.song.id === sid) { D.opt = opt || {}; return; }
+    const T0 = D ? Math.max(now + LOOK, D.t) : now + 0.12;
+    if (D) { memo[D.song.id] = D.fi; E.fadeOut(D, now, T0); }
+    D = E.deck(sid, opt, T0, memo[sid] || 0); D.fade.gain.setValueAtTime(0, T0); D.fade.gain.linearRampToValueAtTime(1, T0 + (first ? 2 : 1)); first = false; }
+  function mix(now) { const k = held ? 1 : (MLV[mood] || 1) * (st.ins ? 0.5 : 1) * (st.sleep ? 0.3 : 1), f = held ? 15000 : st.ins ? 1500 : mood === 'rain' ? 4200 : 15000;
+    if (k !== lvl) { lvl = k; E.inp.gain.setTargetAtTime(BASE * k, now, 0.4); } if (f !== E.f) { E.f = f; E.lp.frequency.setTargetAtTime(f, now, 0.35); } }
+  function pump() { if (!E || dead) return; const ac = E.ac; if (ac.state !== 'running') return; const now = ac.currentTime, p0 = performance.now();
+    try { st = (o.state && o.state()) || {}; } catch (e) { st = {}; }
+    if (held || !on) { mix(now); E.sweep(now); if (!held && !on && !E.decks.some(q => q.jg && !(q.drop < now))) off(); return; }
+    const want = moodOf(st); if (want !== pend) { pend = want; pendN = 0; } if (want !== mood && (++pendN >= 3 || !D)) go(want, now);
+    mix(now); E.sweep(now); if (!D) return;
+    if (D.song.lead === 'region') D.leadNext = REGL[st.reg] || 'pluck';
+    while (D.t < now - 0.05) E.step(D, false);
+    while (D.t < now + LOOK) E.step(D, true); E.pt += performance.now() - p0; E.pc++; }
+  const wake = () => { if (!on || dead || muted()) return; if (!E) init(); else if (E.ac.state !== 'running' && E.ac.state !== 'closed' && !document.hidden) { E.ac.resume(); run(); } };
+  const vis = () => { if (!E) return; if (document.hidden) { halt(); try { E.ac.suspend(); } catch (e) {   } } else { try { E.ac.resume().then(run, run); } catch (e) { run(); } } };
+  const onSet = () => { if (muted()) off(); else wake(); };
+  const EVS = ['touchend', 'pointerup', 'click', 'keydown'];
+  for (const k of EVS) addEventListener(k, wake, { capture: true, passive: true });
+  document.addEventListener('visibilitychange', vis); addEventListener('sm-set', onSet);
+  if (W9.navigator && navigator.userActivation && navigator.userActivation.hasBeenActive) init();
+  return {
+    on: () => on,
+    duck(sec = 1.2) { if (!E || lvl < 0) return; const n = E.ac.currentTime, g = E.inp.gain; try { g.cancelScheduledValues(n); g.setTargetAtTime(BASE * lvl * 0.35, n, 0.05); g.setTargetAtTime(BASE * lvl, n + sec, 0.4); } catch (e) {   } },
+    set(v) { v = !!v; if (v !== on) { on = v; try { localStorage.setItem(KEY, v ? '1' : '0'); } catch (e) {   } } if (v) wake(); else if (!held) off(); else if (D) { E.fadeOut(D, E.ac.currentTime, E.ac.currentTime + 0.15); D = null; mood = ''; } return on; },
+
+    hold(v) { v = !!v; if (v === held) return held; held = v; if (!E) { if (v) boot(); return held; } const now = E.ac.currentTime;
+      if (v) { if (D) { memo[D.song.id] = D.fi; E.fadeOut(D, now, now + 0.15); D = null; } mood = ''; pend = ''; pendN = 0; }
+      else { if (HD) { E.jstop(HD, now + 1.2); HD = null; } pendN = 0; if (on && E.ac.state === 'running') pump(); }
+      return held; },
+    hit(c) { if (!boot()) return 0; const ac = E.ac; if (ac.state !== 'running') { try { ac.resume(); } catch (e) {   } } const t = ac.currentTime + 0.02;
+      for (const q of E.decks) if (q.jg && q !== HD) E.jstop(q, t); if (!HD || HD.stopped) HD = E.jdeck(t); let n = 0; if (c === 'k' || c === 'D') { E.drum(HD, 'dk', 'G', t, 1); n++; } if (c === 'd' || c === 'D') { E.drum(HD, 'dh', 'D', t, 1); n++; } JN += n; run(); return n; },
+    playBars(cells, bpm = 80, o = {}) { if (!boot()) return null; const ac = E.ac; if (ac.state !== 'running') { try { ac.resume(); } catch (e) {   } }
+      const now = ac.currentTime, T0 = now + (o.lead != null ? o.lead : 0.2); for (const q of E.decks) if (q.jg) E.jstop(q, T0 - 0.02); HD = null; const J = E.jdeck(T0), r = jSched(E, J, cells, bpm, o, T0); J.drop = r.end + 1.6; JN += r.n; JP++; run();
+      const wall = performance.now() + (T0 - now) * 1000;
+      return { n: r.n, acc: r.acc, notes: r.notes, len: r.len, cellMs: r.cd * 1000, t0: wall, endMs: wall + (r.end - T0) * 1000, stop: () => { if (E && E.decks.includes(J)) E.jstop(J, E.ac.currentTime); } }; },
+
+    playEv(evs, o = {}) { if (!boot()) return null; const ac = E.ac; if (ac.state !== 'running') { try { ac.resume(); } catch (e) {   } return null; }
+      const now = ac.currentTime, T0 = now + (o.lead != null ? o.lead : 0.3); for (const q of E.decks) if (q.jg) E.jstop(q, T0 - 0.02); HD = null; const R = E.rdeck(T0), Q = evs.slice().sort((a, b) => a.t - b.t), end = Q.length ? Q[Q.length - 1].t : 0; let k = 0, iv = 0;
+      const feed = () => { if (!E || E.ac !== ac || R.stopped) { clearInterval(iv); return; } const lim = ac.currentTime + 1.0 - T0; while (k < Q.length && Q[k].t < lim) { const e = Q[k++]; if (e.d) E.drum(R, e.ch, e.d, T0 + e.t, e.v, e.p || 0); else E.note(R, e.ch, e.i, e.m, T0 + e.t, e.l, e.v); } if (k >= Q.length) { clearInterval(iv); iv = 0; R.drop = T0 + end + 2; } };
+      iv = setInterval(feed, 200); feed(); JP++; run();
+      const lat = Math.max(0, Math.min(0.3, +(ac.outputLatency || ac.baseLatency || 0) || 0));
+      return { ac, t0: T0, lat, n: Q.length, hit: (p = 0) => { if (!E || E.ac !== ac || R.stopped) return; E.drum(R, 'sp', 'P', ac.currentTime + 0.005, 1, p); JN++; }, stop: () => { if (iv) clearInterval(iv); iv = 0; if (E && E.ac === ac && !R.stopped) E.jstop(R, ac.currentTime); } }; },
+    info: () => ({ on, promo, muted: muted(), ctx: E ? E.ac.state : null, mood, song: D ? D.song.id : null, title: D ? D.song.name : null, section: D ? D.sec.name : null, bar: D ? D.bi + 1 : 0, loop: D ? D.loop : 0, lead: D ? D.lead : null,
+      held, jg: JN, jgPlays: JP, indoor: !!st.ins, level: E ? +(BASE * Math.max(0, lvl)).toFixed(3) : 0, filter: E ? E.f : 0, notes: E ? E.n : 0, voicesMax: E ? E.vmax : 0, switches: sw, decks: E ? E.decks.length : 0, pumpMs: E && E.pc ? +(E.pt / E.pc).toFixed(3) : 0 }),
+    dispose() { dead = true; for (const k of EVS) removeEventListener(k, wake, { capture: true }); document.removeEventListener('visibilitychange', vis); removeEventListener('sm-set', onSet); off(); } };
+}
+
+export async function renderMood(m = 'day', sec = 30, o = {}) {
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext, sr = o.sr || 44100, ac = new OAC(2, Math.ceil(sr * sec), sr), E = engine(ac), [sid, opt] = MOODS[m];
+  E.inp.gain.value = BASE * (MLV[m] || 1); if (o.indoor) { E.inp.gain.value *= 0.5; E.lp.frequency.value = 1500; } else if (m === 'rain') E.lp.frequency.value = 4200;
+  let D = E.deck(sid, opt, 0.05, o.fi || 0); D.fade.gain.value = 1; D.leadNext = REGL[o.reg] || null;
+  if (o.to && MOODS[o.to]) { const at = o.at || sec / 2; while (D.t < at + 1) E.step(D, true);
+    const T0 = Math.max(at + 1, D.t), [s2, o2] = MOODS[o.to]; E.fadeOut(D, at, T0); E.inp.gain.setTargetAtTime(BASE * (MLV[o.to] || 1), at, 0.4); D = E.deck(s2, o2, T0, 0); D.fade.gain.setValueAtTime(0, T0); D.fade.gain.linearRampToValueAtTime(1, T0 + 1); D.leadNext = REGL[o.reg] || null; }
+  while (D.t < sec) E.step(D, true);
+  const buf = await ac.startRendering(); return { buf, notes: E.n, voicesMax: E.vmax };
+}
+
+export async function renderEv(evs, sec, o = {}) { const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext, sr = o.sr || 44100, ac = new OAC(2, Math.ceil(sr * sec), sr), E = engine(ac); E.inp.gain.value = BASE;
+  const R = E.rdeck(0.05); for (const e of evs) { if (e.t > sec) continue; if (e.d) E.drum(R, e.ch, e.d, 0.05 + e.t, e.v, e.p || 0); else E.note(R, e.ch, e.i, e.m, 0.05 + e.t, e.l, e.v); }
+  (o.splash || []).forEach((t, i) => { if (t < sec) E.drum(R, 'sp', 'P', 0.05 + t, 1, Math.min(6, i % 7)); });
+  const buf = await ac.startRendering(); return { buf, notes: E.n, voicesMax: E.vmax }; }
+export function toWav(buf) { const ch = buf.numberOfChannels, n = buf.length, sr = buf.sampleRate, out = new DataView(new ArrayBuffer(44 + n * ch * 2)), w = (p, s) => { for (let i = 0; i < s.length; i++) out.setUint8(p + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); out.setUint32(4, 36 + n * ch * 2, true); w(8, 'WAVE'); w(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, ch, true); out.setUint32(24, sr, true); out.setUint32(28, sr * ch * 2, true); out.setUint16(32, ch * 2, true); out.setUint16(34, 16, true); w(36, 'data'); out.setUint32(40, n * ch * 2, true);
+  const C = []; for (let c = 0; c < ch; c++) C.push(buf.getChannelData(c)); let p = 44; for (let i = 0; i < n; i++) for (let c = 0; c < ch; c++) { const x = Math.max(-1, Math.min(1, C[c][i])); out.setInt16(p, x < 0 ? x * 0x8000 : x * 0x7fff, true); p += 2; }
+  return out.buffer; }
