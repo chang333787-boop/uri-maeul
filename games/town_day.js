@@ -127,7 +127,7 @@ export function createDay(A) {
 
   function sec() { if (dead) return; if (!A.on()) { show(''); return; } ensure(); snap();
     const w = ydw();
-    if (w && w.pin != null && !w.pd && !A.busy() && !A.panel()) { if (!pinT) pinT = performance.now(); else if (performance.now() - pinT > 2500) { const q = w.L[w.pin]; w.pd = 1; mark(); pinT = 0; if (q && q.p) { A.route(q.p); A.say((en() ? '🌅 What you waited for: ' : '🌅 어제 기다린 것: ') + L(q.t), 3.6); log('pin go ' + w.pin); } } } else pinT = 0;
+    if (w && w.pin != null && !w.pd && !A.busy() && !A.panel()) { if (!pinT) pinT = performance.now(); else if (performance.now() - pinT > 2500) { const q = w.L[w.pin]; w.pd = 1; mark(); pinT = 0; if (q && q.p) { A.route(q.p, 'auto'); A.say((en() ? '🌅 What you waited for: ' : '🌅 어제 기다린 것: ') + L(q.t), 3.6); log('pin go ' + w.pin); } } } else pinT = 0;
     if (!A.tasksOn() || A.busy()) { show(''); return; }
     if (w && !w.seen && now() < 600) { mode = 'y'; show((en() ? '🌅 Waited for: ' : '🌅 어제 기다린 것: ') + w.L.map(q => q.ic + ' ' + L(q.s)).join(' · '), 'y'); return; }
     mode = 't'; show(lineToday(), 't'); }

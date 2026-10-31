@@ -1,7 +1,7 @@
 export const TIPS_V = 1;
 const GAP = 20000, WIN = 300000, CAP = 3, SEEN_MS = 1500, CN = 30;
-const PRI = { mouse: 6, bus: 5, subway: 5, umb: 5, lost: 5, bike: 4, bag: 4, sleep: 4, u: 3, help: 2 };
-const DROP = { mouse: 1, bus: 1, subway: 1, umb: 1, lost: 1, sleep: 1 };
+const PRI = { mouse: 6, bus: 5, subway: 5, umb: 5, lost: 5, bike: 4, bag: 4, sleep: 4, track: 3, u: 3, help: 2 };
+const DROP = { mouse: 1, bus: 1, subway: 1, umb: 1, lost: 1, sleep: 1, track: 1 };
 const K = k => '<kbd>' + k + '</kbd>', C = t => '<span class="tc">' + t + '</span>', TB = (i, t) => '<span class="tbw"><i class="tb">' + i + '</i>' + (t || '') + '</span>', TJ = t => '<span class="tbw"><i class="tj"><b></b></i>' + t + '</span>';
 const UNL = { map: 1, find: 1, look: 1, jobs: 1, board: 1 };
 const NAME = { mini: ['작은 지도', 'Small map'], map: ['큰 지도', 'Big map'], wx: ['날씨와 시계', 'Weather and clock'], find: ['장소 찾기', 'Place finder'], tasks: ['오늘 할 일', 'Today’s tasks'], look: ['판 모습', 'Mat look'], together: ['함께하기', 'Play together'], quiz: ['보너스 문제', 'Bonus questions'], bus: ['버스', 'Bus'], subway: ['지하철', 'Subway'], board: ['의뢰 게시판', 'Request board'], dex: ['도감', 'Codex'], skill: ['내 솜씨', 'Skills'], pass: ['마을 여권', 'Town passport'], jobs: ['직업 체험', 'Job experience'], rank: ['승급 미션', 'Skill missions'] };
@@ -17,6 +17,7 @@ function TIP(id, en, q) {
     case 'lost': return { d: [L('길을 찾나요? ', 'Looking for the way? '), K('J'), L(' 에서 장소 이름을 쓰고 Enter를 누르면 빨간 선이 생겨요.', ' — type a place and press Enter for a red line.')], t: [L('길을 찾나요? ', 'Looking for the way? '), M, L(' 의 📍 바로 가기에서 장소를 찾고 길 안내를 눌러요.', ' → 📍 Jump: find the place and tap Guide.')] };
     case 'bag': return { d: [L('가방에 물건이 들어왔어요. ', 'Something went into your bag. '), K('I'), L(' 를 누르면 가방이 열려요.', ' opens the bag.')], t: [L('가방에 물건이 들어왔어요. ', 'Something went into your bag. '), M, L(' 의 🎒 가방에서 볼 수 있어요.', ' → 🎒 Bag to see it.')] };
     case 'sleep': { const x = [L('밤이 됐어요. 우리 집 침대나 ', 'It is night. Sleep in your bed at home or use '), M, L(' 의 😴 단추로 자면 다음 날 아침이 돼요.', ' → 😴 to wake up the next morning.')]; return { d: x, t: x }; }
+    case 'track': { const x = [L('할 일이 여러 개예요. 왼쪽 위 ', 'You have several things to do. Tap '), C('🧭 ' + L('바꾸기', 'Change')), L(' 를 누르면 따라갈 것을 하나 골라요. 나침반과 지도가 그것만 가리켜요.', ' at the top left to pick one. The compass and map show only that one.')]; return { d: x, t: x }; }
     case 'help': return { d: ['', K('H'), L(' 를 누르면 지금 쓸 수 있는 키를 모두 볼 수 있어요.', ' shows every key you can use now.')], t: ['', M, L(' 의 ❓ 조작 도움에서 단추 쓰는 법을 모두 볼 수 있어요.', ' → ❓ Controls shows how every button works.')] };
   }
   if (id.startsWith('u:')) { const tag = L('새로 생겼어요', 'New');
@@ -74,6 +75,7 @@ export function createTips(A) {
       case 'umb': return A.raining() && A.umbOk() && !A.umbOpen() && A.out();
       case 'lost': return now - q.t0 < 60000 && !A.route() && A.out();
       case 'sleep': return A.night();
+      case 'track': return !!(A.trkRow && A.trkRow()) && A.out();
     }
     if (id.startsWith('u:')) return !A.toastOn();
     return true; }
@@ -143,6 +145,7 @@ export function createTips(A) {
     r(t9 ? M : K('J'), L('바로 가기와 찾기', 'Jump and search'), L('장소 이름을 쓰고 Enter를 누르면 빨간 선이 생겨요. 순간이동은 하루 5번이에요', 'Type a place and press Enter for a red line. Quick trips: 5 a day'), 'lost');
     if (H('bus')) r(C('🚌 ' + L('정류장', 'Bus stop')) + (t9 ? TB('✋') : K('E')), L('버스', 'Bus'), L('정류장에서 갈 곳을 골라요', 'Pick where to go at the stop'), 'bus');
     if (H('subway')) r(C('🚇 ' + L('역 입구', 'Station')) + (t9 ? TB('✋') : K('E')), L('지하철', 'Subway'), L('역 입구에서 내릴 역을 골라요', 'Pick your stop at the entrance'), 'subway');
+    if (A.trkRow && (A.trkRow() || A.GAME.S.trk && A.GAME.S.trk.seen)) r(C('🧭 ' + L('바꾸기', 'Change')), L('따라갈 것 고르기', 'Pick what to follow'), L('왼쪽 위 「따라가는 중」 줄의 단추예요. 이야기, 할 일, 사건 가운데 하나를 고르면 나침반과 지도가 그것만 가리켜요', 'The button on the “Following” line at the top left. Pick a story, task or event and the compass and map show only that one'), 'track');
     r(M, L('하늘에서 보기', 'Sky view'), L('메뉴의 🛰 단추로 마을 전체를 내려다봐요', 'See the whole town with 🛰 in the menu'));
     if (H('look')) r(t9 ? M : K('Y'), L('판 모습', 'Mat look'), L('우리가 만든 판 모습으로 바꿔요', 'Switch to the mat we built'), 'look');
     g(L('가방과 하루', 'Bag and day'));
