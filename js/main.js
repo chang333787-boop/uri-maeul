@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { buildKid } from './kid.js?v=5';
 import { attachLook, openLookPanel, parseLook, lookColors } from './look.js?v=1';
-import { SET, openSetPanel, openGfxPick } from './settings.js?v=5';
+import { SET, openSetPanel, openGfxPick } from './settings.js?v=6';
 import { afterRender, takePhoto, openPhotoPanel } from './photo.js?v=6';
 import { buildWorld } from './world.js?v=159';
 import { SCHOOL } from './layout.js?v=16';

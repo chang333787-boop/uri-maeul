@@ -1,4 +1,4 @@
-import { schoolPop } from './settings.js?v=5';
+import { schoolPop } from './settings.js?v=6';
 const DBN = 'sm-photos', ST = 'p', MAX = 30, W9 = 320, H9 = 180;
 let shotQ = null, busy = false, URLS = [];
 export const lastShot = { ms: 0, kb: 0, n: 0 };

@@ -177,18 +177,7 @@ export function jobSvg(key, f, k = 0) { const J = JOBS[key]; if (!J) return ''; 
 
 export const jobRow = (name, keys) => { let h = 7; for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return keys.map((k, i) => ({ k, f: (h + i) % 2 === 0, skin: (h + i) % 3 })); };
 
-export const PHOTOS = {
-  gochang: { src: 'mudflat_gochang.jpg', t: T2('고창 갯벌', 'Gochang tidal flat'), by: '문화재청', lic: T2('공공누리 1유형(출처 표시)', 'KOGL Type 1 (attribution)'), url: 'https://commons.wikimedia.org/wiki/File:Gochang_tidal_flat_01.jpg' },
-  saemangeum: { src: 'seawall_saemangeum.jpg', t: T2('새만금 방조제 — 바다를 막은 둑', 'Saemangeum seawall — a dike that walls off the sea'), by: 'Kussy', lic: T2('CC BY-SA 2.1 jp', 'CC BY-SA 2.1 jp'), url: 'https://commons.wikimedia.org/wiki/File:Saemangeum_seawall.JPG' },
-  suncheon: { src: 'mudflat_suncheon.jpg', t: T2('순천만 갯벌의 게와 구멍', 'Crabs and burrows on the Suncheon Bay mudflat'), by: 'lumoplank', lic: T2('CC0(퍼블릭 도메인)', 'CC0 (public domain)'), url: 'https://commons.wikimedia.org/wiki/File:Suncheon_Bay_Natural_Reserve_-_SuncheonBNG2975.jpg' },
-};
-export const PHOTO_OF = [[/갯벌/, 'gochang'], [/간척/, 'saemangeum']];
-export const photoKey = name => { for (const [re, k] of PHOTO_OF) if (re.test(String(name || ''))) return k; return null; };
-const escH = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-export function photoHtml(k, en) { const P = PHOTOS[k]; if (!P) return ''; const L = en ? 1 : 0, src = new URL('../img/photos/' + P.src, import.meta.url).href;
-  return '<figure class="pc-ph"><img src="' + src + '" alt="' + escH(P.t[L]) + '" loading="lazy" decoding="async"><figcaption><b>' + escH(P.t[L]) + '</b><br>' + (en ? 'Photo: ' : '사진: ') + escH(P.by) + ' · ' + escH(P.lic[L]) + ' · <a href="' + escH(P.url) + '" target="_blank" rel="noopener">' + (en ? 'Wikimedia Commons' : '위키미디어 공용') + '</a></figcaption></figure>'; }
-export const PHOTO_CSS = '.twn-p .pc-ph{margin:4px 0 10px;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 4px 0 var(--ink)}.twn-p .pc-ph img{display:block;width:100%;max-height:300px;object-fit:cover}.twn-p .pc-ph figcaption{padding:6px 10px;font-size:12.5px;color:var(--mut);line-height:1.4}.twn-p .pc-ph figcaption b{color:var(--ink);font-size:14px}.twn-p .pc-ph a{color:inherit}';
+export { PHOTOS, PHOTO_OF, photoKey, photoHtml, PHOTO_CSS } from './town_photos.js?v=2';
 
 export const LIB_CATS = [
   ['300', '사회과학', 'Social science', '#ef8b33', T2('사회·경제·교육·풍습', 'Society, money, school, customs')],

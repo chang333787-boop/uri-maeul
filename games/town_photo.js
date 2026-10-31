@@ -1,4 +1,4 @@
-import { WILD, wildById, HAB_NAME } from './town_wild.js?v=9';
+import { WILD, wildById, HAB_NAME } from './town_wild.js?v=10';
 export const PHOTO_V = 1;
 const T2 = (ko, en) => [ko, en];
 

@@ -1,3 +1,4 @@
+import { photoHtml } from './town_photos.js?v=2';
 export const WILD_V = 1;
 const ALL = ['spring', 'summer', 'autumn', 'winter'], WARM = ['spring', 'summer', 'autumn'];
 
@@ -291,7 +292,7 @@ export function createWild(A) {
       + '<div class="sm" style="margin-top:6px">' + A.esc(prog) + (add ? '' : e9 ? ' (already counted this one today)' : ' (이 친구는 오늘 벌써 셌어요)') + '</div>'
       + (lv > lv0 ? '<div style="margin-top:4px;font-weight:800;color:#2f8a3a">' + '⭐'.repeat(lv) + ' ' + (e9 ? 'Observation star!' : '관찰 별을 받았어요') + '</div>' : '')
       + (neuT ? '<div style="margin-top:4px;font-weight:900">🏅 ' + (e9 ? 'New title: Field watcher' : '새 칭호: 들판 관찰가') + '</div>' : '')
-      + '</div></div><div class="row"><button class="sub" data-a="x">' + (e9 ? 'Close' : '닫기') + '</button></div>', false, 'wild');
+      + '</div></div>' + photoHtml('wild:' + w.id, e9, { sm: 1 }) + '<div class="row"><button class="sub" data-a="x">' + (e9 ? 'Close' : '닫기') + '</button></div>', false, 'wild');
     const cv = P9.querySelector('.twn-wild'); if (cv) drawWild(cv, w, { bg: BG[s.reed ? 'river' : w.hab] }); P9.onclick = e => { const b = e.target.closest('button'); if (b && b.dataset.a === 'x') A.closeP(); }; A.map.sfx && A.map.sfx(neu || lv > lv0 ? 'ding' : 'tick'); if (neu) A.bagShow(); }
 
   function pic(w, sil) { const k9 = w.id + (sil ? ':s' : ''); if (picN[k9]) return picN[k9]; const c = document.createElement('canvas'); c.width = 84; c.height = 60; drawWild(c, w, sil ? { sil: '#4b4f55' } : {}); return (picN[k9] = '<img src="' + c.toDataURL() + '" alt="" style="height:36px;width:auto;display:inline-block">'); }
