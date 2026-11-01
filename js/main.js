@@ -419,10 +419,11 @@ addEventListener('keydown', e => { if (e.code === 'KeyV' && !e.repeat) camFirst 
 const CAM_D = 6.3;
 let roomLift = 0;
 let camD = CAM_D, camLift = 0;
-canvas.addEventListener('click', () => { if (!TOUCH.on && !CTRL.freeMouse) canvas.requestPointerLock(); });
+const TWN_MODAL = () => !!document.querySelector('.twn-p,.twn-dlg,.twn-play');
+canvas.addEventListener('click', () => { if (!TOUCH.on && !CTRL.freeMouse && !TWN_MODAL()) canvas.requestPointerLock(); });
 
 let LOOKT = -1e9, camZ = 1;
-canvas.addEventListener('wheel', e => { if (!world.overAt || camFirst) return; e.preventDefault(); camZ = Math.max(4 / CAM_D, Math.min(18 / CAM_D, camZ * Math.exp(Math.max(-60, Math.min(60, e.deltaY)) * 0.004))); }, { passive: false });
+canvas.addEventListener('wheel', e => { if (!world.overAt || camFirst) return; e.preventDefault(); if (TWN_MODAL()) return; camZ = Math.max(4 / CAM_D, Math.min(18 / CAM_D, camZ * Math.exp(Math.max(-60, Math.min(60, e.deltaY)) * 0.004))); }, { passive: false });
 const MOUSE = { dx: 0, dy: 0, t0: 0, fd: 16.7, fl: 0, te: 0, drop: 0 };
 document.addEventListener('pointerlockchange', () => { MOUSE.t0 = performance.now(); MOUSE.dx = MOUSE.dy = 0; if (document.pointerLockElement !== canvas) keysClear(); });
 addEventListener('focus', () => { MOUSE.t0 = performance.now(); });
@@ -434,6 +435,7 @@ addEventListener('keydown', e => {
   if (e.code !== 'Tab' || e.repeat || TOUCH.on || CTRL.freeMouse || e.ctrlKey || e.altKey || e.metaKey) return;
   const tg = e.target; if (tg && (tg.tagName === 'INPUT' || tg.tagName === 'TEXTAREA' || tg.tagName === 'SELECT' || tg.isContentEditable)) return;
   if (TITLE && TITLE.phase !== 'off') return;
+  if (TWN_MODAL() && document.pointerLockElement !== canvas) return;
   e.preventDefault();
   if (document.pointerLockElement === canvas) { CURSOR.on = true; document.exitPointerLock(); toast('👀 마우스가 보여요 — 단추를 눌러요 · 화면을 누르거나 Tab = 다시 둘러보기', 2.6); }
   else if (!(window.__pause && window.__pause.on)) { CURSOR.on = false; canvas.requestPointerLock(); }
@@ -1937,7 +1939,7 @@ window.SD2 = {
   film: FILM, top: TOP, acts: ACTS, hotNow: () => hotNear, actOn: h => act(h), camOvr: f => { CAM_OVR = f; }, pg,
   perf: () => ({ fps: FM.fps1 || 0, mode: FM.mode, target: FM.target, step: FM.lv, stepName: FM.step, dpr: GFX.dpr, dprLvl: ADAPT.lvl + '/' + (ADAPT.ladder.length - 1), fog: FM.fk, detail: FM.dk, shadow: !FM.shOff && GFX.shadow > 0, drawCalls: FM.dc || 0, gfxMode: GFX.mode, log: FM.log.slice(-8) }),
   touch: TOUCH, gfx: GFX, title: TITLE, input: { keys, KEY_NEW, KEY_UP, MOUSE, clear: keysClear }, prewarm, setDpr, setShadowSize, adaptTick,
-  cam: () => [+camYaw.toFixed(3), +camPitch.toFixed(3), camFirst],
+  cam: () => [+camYaw.toFixed(3), +camPitch.toFixed(3), camFirst, +camZ.toFixed(3)],
 
   map: MAP, phys: { groundAt, blockedAt, ceilAt, camHit, PHY, pGround, pBlocked, pCeil }, ACT, CTRL, camPose: (...a) => ({ ...camPose(...a) }),
   health: opt => import('./health.js?v=8').then(m => m.runHealth(window.SD2, opt || {})),
