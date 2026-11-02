@@ -1,5 +1,5 @@
 import { makeWorkerMesh } from './town_worker.js?v=7';
-import { BD_HRS, POST_HRS, bldgKind } from './town_bldg.js?v=10';
+import { BD_HRS, POST_HRS, bldgKind } from './town_bldg.js?v=13';
 
 export const CUE_V = 1;
 const T2 = (a, b) => [a, b];
