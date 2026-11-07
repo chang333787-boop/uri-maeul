@@ -256,7 +256,7 @@ export function createRoad(A) {
     if (ACT) { if (A.away() || A.night()) actEnd(false, 'away'); return; }
     if (REQ) { REQ.t++; const w = REQ.w, d = Math.hypot(me.x - w.x, me.z - w.z); if (A.away() || A.night() || REQ.t > 50 || d > 120) { reqEnd(d > 120 || REQ.t > 50); movMin = 30; return; } if (!A.busy() && (REQ.bq += 1) >= 6 && d < 60) { REQ.bq = 0; A.bubble({ x: w.x, y: w.g, z: w.z, sc: 1 }, en() ? 'Excuse me! Can you help?' : '저기요! 잠깐 도와줄래요?'); } return; }
     if (PAPER) { PAPER.life++; if (PAPER.life > 120 || Math.hypot(me.x - PAPER.x, me.z - PAPER.z) > 100 || A.away()) paperGone(); return; }
-    if (A.busy() || A.away() || A.inSchool(me.x, me.z)) return;
+    if (A.busy() || A.away() || A.inSchool(me.x, me.z) || (A.emCall && A.emCall())) return;
     const moving = mv > 1.2 && mv < 40; if (!moving) return; movMin += dm; movP += dm;
     if (!A.night() && movMin >= (A.story() ? 200 : 100) && A.GAME.uses('road:help') < 4) { if (!helpTry(me)) movMin -= 25; return; }
     if (movP >= 50 && !A.GAME.uses('road:paper')) { if (!paperTry(me)) movP -= 15; } }

@@ -37,6 +37,7 @@ export function createGo(A) {
       gx.classList.remove('up', 'dn'); gx.classList.add(pt.x < W / 2 ? 'rt' : 'lf'); return; }
     if (!pt) { gx.style.left = Math.max(m, (W - w) / 2) + 'px'; gx.style.top = Math.max(m, (H - h) / 2) + 'px'; return; }
     let x = pt.x + 16, y = pt.y + 14; if (x + w > W - m) x = pt.x - w - 16; if (x < m) x = Math.max(m, Math.min(W - w - m, pt.x - w / 2)); if (y + h > H - m) y = pt.y - h - 14; if (y < m) y = Math.max(m, H - h - m);
+    x = Math.max(m, Math.min(W - w - m, x)); y = Math.max(m, Math.min(H - h - m, y));
     gx.style.left = Math.round(x) + 'px'; gx.style.top = Math.round(y) + 'px'; }
   function open(t, pt) { if (dead || !t) return false; close('re'); ensureCss(); cur = t; t0 = performance.now(); at0 = pt && Number.isFinite(pt.x) ? { x: pt.x, y: pt.y } : null; back = document.activeElement; downBack = false; DBG.open++; DBG.last = { kind: t.kind, name: t.name, no: t.no || '', left: t.left }; log('open', t.kind + ' ' + t.name);
     el = document.createElement('div'); el.className = 'twn-go ttl-keep'; el.innerHTML = html(t); document.body.appendChild(el); place(pt);
