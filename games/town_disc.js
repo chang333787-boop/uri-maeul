@@ -137,8 +137,8 @@ export function createDisc(A) {
   function pickWx(k, skip) { const M = spots(), me = A.me(), L9 = DISC.filter(r => M[r.id] && (k === 'rain' ? r.rain : r.clear) && !(skip && skip.includes(r.id)) && openLater(r)).sort((a, b) => distTo(a.id, me) - distTo(b.id, me)); const u = L9.filter(r => vOf(r) === 0), C9 = (u.length ? u : L9).slice(0, day() <= 1 ? 1 : 3); return seedPick(C9, 3); }
   const ctxC = skip => ({ S: S(), day: day(), min: S().min | 0, season: A.season(), wx: A.wx(), has: id => (skip && skip.includes(id) ? null : has(id)), lows: d => A.lows(d), hm: m => A.hm(m), fac: d => A.fac(d), pickWx: k => pickWx(k, skip) });
 
-  function pick() { const d9 = D(), d = day(); if (d9.p && d9.p.d === d) return d9.p; const me = A.me();
-    const U = untried(null, me); let n4 = null, again = false; if (U.length) { const near = U.slice(0, d <= 1 ? 1 : 3); n4 = near[(d * 7) % near.length].id; } else { const M = spots(), all = DISC.filter(r => M[r.id] && (r.pri || 1) === 1); const r = seedPick(all, 1); if (r) { n4 = r.id; again = true; } }
+  function pick() { const d9 = D(), d = day(); if (d9.p && d9.p.d === d) return d9.p; const me = A.me(), prev = d9.p ? d9.p.n4 : null;
+    const U0 = untried(null, me), U1 = U0.filter(r => r.id !== prev), U = U1.length ? U1 : U0; let n4 = null, again = false;     if (U.length) { const near = U.slice(0, d <= 1 ? 1 : 3); n4 = near[(d * 7) % near.length].id; } else { const M = spots(), all = DISC.filter(r => M[r.id] && (r.pri || 1) === 1); const r = seedPick(all, 1); if (r) { n4 = r.id; again = true; } }
     let o5 = null; const c = ctxC(n4 ? [n4] : []), sp = d <= 1 ? [] : ONLY.filter(o => !o.wx).map(o => [o, o.when(c)]).filter(q => q[1]);
     const ch = sp.length ? sp[(d * 3) % sp.length] : ONLY.filter(o => o.wx).map(o => [o, o.when(c)]).find(q => q[1]);
     if (ch) { const [o, w] = ch, r = w.row ? DISC_BY[w.row] : null, s = r ? spots()[r.id] : null; o5 = { id: o.id, row: w.row || null, at: w.at || (s ? s.at : null), why: w.why, b: 0 }; o5.b = r ? vOf(r) : o.v ? (+o.v(S()) || 0) : 0; }

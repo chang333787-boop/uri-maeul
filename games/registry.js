@@ -1,4 +1,4 @@
 export const FOLDERS = [];
 export const GAMES = {
-  town: { title: '우리 마을', v: 323, dev: true, icon: '🏘', desc: '우리 마을' },
+  town: { title: '우리 마을', v: 324, dev: true, icon: '🏘', desc: '우리 마을' },
 };

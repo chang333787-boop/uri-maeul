@@ -249,15 +249,19 @@ export function createCase(A) {
     A.banner(R.icon + ' ' + (e ? 'New case: ' : '새 사건: ') + L(R.t), 3.6); sfx('ding');
     A.say('📒 ' + L(R.ann), 5, 2); }
 
-  function sec() { if (dead || !A.on()) return; if (OFF) { if (S().cur) { S().cur = null; mark(); } sync(); hotSync(); chipSync(); return; } const s = S(), D = day(); let q = s.cur;
+  function sec() { if (dead || !A.on()) return; if (OFF) { if (S().cur) { S().cur = null; mark(); } sync(); hotSync(); chipSync(); return; } const s = S(); let q = s.cur;
     if (!q) { plan(false); q = s.cur; }
+    q = roll(q);
+    watchSec(q); sync(); hotSync(); chipSync(); }
+
+  function roll(q) { const s = S(), D = day();
     if (q) { if (q.st === 'open' && now() > dueAt(q) && D > q.d0 + CASES[q.id].days - 1) { q.st = 'late'; q.late = D; mark(); A.rec('case', { id: q.id, ev: 'late', d: D }); }
       const R = CASES[q.id]; if (q.st === 'late' && !q.mudD && R.lateOn({ wx: A.wxDay ? A.wxDay() : '', jang: A.jang ? A.jang() : null, day: D, d0: q.d0 })) { q.mudD = D; mark(); }
       if (q.st === 'late' && !q.mudD && D >= q.late + R.lateMax) { q.mudD = -1; mark(); }
       if (q.st === 'late' && q.mudD && (q.mudD < 0 || D > q.mudD) && !q.fixD) { q.fixD = D; q.st = 'lateFix'; mark(); }
       if (q.st === 'ok' && D > q.rep.d && !q.fixD) { q.fixD = D; q.st = 'fixed'; mark(); s.helper = (s.helper | 0) + 1; A.rec('case', { id: q.id, ev: 'fixed', d: D }); }
       if ((q.st === 'fixed' || q.st === 'lateFix') && D >= q.fixD + 4) { s.log.unshift({ id: q.id, d0: q.d0, st: q.st === 'fixed' ? 'ok' : 'late', fixD: q.fixD, hyp: q.hyp, wrong: q.wrong, rep: q.rep ? q.rep.ev : null }); s.log.length = Math.min(s.log.length, 10); s.done[q.id] = D; const nx = CASES[q.id].next; if (nx) s.seeds[nx] = D; s.cur = null; mark(); q = null; } }
-    watchSec(q); sync(); hotSync(); chipSync(); }
+    return q; }
 
   function partsSite(q, fixed) { return A.buildParts(put => {
     const W = 11, D = 9, H = 1.5, gap = 2.6;
@@ -539,7 +543,7 @@ export function createCase(A) {
     if (q.st === 'open') return '📒 ' + (e ? 'Waiting tomorrow: ' : '내일 기다리는 것: ') + L(R.t) + ' — ' + (q.d0 + R.days - 1 - d === 1 ? (e ? 'tomorrow is the last day' : '내일이 마지막 날이에요') : q.d0 + R.days - 1 - d <= 0 ? (e ? 'today was the last day' : '오늘이 마지막 날이었어요') : (e ? (q.d0 + R.days - 1 - d + 1) + ' days left' : (q.d0 + R.days - 1 - d + 1) + '일 남았어요'));
     if ((q.st === 'ok' || q.st === 'fixed') && q.rep && q.rep.d === d) return '📒 ' + (q.id === 'scale' ? (e ? 'Tomorrow morning: see if the scale is back at the market' : '내일 아침: 장터에 저울이 돌아왔는지 보러 가요') : q.id === 'siteRoad' ? (e ? 'Tomorrow morning: see how the road by the building site has changed' : '내일 아침: 공사장 앞 길이 어떻게 바뀌었는지 보러 가요') : (e ? 'Tomorrow morning: see the silt fences at the building site' : '내일 아침: 공사장에 흙막이가 서는지 보러 가요'));
     return ''; }
-  function news(d) { const q = S().cur, out = []; if (!q) return out; const R = CASES[q.id], p = q.pl; if (q.id === 'scale') return newsScale(q, d); if (q.id === 'siteRoad') return newsSite(q, d);
+  function news(d) { if (!dead && !OFF && A.on() && d === day() && S().cur) roll(S().cur); const q = S().cur, out = []; if (!q) return out; const R = CASES[q.id], p = q.pl; if (q.id === 'scale') return newsScale(q, d); if (q.id === 'siteRoad') return newsSite(q, d);
     if (q.st === 'open' && q.d0 === d) out.push({ k: 'case:' + q.id, two: 1, t: T2('🌊 비 사흘 뒤 강물이 흙빛이에요. 왜 그럴까요?', '🌊 After three days of rain the river is brown. Why?'), at: null });
     if (q.st === 'fixed' && q.fixD === d) out.push({ k: 'case:' + q.id, t: T2('🚧 어제 낸 보고서대로 ' + p.site.cell + ' 칸 공사장에 흙막이를 세웠어요. 강물이 조금씩 맑아질 거예요', '🚧 As you reported, silt fences went up at the site in ' + p.site.cell + '. The river will slowly clear'), at: [p.site.x, p.site.z] });
     if (q.mudD > 0 && q.mudD === d) out.push({ k: 'case:' + q.id + ':mud', two: 1, t: T2('🌧 큰비에 흙탕물이 농수로를 타고 ' + A.cell(p.mud.x, p.mud.z) + ' 칸 논 한 곳에 들어갔어요', '🌧 In the heavy rain, muddy water ran down the canal into a paddy in ' + A.cell(p.mud.x, p.mud.z)), at: [p.mud.x, p.mud.z] });

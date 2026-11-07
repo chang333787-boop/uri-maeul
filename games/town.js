@@ -49,8 +49,8 @@ import { createBoatX } from './town_boat.js?v=6'; import { createPollen } from '
 import { createRes, wildOf } from './town_res.js?v=2'; import { createShore, SHORE as SHOREL, tideLvl, isLow, lowAt, lowsOf, hm as hm9 } from './town_shore.js?v=6'; import { createXp } from './town_xp.js?v=9';     import { newsMake, GIFT_OF, NB_RANK } from './town_news.js?v=14';
 import { createTreasure } from './town_treasure.js?v=9';
 import { planBusLines, makeBusLines, busPlan, busLeg } from './town_bus.js?v=1';
-import { createEmerg, EMSTY } from './town_emerg.js?v=16'; import { createWhy } from './town_why.js?v=1';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=7';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=13'; import { createDay } from './town_day.js?v=13'; import { createTyphoon } from './town_typhoon.js?v=11'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=8'; import { createAsk, wayLine } from './town_ask.js?v=2'; import { createStam } from './town_stam.js?v=5';
-import { createEnter, entOf } from './town_enter.js?v=3';
+import { createEmerg, EMSTY } from './town_emerg.js?v=16'; import { createWhy } from './town_why.js?v=1';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=8';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=13'; import { createDay } from './town_day.js?v=13'; import { createTyphoon } from './town_typhoon.js?v=11'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=9'; import { createAsk, wayLine } from './town_ask.js?v=2'; import { createStam } from './town_stam.js?v=5';
+import { createEnter, entOf } from './town_enter.js?v=4';
 import { createAcad } from './town_acad.js?v=6';
 import { createJanggu } from './town_janggu.js?v=4';
 import { createTower } from './town_tower.js?v=1';
@@ -60,7 +60,7 @@ import { createWild, WILD as WILDL } from './town_wild.js?v=10'; import { create
 import { createAfter } from './town_after.js?v=2';
 import { createFeast } from './town_feast.js?v=8'; import { createSeason } from './town_season.js?v=6';
 import { simFill, supOf, demOf, mkK, lumpsOf, whyOf } from './town_market.js?v=1';
-import { createCue } from './town_cue.js?v=7'; import { createDisc } from './town_disc.js?v=2';
+import { createCue } from './town_cue.js?v=7'; import { createDisc } from './town_disc.js?v=3';
 import { createMusic } from './town_music.js?v=4'; import { createFeel } from './town_feel.js?v=4'; import { createEfx } from './town_efx.js?v=2';     import { createSurp } from './town_surp.js?v=6'; import { createSki } from './town_ski.js?v=2';
 import { healCurves, litFrac, ambLayers, AMB_LAYERS, ANIMAL_JOB, jobName, cardName, cardThanks, cardRumor, cardColor, CARD_DAY, CARD_KEEP, CARD_STAMP } from './town_heal.js?v=1';
 import { createSubway } from './town_subway.js?v=3';

@@ -36,6 +36,7 @@ export function createRoad(A) {
   let HAT = null, HATG = [], ITEM = null, PAP = null, PAPT = null, PAPG = null;
   let BK = null, BKM = null, BKC = null, BKS = null, BKT = null;
   const DBG = [];
+  const modal = () => A.panelOpen() || !!document.querySelector('.twn-dlg,.twn-play');
 
   let BQ = null;
   function build(all) { const t0 = performance.now(); if (!BQ) { CS = []; BQ = { ch: [], i: 0, cand: [], XP: null, ms: 0 };
@@ -120,7 +121,7 @@ export function createRoad(A) {
   function blkOff() { if (!BK) return; for (const h of BK.cols) if (h && h.remove) h.remove(); BK = null; for (const m of [BKM, BKC, BKS]) if (m) m.visible = false; }
 
   function blkFrame(dt, me) { const R = RACE; if (!R || !BK || BK.c !== R.c) return; const p = BK.p, a = aOf(p, me.x, me.z), l = lOf(p, me.x, me.z);
-    if (R.hold > 0) { R.hold -= dt; if (R.hold <= 0) { if (A.busy()) { R.hold = 0.1; return; } map.player.freeze(false);     toast('🚗 ' + (en() ? 'The cars have passed. Go on carefully.' : '차가 지나갔어요. 조심해서 가요.'), 2); } return; }
+    if (R.hold > 0) { R.hold -= dt; if (R.hold <= 0) { if (modal()) { R.hold = 0.1; return; } map.player.freeze(false);     toast('🚗 ' + (en() ? 'The cars have passed. Go on carefully.' : '차가 지나갔어요. 조심해서 가요.'), 2); } return; }
     if (Math.abs(a) < BL / 2 + 1.5) { if (!R.rd && l < -1.5) { R.rd = true; R.hold = 3; map.player.freeze(true); tone(392, 0, 0.18, 'square', 0.05); tone(392, 0.25, 0.18, 'square', 0.05); toast('🚗 ' + (en() ? 'This is the road — cars drive here! Stop and let them pass.' : '여기는 차가 다니는 차도예요! 멈춰서 차를 먼저 보내요.'), 3); }
       else if (!R.sw && l > p.w + 0.2) R.sw = true; } }
 
@@ -130,12 +131,12 @@ export function createRoad(A) {
   function raceStart(c, me) { const bk = !!A.bike(); RACE = { c, i: 1, t: 0, bike: bk, lx: me.x, lz: me.z, ps: sOf(c.rings[1], me), walk: 0, off: false, blk: BK && BK.c === c ? BK.p : null, rd: false, sw: false, hold: 0 }; ding(0); paint(); goalT = null;
     toast(bk ? '🚲 ' + (en() ? 'Go! Ride through the yellow rings' : '출발! 노란 고리를 차례로 지나요') : '🚶 ' + (en() ? 'Practice run. Records count only on the bike (B)' : '연습이에요. 기록은 자전거(B)로만 남아요'), 2.2); }
   function ding(i) { const f = NOTES[Math.min(i, NOTES.length - 1)]; tone(f, 0, 0.16, 'triangle', 0.12); tone(f / 2, 0, 0.12, 'sine', 0.05); }
-  function raceFrame(dt, me) { const R = RACE, c = R.c; if (!A.busy()) R.t += dt; if (BK) blkFrame(dt, me); const jp = Math.abs(me.x - R.lx) + Math.abs(me.z - R.lz); R.lx = me.x; R.lz = me.z; if (jp > 30) { raceEnd(true); return; } if (R.bike && !A.bike()) R.walk += jp;
+  function raceFrame(dt, me) { const R = RACE, c = R.c; if (!modal()) R.t += dt; if (BK) blkFrame(dt, me); const jp = Math.abs(me.x - R.lx) + Math.abs(me.z - R.lz); R.lx = me.x; R.lz = me.z; if (jp > 30) { raceEnd(true); return; } if (R.bike && !A.bike()) R.walk += jp;
     const r = c.rings[R.i], s = sOf(r, me); if (R.ps < 0 && s >= 0 && s < 4 && inRing(r, me)) { ding(R.i); R.i++; if (R.i >= c.rings.length) { finish(); return; } R.ps = sOf(c.rings[R.i], me); paint(); goalT = null; return; } R.ps = s; }
   function raceSec(me) { const R = RACE, c = R.c; if (R.bike && !A.bike()) { if (!R.off) { R.off = true; setTimeout(() => { if (RACE === R && R.bike && !A.bike()) toast('🚲 ' + (en() ? 'Press B to get back on and keep going!' : 'B를 눌러 다시 타고 이어 달려요!'), 2.6); }, 2600); } if (R.walk > 20) { R.bike = false; toast('🚶 ' + (en() ? 'You walked off the bike: this run is practice now (no record)' : '자전거에서 내려 걸었어요. 이번 판은 연습이에요(기록 X)'), 2.8); } } else if (A.bike()) R.off = false;
     const r = c.rings[R.i]; if (A.away() || R.t > c.par * 4 + 40 || Math.hypot(me.x - r.x, me.z - r.z) > 130) raceEnd(false); }
-  function raceEnd(jump) { if (!RACE) return; if (RACE.hold > 0 && !A.busy()) map.player.freeze(false); RACE = null; paint(); goalT = null; toast('⏱ ' + (jump ? (en() ? 'Ring course stopped (you moved away)' : '고리 코스를 멈췄어요(다른 곳으로 옮겼어요)') : (en() ? 'Ring course stopped. Next time for sure!' : '고리 코스를 멈췄어요. 다음엔 꼭!')), 2.4); }
-  function finish() { const R = RACE, c = R.c, t = Math.round(R.t * 10) / 10, e = en(); if (R.hold > 0 && !A.busy()) map.player.freeze(false); RACE = null; c.ps = 1; paint(); goalT = null;
+  function raceEnd(jump) { if (!RACE) return; if (RACE.hold > 0 && !modal()) map.player.freeze(false); RACE = null; paint(); goalT = null; toast('⏱ ' + (jump ? (en() ? 'Ring course stopped (you moved away)' : '고리 코스를 멈췄어요(다른 곳으로 옮겼어요)') : (en() ? 'Ring course stopped. Next time for sure!' : '고리 코스를 멈췄어요. 다음엔 꼭!')), 2.4); }
+  function finish() { const R = RACE, c = R.c, t = Math.round(R.t * 10) / 10, e = en(); if (R.hold > 0 && !modal()) map.player.freeze(false); RACE = null; c.ps = 1; paint(); goalT = null;
     const bl = R.blk, why = bl ? (R.rd ? (e ? ' You went round by the road and had to stop for cars.' : ' 차도로 돌아가느라 멈춰 서서 기다렸어요.') : R.sw ? (e ? ' You went round the outside, off the road — a safe choice.' : ' 막힌 곳을 차도 말고 바깥쪽으로 돌아갔어요 — 안전하게 골랐어요.') : '') : '';     tone(1046.5, 0.12, 0.25, 'triangle', 0.12); tone(1318.5, 0.24, 0.25, 'triangle', 0.12); tone(1568, 0.36, 0.4, 'triangle', 0.12);
     if (!R.bike) { banner('🏁 ' + (e ? 'Practice done: ' + t + ' s. Records count only on the bike (B)' : '연습 완주 ' + t + '초! 기록은 자전거(B)로만 남아요') + why, 3.4); A.rec('road', { k: 'ring', id: c.id, t, m: 0 }); return; }
     const s = S(), Q = s.ring[c.id] || (s.ring[c.id] = { b: 0, m: 0, n: 0 }), ex = bl ? Math.round((2 * (bl.w + 1.6)) / 22 * 10) / 10 : 0, best = !Q.b || t < Q.b, m = t <= c.gold + ex ? 3 : t <= c.silver + ex ? 2 : 1, H9 = Array.isArray(Q.h) ? Q.h : (Q.h = []), prev = H9.length ? H9[H9.length - 1].t : null;
@@ -261,7 +262,7 @@ export function createRoad(A) {
     if (!A.night() && movMin >= (A.story() ? 200 : 100) && A.GAME.uses('road:help') < 4) { if (!helpTry(me)) movMin -= 25; return; }
     if (movP >= 50 && !A.GAME.uses('road:paper')) { if (!paperTry(me)) movP -= 15; } }
 
-  function abort() { if (RACE) { if (RACE.hold > 0 && !A.busy()) map.player.freeze(false); RACE = null; } blkOff(); if (ACT) { const a = ACT; ACT = null; const M = A.wkMesh(); if (M) { M.reset(a.i); if (M.hat) M.hat(a.i, true); } hotOff(a.w, false); if (a.h) a.h.remove(); if (a.hs) for (const h of a.hs) h.remove(); }
+  function abort() { if (RACE) { if (RACE.hold > 0 && !modal()) map.player.freeze(false); RACE = null; } blkOff(); if (ACT) { const a = ACT; ACT = null; const M = A.wkMesh(); if (M) { M.reset(a.i); if (M.hat) M.hat(a.i, true); } hotOff(a.w, false); if (a.h) a.h.remove(); if (a.hs) for (const h of a.hs) h.remove(); }
     if (REQ) reqEnd(true); if (PAPER) paperGone(); if (HAT) HAT.visible = false; if (ITEM) ITEM.visible = false; goalT = null; }
 
   function warm() { const R9 = window.SD2 && window.SD2.renderer, root = A.root(), sc = root && root.parent; ringMesh(); if (root && !RING.parent) root.add(RING); if (!ITEM) itemBuild(); if (!PAP) papMake(); if (!HAT) hatBuild(0xe8d38a);
