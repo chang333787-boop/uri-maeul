@@ -2541,7 +2541,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     { const C9 = [[-2.2, half], [2.2, half], [2.2, half + gapR + 0.8], [-2.2, half + gapR + 0.8]].map(([u, t]) => L2W(B9, fwL[0] ? fwL[0] * t : u, fwL[0] ? u : fwL[1] * t)), xs = C9.map(q => q[0]), zs = C9.map(q => q[1]); occAdd(Math.min(...xs), Math.min(...zs), Math.max(...xs), Math.max(...zs)); }
 
     if (k !== 'house' && front > 7) { const sideSign = R() < 0.5 ? -1 : 1, along = fl[0] ? [0, 1] : [1, 0], span = (fl[0] ? B9.d : B9.w) / 2;
-      for (let t = 1.25; t < span + side - 1.2; t += 2.5) for (const r of [0]) { void r; const base = half + front / 2; const [x, z] = L2W(B9, fwL[0] * base + along[0] * sideSign * t, fwL[1] * base + along[1] * sideSign * t); if (!ok(x, z)) continue;
+      for (let t = 3.75; t < span + side - 1.2; t += 2.5) for (const r of [0]) { void r; const base = half + front / 2; const [x, z] = L2W(B9, fwL[0] * base + along[0] * sideSign * t, fwL[1] * base + along[1] * sideSign * t); if (!ok(x, z)) continue;
         gpad(x, z, fl[0] ? front - 1 : 2.5, fl[0] ? 2.5 : front - 1, B9.ry, 0.15, 0x5f6368, { yf: lotH });
         const [lx9, lz9] = L2W(B9, fwL[0] * base + along[0] * sideSign * (t + 1.25), fwL[1] * base + along[1] * sideSign * (t + 1.25)); gpad(lx9, lz9, fl[0] ? front - 1.6 : 0.12, fl[0] ? 0.12 : front - 1.6, B9.ry, 0.2, 0xf2f1ea, { yf: lotH }); } }
   }
@@ -2564,7 +2564,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
       for (let e = 0; e < 4; e++) { const f = (e + 1) % 4, [ax, az] = Q(...C0[e]), [bx, bz] = Q(...C0[f]), [cx2, cz2] = Q(...C1[f]), [dx, dz] = Q(...C1[e]), p0 = [ax, T9.hi, az], p1 = [bx, T9.hi, bz], p2 = [cx2, T9.lo, cz2], p3 = [dx, T9.lo, dz], n9 = nrm(p0, p1, p2), mx = (ax + bx) / 2 - cx, mz = (az + bz) / 2 - cz; if (n9[0] * mx + n9[2] * mz < 0) quad(B, p1, p0, p3, p2, gc); else quad(B, p0, p1, p2, p3, gc); }
       for (const k of [1, 2]) PCOL.push(col9(cx, cz, A + s9 * k / 3, Bd + s9 * k / 3, ry, T9.lo - 1, T9.hi - H9 * k / 3)); }
     else for (let lv = 0.5; lv < H9 - 0.2; lv += 0.55) box(cx, T9.lo + lv, cz, w + 4.04, 0.06, d + 4.04, ry, 0x938d7f, { noTop: true });
-    const f = B9.fl, nS = Math.ceil(H9 / 0.3); for (let i = 0; i < nS; i++) { const o = (f[0] ? w : d) / 2 + 2 + 0.35 + i * 0.35, [sx, sz] = Q(f[0] * o, f[1] * o), sh = H9 - (i + 1) * 0.3; if (sh <= 0) break; box(sx, T9.lo, sz, f[0] ? 0.36 : 2.4, sh, f[0] ? 2.4 : 0.36, ry, 0xb9b3a4); PCOL.push(col9(sx, sz, f[0] ? 0.18 : 1.2, f[0] ? 1.2 : 0.18, ry, T9.lo - 1, T9.lo + sh)); }
+    const f = B9.fl, nS = Math.ceil(H9 / 0.3); for (let i = 0; i < nS; i++) { const o = (f[0] ? w : d) / 2 + 2 + 0.35 + i * 0.35, [sx, sz] = Q(f[0] * o, f[1] * o), sh = H9 - (i + 1) * 0.3; if (sh < 0.06 || T9.lo + sh < ty(sx, sz) + 0.06) break;     box(sx, T9.lo, sz, f[0] ? 0.36 : 2.4, sh, f[0] ? 2.4 : 0.36, ry, 0xb9b3a4); PCOL.push(col9(sx, sz, f[0] ? 0.18 : 1.2, f[0] ? 1.2 : 0.18, ry, T9.lo - 1, T9.lo + sh)); }
     PCOL.push(col9(cx, cz, w / 2 + 2, d / 2 + 2, ry, T9.lo - 1, T9.hi)); }
   function poolOf(B9) { const bm = BLDMODE; BLDMODE = false; try { return pool0(B9); } finally { BLDMODE = bm; } }
   function pool0(B9) {
@@ -3050,7 +3050,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     let gw = fw * 0.86, sgY = Math.min(h - 1.1, sh + 0.75);
     if (V.front <= 1) { if (V.front === 1) gw = fw * 0.66; storeFront(B9, ff, gw, sh - 0.6, { mull: V.front === 1 ? 0x3a3f45 : 0x5f6670 });
       if (V.front === 1) { for (const s9 of [-1, 1]) { fbox(B9, ff, s9 * (gw / 2 + 0.22), 0, 0.44, sh - 0.19, 0.6, acc); const p9 = FP(B9, ff, s9 * (gw / 2 + 0.22), 0, 0.3); PCOL.push(col9(p9[0], p9[2], 0.22, 0.3, ry + (ff[0] ? Math.PI / 2 : 0), y0 - 1, y0 + sh)); } fbox(B9, ff, 0, sh - 0.2, gw + 0.88, 0.45, 0.6, acc, { top: acc }); } }
-    else if (V.front === 2) { for (const s9 of [-1, 1]) { const u = s9 * fw * 0.28; fbox(B9, ff, u, 0, 1.5, 2.5, 0.08, acc); fbox(B9, ff, u, 0, 1.2, 2.35, 0.05, 0x4a3a30, { out: 0.08 }); fbox(B9, ff, u, 0, 2.2, 0.3, 0.6, 0xcfc9bd, { out: 0.02 }); } for (const u of [0, -fw * 0.42, fw * 0.42]) if (Math.abs(u) + 0.8 < fw / 2) { fbox(B9, ff, u, 0.85, Math.min(1.6, fw * 0.14) + 0.2, 1.7, 0.06, acc); fbox(B9, ff, u, 0.95, Math.min(1.6, fw * 0.14), 1.5, 0, GLASS, { quad: true, out: 0.075, glass: true }); } sgY = Math.min(h - 1.1, 3.1); }
+    else if (V.front === 2) { for (const s9 of [-1, 1]) { const u = s9 * fw * 0.28; fbox(B9, ff, u, 0, 1.5, 2.5, 0.08, acc); fbox(B9, ff, u, 0, 1.2, 2.35, 0.05, 0x4a3a30, { out: 0.08 }); fbox(B9, ff, u, 0, 2.2, 0.3, 0.6, 0xcfc9bd, { out: 0.02 }); } for (const u of [0, -fw * 0.42, fw * 0.42]) if (Math.abs(u) + 0.8 < fw / 2 && (!u || Math.abs(u) - (Math.min(1.6, fw * 0.14) + 0.2) / 2 > fw * 0.28 + 0.8)) { fbox(B9, ff, u, 0.85, Math.min(1.6, fw * 0.14) + 0.2, 1.7, 0.04, acc); fbox(B9, ff, u, 0.95, Math.min(1.6, fw * 0.14), 1.5, 0, GLASS, { quad: true, out: 0.075, glass: true }); }     sgY = Math.min(h - 1.1, 3.1); }
     else { fbox(B9, ff, 0, 0, 2.0, 2.7, 0.08, acc); fbox(B9, ff, 0, 0, 1.6, 2.55, 0.05, 0x4a3a30, { out: 0.08 }); fbox(B9, ff, 0, 0, 2.6, 0.3, 0.7, 0xcfc9bd, { out: 0.02 }); fbox(B9, ff, 0, 2.95, 2.8, 0.16, 1.1, acc, { top: acc }); sgY = Math.min(h - 1.1, 3.5); }
     const awn = V.front >= 2 ? (V.awn === 0 ? 3 : V.awn) : V.awn;
     if (V.front <= 1 && awn === 0) { const nA = Math.max(3, Math.floor(fw / 1.15)); for (let k = 0; k < nA; k++) fbox(B9, ff, -fw * 0.46 + (k + 0.5) * fw * 0.92 / nA, sh + 0.3, fw * 0.92 / nA, 0.55, 1.5, k % 2 ? 0xffffff : acc, { out: 0.65 * (V.front === 1 ? 1 : 0) + 0.05 }); }
@@ -3346,7 +3346,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
         const CL = [0xf08fb2, 0x7fb8d0, 0xf6f4ee, 0xf2c230, 0x3cc76a]; for (let k = 0; k < 4; k++) { const t = 0.18 + k * 0.21, px = a[0] + (b[0] - a[0]) * t, pz = a[2] + (b[2] - a[2]) * t, py = ga + (gb - ga) * t + 1.78; dbx(px, py - (k % 2 ? 0.62 : 0.5), pz, 0.46, k % 2 ? 0.62 : 0.5, 0.02, r9 + Math.PI / 2, CL[(h0 >>> 3 + k) % 5]); }
         const m = FP(B9, sf, 0, 0, 1.15); PCOL.push(col9(m[0], m[2], 1.5, 0.1, r9 + Math.PI / 2, Math.min(ga, gb) - 1, Math.max(ga, gb) + 1.85)); } }
     if ((reg === '산' || reg === '들') && h0 % 3 === 1) { const p = FP(B9, sf, -sf[2] * 0.28, 0, 1.0); if (free(p)) { const g9 = ty(p[0], p[2]); box(p[0], g9 - 0.2, p[2], 1.5, 0.45, 0.95, r9, 0xb5afa2); const Q = LP(p[0], p[2], r9); for (const [u, v, r, hh] of [[-0.45, 0.1, 0.25, 0.5], [0.15, 0.15, 0.22, 0.42], [0.5, -0.15, 0.17, 0.32]]) { const [jx, jz] = Q(u, v); cyl(jx, g9 + 0.25, jz, r, hh, 0x5a3a26, 10, { top: 0x4a2e1e }); } PCOL.push(col9(p[0], p[2], 0.75, 0.5, r9, g9 - 1, g9 + 0.8)); } }
-    if ((reg === '읍내' || reg === '시내') && h0 % 2 === 0) { const ff = frontF(B9); for (const u of [-1.35, 1.35]) { const p = FP(B9, ff, u, 0, 0.55); if (!free(p)) continue; const g9 = ty(p[0], p[2]); cyl(p[0], g9, p[2], 0.24, 0.38, 0xc8693a, 8, { top: 0x6b4a2f }); for (let j = 0; j < 3; j++) TREES.flower.push({ x: p[0] + Math.cos(j * 2.1) * 0.09, y: g9 + 0.36, z: p[2] + Math.sin(j * 2.1) * 0.09, s: 1.2, hex: PAL.flower[(h0 + j) % 4], ry: j }); PCOL.push(col9(p[0], p[2], 0.25, 0.25, 0, g9 - 1, g9 + 0.6)); } } }
+    if ((reg === '읍내' || reg === '시내') && h0 % 2 === 0) { const ff = frontF(B9); for (const u of [-1.35, 1.35]) { const p = FP(B9, ff, u, 0, 0.55); if (!free(p)) continue; const g9 = ty(p[0], p[2]); cyl(p[0], g9, p[2], 0.24, 0.38, 0xc8693a, 8, { top: 0x6b4a2f }); for (let j = 0; j < 3; j++) TREES.flower.push({ x: p[0] + Math.cos(j * 2.1) * 0.09, y: g9 + 0.36 + j * 0.008, z: p[2] + Math.sin(j * 2.1) * 0.09, s: 1.2, hex: PAL.flower[(h0 + j) % 4], ry: j }); PCOL.push(col9(p[0], p[2], 0.25, 0.25, 0, g9 - 1, g9 + 0.6)); } } }
 
   let HOMES = [];
   function homesData() { HOMES = []; for (const B9 of BLD) { if (B9.kind !== 'house' && B9.kind !== 'apt') continue; const reg = regionOf(B9.cx, B9.cz), R9 = rng0(hashS('hh:' + (B9.b.id || B9.cx.toFixed(1)))), fl = Math.max(1, Math.round(B9.h / 3.2)), hh = B9.kind === 'apt' ? fl * 4 : B9.h >= 9 || B9.w * B9.d > 150 ? fl * 2 : 1, rur = !!RURAL[reg];
@@ -3838,7 +3838,10 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     GRAPH = { nodes, adj };
   }
   const crossesSchool = (a, b) => { for (let t = 0.1; t < 1; t += 0.2) if (inSchool(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)) return true; return false; };
-  function snapRoadOK(x, z, toward) { const C = []; GRAPH.adj.forEach((e, i) => e.forEach(([j]) => { if (j < i) return; const r = segD(x, z, GRAPH.nodes[i], GRAPH.nodes[j]); C.push({ d: r[0], i, j, t: r[1], p: [r[2], r[3]] }); })); if (!C.length) return null; C.sort((a, b) => a.d - b.d);
+  var RMEMO = null;
+  function rmemo(k, f) { if (!RMEMO) return f(); let r = RMEMO.get(k); if (r === undefined) { r = f(); RMEMO.set(k, r); } return r; }
+  function snapRoadOK(x, z, toward) { return rmemo('s' + x + ',' + z + (toward ? 't' : 'f'), () => snapRoadOK0(x, z, toward)); }
+  function snapRoadOK0(x, z, toward) { const C = []; GRAPH.adj.forEach((e, i) => e.forEach(([j]) => { if (j < i) return; const r = segD(x, z, GRAPH.nodes[i], GRAPH.nodes[j]), d = r[0]; if (C.length === 8 && d >= C[7].d) return; let k = C.length; while (k > 0 && C[k - 1].d > d) k--; C.splice(k, 0, { d, i, j, t: r[1], p: [r[2], r[3]] }); if (C.length > 8) C.pop(); })); if (!C.length) return null;
     for (let k = 0; k < Math.min(8, C.length) && C[k].d < C[0].d + 60; k++) { const q = C[k]; if (q.d < 1 || (toward ? legOK(q.p, [x, z]) : legOK([x, z], q.p))) return q; } return C[0]; }
   function snapRoad(x, z) { let best = null; GRAPH.adj.forEach((e, i) => e.forEach(([j]) => { if (j < i) return; const r = segD(x, z, GRAPH.nodes[i], GRAPH.nodes[j]); if (!best || r[0] < best.d) best = { d: r[0], i, j, t: r[1], p: [r[2], r[3]] }; })); return best; }
 
@@ -3882,7 +3885,8 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
 
   function legOK(a, b) { try { const bk = map.q.blocked || map.q.blockedAt, L9 = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L9 / 0.5)); let y = map.q.groundAt(a[0], a[1], ty(a[0], a[1]) + 1.2);
       for (let k = 1; k <= n; k++) { const x = a[0] + (b[0] - a[0]) * k / n, z = a[1] + (b[1] - a[1]) * k / n; if (bk(x, z, y)) return false; const y2 = map.q.groundAt(x, z, y); if (y2 - y > 0.55) return false; y = y2; } return true; } catch (e) { return true; } }
-  function walkPts(a, b, rr = 1.6, mg = 30) { try { const bk = map.q.blocked || map.q.blockedAt, x0 = Math.min(a[0], b[0]) - mg, z0 = Math.min(a[1], b[1]) - mg, NXq = Math.ceil(Math.max(a[0], b[0]) + mg - x0) + 1, NZq = Math.ceil(Math.max(a[1], b[1]) + mg - z0) + 1, N9 = NXq * NZq; if (N9 > 160000) return null;
+  function walkPts(a, b, rr = 1.6, mg = 30) { return rmemo('w' + a[0] + ',' + a[1] + '>' + b[0] + ',' + b[1] + ':' + rr + ':' + mg, () => walkPts0(a, b, rr, mg)); }
+  function walkPts0(a, b, rr, mg) { try { const bk = map.q.blocked || map.q.blockedAt, x0 = Math.min(a[0], b[0]) - mg, z0 = Math.min(a[1], b[1]) - mg, NXq = Math.ceil(Math.max(a[0], b[0]) + mg - x0) + 1, NZq = Math.ceil(Math.max(a[1], b[1]) + mg - z0) + 1, N9 = NXq * NZq; if (N9 > 160000) return null;
       const Y = new Float32Array(N9).fill(NaN), PR = new Int32Array(N9).fill(-1), Q9 = new Int32Array(N9); let qh = 0, qt = 0, hit = -1; const s0 = Math.round(a[1] - z0) * NXq + Math.round(a[0] - x0); Y[s0] = map.q.groundAt(a[0], a[1], ty(a[0], a[1]) + 1.2); Q9[qt++] = s0;
       while (qh < qt) { const i = Q9[qh++], ix = i % NXq, iz = (i / NXq) | 0, x = x0 + ix, z = z0 + iz, y = Y[i]; if (Math.hypot(x - b[0], z - b[1]) < rr) { hit = i; break; }
         for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const jx = ix + dx, jz = iz + dz; if (jx < 0 || jz < 0 || jx >= NXq || jz >= NZq) continue; const j = jz * NXq + jx; if (Y[j] === Y[j]) continue; const x2 = x0 + jx, z2 = z0 + jz;
@@ -4374,8 +4378,8 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
 
   const HOME_G = [16.5, 58];
   const bldH = () => { let h = BLD.length | 0; for (const b of BLD) { h = (Math.imul(h, 31) + Math.round(b.cx * 100)) | 0; h = (Math.imul(h, 31) + Math.round(b.cz * 100)) | 0; h = (Math.imul(h, 31) + Math.round((b.w || 0) * 100)) | 0; const k = b.kind || '', c = (b.b && b.b.c) || ''; h = (Math.imul(h, 31) + k.length * 7 + (k.charCodeAt(0) | 0) + (c.charCodeAt(0) | 0) * 3 + c.length) | 0; } return (h >>> 0).toString(36); };
-  function walkMany(a, T, mg = 12) {
-    const xs = [a[0], ...T.map(t => t[0])], zs = [a[1], ...T.map(t => t[1])], x0 = Math.min(...xs) - mg, z0 = Math.min(...zs) - mg, NXq = Math.ceil(Math.max(...xs) + mg - x0) + 1, NZq = Math.ceil(Math.max(...zs) + mg - z0) + 1, N9 = NXq * NZq, out = T.map(() => -1);
+  function walkMany(a, T, mg = 12, Tb = T) {
+    const xs = [a[0], ...Tb.map(t => t[0])], zs = [a[1], ...Tb.map(t => t[1])], x0 = Math.min(...xs) - mg, z0 = Math.min(...zs) - mg, NXq = Math.ceil(Math.max(...xs) + mg - x0) + 1, NZq = Math.ceil(Math.max(...zs) + mg - z0) + 1, N9 = NXq * NZq, out = T.map(() => -1);
     if (N9 > 160000) return out.map(() => -2);
     const Y = new Float32Array(N9).fill(NaN), Dd = new Int32Array(N9), Q9 = new Int32Array(N9); let qh = 0, qt = 0, left = T.length; const s0 = Math.round(a[1] - z0) * NXq + Math.round(a[0] - x0); Y[s0] = map.q.groundAt(a[0], a[1], ty(a[0], a[1]) + 1.2); Q9[qt++] = s0;
     while (qh < qt && left > 0) { const i = Q9[qh++], ix = i % NXq, iz = (i / NXq) | 0, x = x0 + ix, z = z0 + iz, y = Y[i];
@@ -4393,15 +4397,15 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
   function homePick(force) { if (LOOK !== 'town' || window.SM_PROMO || dead) return null; const t0 = performance.now(), S9 = GAME.S, H = S9.home && typeof S9.home === 'object' ? S9.home : (S9.home = { v: 1, id: null, h: '', x: 0, z: 0, pots: [null, null], met: 0 }); if (!Array.isArray(H.pots)) H.pots = [null, null];
     const hh = bldH(); let B9 = null, info = null;
     if (!force && H.h === hh && H.id) B9 = BLD.find(b => b.b && b.b.id === H.id && Math.abs(b.cx - H.x) < 0.6 && Math.abs(b.cz - H.z) < 0.6) || null;
-    if (!B9 && (force || H.h !== hh || H.id)) { const G = HOME_G, hb = hubB9(), Hd = hb && hb.door, base = Hd ? route(G, Hd) : null, C = homeCands().slice(0, 8), R = [];
+    if (!B9 && (force || H.h !== hh || H.id)) { const G = HOME_G, hb = hubB9(), Hd = hb && hb.door, C = homeCands().slice(0, 8), R = []; RMEMO = new Map(); try { const base = Hd ? route(G, Hd) : null;
       for (const [, b] of C) { const rG = route(G, b.door); if (!rG.ok) continue; const rH = base && base.ok ? route(b.door, Hd) : null; let s = Math.abs(rG.len - 140) + 0.35 * (rH && rH.ok ? rG.len + rH.len - base.len : 0);
         if (rG.len < 110) s += (110 - rG.len) * 2; else if (rG.len > 250) s += (rG.len - 250) * 2;
         if (BUSST.some(p => Math.hypot(p[0] - b.door[0], p[1] - b.door[1]) < 25)) s -= 15;
         const gx = G[0] - b.door[0], gz = G[1] - b.door[1], gl = Math.hypot(gx, gz) || 1; if (b.fw && (b.fw[0] * gx + b.fw[1] * gz) / gl > 0.3) s -= 15;
-        R.push({ b, s, len: rG.len }); }
-      R.sort((p, q) => p.s - q.s); const tR = performance.now(), two = R.slice(0, 2), W = two.length ? walkMany(G, two.map(r => r.b.door)) : [], tW = performance.now();
-      const ok = two.map((r, i) => ({ ...r, walk: W[i] })).filter(r => r.walk === -2 || (r.walk > 0 && r.walk < r.len * 2.2 + 40));
-      const win = ok[0] || null; info = { cands: C.length, scored: R.length, msRoute: +(tR - t0).toFixed(1), msWalk: +(tW - tR).toFixed(1), two: two.map((r, i) => ({ id: r.b.b.id, s: Math.round(r.s), len: Math.round(r.len), walk: W[i] })) };
+        R.push({ b, s, len: rG.len }); } } finally { RMEMO = null; }
+      R.sort((p, q) => p.s - q.s); const tR = performance.now(), two = R.slice(0, 2), TD = two.map(r => r.b.door), W = [], wOK = (r, w) => w === -2 || (w > 0 && w < r.len * 2.2 + 40); let win = null;
+      for (let i = 0; i < two.length && !win; i++) { W[i] = walkMany(G, [TD[i]], 12, TD)[0]; if (wOK(two[i], W[i])) win = { ...two[i], walk: W[i] }; }
+      const tW = performance.now(); info = { cands: C.length, scored: R.length, msRoute: +(tR - t0).toFixed(1), msWalk: +(tW - tR).toFixed(1), two: two.map((r, i) => ({ id: r.b.b.id, s: Math.round(r.s), len: Math.round(r.len), walk: W[i] ?? null })) };
       if (win) { B9 = win.b; Object.assign(H, { id: B9.b.id, h: hh, x: +B9.cx.toFixed(2), z: +B9.cz.toFixed(2), len: Math.round(win.len), walk: win.walk }); }
       else Object.assign(H, { id: null, h: hh, x: 0, z: 0 }); GAME.mark(); }
     if (HOME && (HOME.B9 !== B9 || HOME.root !== ROOT)) homeDispose();
