@@ -31,6 +31,7 @@ export function newsMake(c) {
   if (Y && Y.sold > 0) add(one, 'sold', '🛒 어제 장터에서 물건을 ' + Y.sold + '개 팔았어요', '🛒 You sold ' + Y.sold + ' thing(s) at the market yesterday', { mine: 1 });
   if (Y && Y.shared > 0 && !c.gift) add(one, 'shared', '🍽 어제 이웃에게 요리를 ' + Y.shared + '번 나눠 줬어요', '🍽 You shared food with neighbours ' + Y.shared + ' time(s) yesterday', { mine: 1 });
 
+  for (const q of c.fx || []) if (q.two && q.top) add(two, 'fx:' + q.k + (q.k2 ? ':' + q.k2 : ''), q.t[0], q.t[1], { at: q.at || null, top: 1 });
   if (c.chain && c.chain.t) add(two, 'chain:' + c.chain.k, c.chain.t[0], c.chain.t[1], { at: c.chain.at || null, ck: { chain: c.chain.k } });
   if (c.jang && c.jang.on) add(two, 'jang', '🎪 오늘은 장날이에요. 장터 값이 더 좋아요', '🎪 Market day today — the market pays more', { at: c.jang.at || null, ck: { jang: 1 } });
   if (c.seaNext) add(two, 'sea', '📅 내일부터 ' + c.seaNext + josa(c.seaNext, '이에요', '예요'), '📅 ' + c.seaNext + ' starts tomorrow', { ck: { sea: 1 } });
@@ -39,10 +40,10 @@ export function newsMake(c) {
   if (c.twig) add(two, 'twig', '🍂 비 온 다음 날이라 숲에 마른 가지가 많아요', '🍂 After the rain there are lots of dry twigs in the woods', { ck: { twig: 1 } });
   if (c.wx && WXT[c.wx.nm]) add(two, 'wx', c.wx.ic + ' 오늘은 ' + WXT[c.wx.nm][0], c.wx.ic + ' Today is ' + WXT[c.wx.nm][1], { ck: { wx: c.wx.nm } });
   if (c.mush) add(two, 'mush', '🍄 숲의 버섯이 다시 자랐어요', '🍄 The mushrooms in the woods grew back', { ck: { mush: 1 } });
-  for (const q of c.fx || []) if (q.two) add(two, 'fx:' + q.k, q.t[0], q.t[1], { at: q.at || null });
+  for (const q of c.fx || []) if (q.two && !q.top) add(two, 'fx:' + q.k, q.t[0], q.t[1], { at: q.at || null });
   if (c.disc && c.disc.card) add(two, 'disc:' + c.disc.id, c.disc.card[0], c.disc.card[1], { at: c.disc.at || null, ck: { disc: c.disc.id } });
 
-  const fresh = L => last[L.k] !== d - 1 || (L.mine && prevT[L.k] !== L.t);
+  const fresh = L => L.top || last[L.k] !== d - 1 || (L.mine && prevT[L.k] !== L.t);
   const pick = A => A.find(fresh) || A[0] || null;
   const L1 = pick(one), L2 = pick(two.filter(L => !L1 || L.k !== L1.k)), lines = [];
   if (d <= 3) { const L = L1 || L2; if (L) lines.push(L); } else { if (L1) lines.push(L1); if (L2) lines.push(L2); if (!L1) { const L3 = pick(two.filter(L => L !== L2)); if (L3 && L3 !== L2) lines.push(L3); } }

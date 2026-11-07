@@ -98,7 +98,7 @@ export function createTips(A) {
     if (!seen('sleep') && A.night() && A.out()) want('sleep');
     if (!seen('help') && now - ST.t0 > (tch() ? 240000 : 150000) && (tch() || A.keysFold())) want('help');
     if (ST.n % 4 === 0) { if (A.out() && (A.roam() || A.bike()) && !A.busy()) { if (!seen('lost') && circ(me) && !A.route()) { want('lost'); circReset(); } } else circReset(); }
-    const busy = A.busy() || A.banner();
+    const busy = A.busy() || A.banner() || (tch() && document.body.classList.contains('small') && innerHeight > innerWidth && A.toastOn());
     if (busy) ST.lastBusy = now;
     if (ST.cur) { if (busy) hide(false); else if (now - ST.curAt > ST.curDur) hide(true); return; }
     if (busy || now - ST.lastBusy < 1500 || now - ST.t0 < 4000 || now - ST.lastHide < GAP) return;

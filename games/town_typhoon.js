@@ -257,7 +257,7 @@ export function createTyphoon(A) {
 
   function memSec() { const s = S(), m = me(), d = day(); for (const [key, o] of Object.entries(s.mem)) { if (!o || !o.at || key.startsWith('home:') || d - o.d > 3 || said['mem:' + key] === d) continue;     if (Math.hypot(o.at[0] - m.x, o.at[1] - m.z) > 9) continue; said['mem:' + key] = d;
       const t = o.k === 'thx' ? T2('태풍 때 도와줘서 고마워. 덕분에 멀쩡했어.', 'Thanks for helping before the typhoon. Everything was fine.') : o.k === 'both' ? T2('기울어진 건 아쉬웠지만, 같이 고쳐 줘서 고마워.', 'It was a shame it got damaged, but thanks for fixing it with me.') : T2('다음 태풍 땐 미리 같이 준비하자. 다친 사람이 없어서 다행이야.', 'Next time let’s get ready early together. Good thing no one was hurt.');
-      A.say('💬 ' + L(o.who) + ': "' + L(t) + '"', 4); break; } }
+      A.say('💬 ' + L(o.who) + ': "' + L(t) + '"', 4, 2); break; } }
 
   const safeAt = (x, z) => { const h = A.home(), hd = A.homeDoor ? A.homeDoor() : null, sh = S().shelter; return A.inSchool(x, z) || (h && Math.hypot(x - h[0], z - h[1]) < TY.door) || (hd && Math.hypot(x - hd[0], z - hd[1]) < TY.door) || (sh && Math.hypot(x - sh.at[0], z - sh.at[1]) < 8); };
   function goBack() { const s = S(), h = A.home(), to = LASTOK && safeAt(LASTOK[0], LASTOK[1]) ? LASTOK : h ? landNear(h[0], h[1], 3) || h : A.gate(), put = () => map.player.teleport([to[0], A.gy(to[0], to[1]) + 0.05, to[1]]);

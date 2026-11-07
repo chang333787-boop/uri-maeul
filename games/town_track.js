@@ -57,12 +57,12 @@ export function createTrack(A) {
   function set(k, by, o) { o = o || {}; const s = S(), was = s.k; s.k = k || null; s.by = by; s.pin = k && k.startsWith('pin:') ? pinSnap(REQ[k.slice(4)]) || (s.pin && s.pin.own === k.slice(4) ? s.pin : null) : null; gone = 0; endAt = 0; A.GAME.mark();
     if (was === k) return; DBG.set++; log('set', (was || '-') + '>' + (k || '-') + ' ' + by + (o.why ? ' ' + o.why : '')); LC = cands();
     if (!o.noDraw) redraw();
-    A.goalSync(); if (A.changed) A.changed(); if (!o.quiet && k) note(k); rowSig = ''; row(); }
+    A.goalSync(); if (A.changed) A.changed(); if (!o.quiet && k) note(k, by); rowSig = ''; row(); }
   function redraw() { const k = S().k, r = k ? reqOf(k) : null; if (r && !r.fail) A.draw(r); else if (A.drawnK() != null) A.draw(null); }
   const labOf = c => c.icon + ' ' + c.name;
   const cellT = c => { const n = A.cell(c.at[0], c.at[1]); return /^([가-힣]\d+|\d+[가-힣])$/.test(n) ? n + L(' 칸', '') : n; };
   const fmtC = (c, d) => (A.fmt ? A.fmt(c, d) : fmtM(d));
-  function note(k) { const c = LC.find(q => q.k === k) || cands().find(q => q.k === k); if (!c) return; const t = '🧭 ' + (en() ? 'Now guiding you to ' + labOf(c) : '이제 ' + labOf(c) + ro(c.name) + ' 안내해요'); DBG.notes.push(t); if (DBG.notes.length > 10) DBG.notes.shift(); A.say(t, 2.8); }
+  function note(k, by) { const c = LC.find(q => q.k === k) || cands().find(q => q.k === k); if (!c) return; const t = '🧭 ' + (en() ? 'Now guiding you to ' + labOf(c) : '이제 ' + labOf(c) + ro(c.name) + ' 안내해요'); DBG.notes.push(t); if (DBG.notes.length > 10) DBG.notes.shift(); A.say(t, 2.8, by === 'kid' ? 0 : 3); }
   function next(why) { const was = S().k, L9 = LC.filter(c => c.k !== was); const n = L9.find(c => c.src === 'story') || near(L9.filter(c => c.at && !c.self)) || L9[0] || null;
     DBG.ends++; log('end', (was || '-') + ' ' + (why || '')); set(n ? n.k : null, 'auto', { why: why || 'end', quiet: !n }); }
   function pick(k) { if (!k || dead) return false; LC = cands(); if (!LC.some(c => c.k === k)) return false; if (S().k === k) return true; set(k, 'kid', { why: 'pick' }); return true; }

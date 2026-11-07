@@ -22,9 +22,9 @@ import { createGame, ITEMS, itemName, DISHES, shopOf, won, RECIPES, CAL_LEN, SHO
 import { createStory, CHAPTERS, VEG, parkSim, parkSlot } from './town_story.js?v=41';
 import { attachLook, lookHTML, bindLook, setLook as setMyLook, getLook, lookColors } from '../js/look.js?v=1'; import { buildKid } from '../js/kid.js?v=5';
 import { startKeyText, stopKeyText } from '../js/keytext.js?v=1';
-import { createTips } from './town_tips.js?v=7';
-import { createTrack } from './town_track.js?v=2';
-import { createLineQ, readSec, infoOf } from './town_read.js?v=3';
+import { createTips } from './town_tips.js?v=8';
+import { createTrack } from './town_track.js?v=3';
+import { createLineQ, readSec, infoOf } from './town_read.js?v=4';
 import { createGo } from './town_go.js?v=4';
 import { createMap2, LAY as MLAY, rankPlaces, tierMax, createPlacer, placeLabels, drawArrow, meBoxes, createHeading, MAP2_CSS, ME_RED } from './town_map2.js?v=3';
 import { createFriends } from './town_friends.js?v=1';
@@ -46,10 +46,10 @@ import { createQuiz } from './town_quiz.js?v=14';
 import { createRec } from './town_rec.js?v=23'; import { teacherPin } from '../js/lobby.js?v=19';
 import { createTeach } from './town_teach.js?v=5';
 import { createBoatX } from './town_boat.js?v=6'; import { createPollen } from './town_pollen.js?v=1';
-import { createRes, wildOf } from './town_res.js?v=2'; import { createShore, SHORE as SHOREL, tideLvl, isLow, lowAt, lowsOf, hm as hm9 } from './town_shore.js?v=6'; import { createXp } from './town_xp.js?v=9';     import { newsMake, GIFT_OF, NB_RANK } from './town_news.js?v=13';
+import { createRes, wildOf } from './town_res.js?v=2'; import { createShore, SHORE as SHOREL, tideLvl, isLow, lowAt, lowsOf, hm as hm9 } from './town_shore.js?v=6'; import { createXp } from './town_xp.js?v=9';     import { newsMake, GIFT_OF, NB_RANK } from './town_news.js?v=14';
 import { createTreasure } from './town_treasure.js?v=9';
 import { planBusLines, makeBusLines, busPlan, busLeg } from './town_bus.js?v=1';
-import { createEmerg, EMSTY } from './town_emerg.js?v=16'; import { createWhy } from './town_why.js?v=1';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=7';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=13'; import { createDay } from './town_day.js?v=13'; import { createTyphoon } from './town_typhoon.js?v=10'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=7'; import { createAsk, wayLine } from './town_ask.js?v=2'; import { createStam } from './town_stam.js?v=4';
+import { createEmerg, EMSTY } from './town_emerg.js?v=16'; import { createWhy } from './town_why.js?v=1';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=7';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=13'; import { createDay } from './town_day.js?v=13'; import { createTyphoon } from './town_typhoon.js?v=11'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=7'; import { createAsk, wayLine } from './town_ask.js?v=2'; import { createStam } from './town_stam.js?v=4';
 import { createEnter, entOf } from './town_enter.js?v=3';
 import { createAcad } from './town_acad.js?v=6';
 import { createJanggu } from './town_janggu.js?v=4';
@@ -58,7 +58,7 @@ import { createNight } from './town_night.js?v=5';
 import { createChem } from './town_chem.js?v=13'; import { createCellKit } from './town_cellkit.js?v=6';     import { createTools, FRESH as FRESHF } from './town_tools.js?v=17'; import { createSpend } from './town_spend.js?v=1'; import { createCozy } from './town_cozy.js?v=3'; import { createBag } from './town_bag.js?v=9'; import { createBag3 } from './town_bag3.js?v=5';         import { createRoutine } from './town_routine.js?v=4';
 import { createWild, WILD as WILDL } from './town_wild.js?v=10'; import { createPath, stepsOf, PATHS, P_ORDER, nWord } from './town_path.js?v=15'; import { createBundle2 } from './town_bundle2.js?v=1'; import { createRegen } from './town_regen.js?v=5';         import { createOrient } from './town_orient.js?v=5';         import { createPress } from './town_photo.js?v=7'; import { createNb, DEED_TEV, fillT as nbFillT } from './town_nb.js?v=2';
 import { createAfter } from './town_after.js?v=2';
-import { createFeast } from './town_feast.js?v=7'; import { createSeason } from './town_season.js?v=6';
+import { createFeast } from './town_feast.js?v=8'; import { createSeason } from './town_season.js?v=6';
 import { simFill, supOf, demOf, mkK, lumpsOf, whyOf } from './town_market.js?v=1';
 import { createCue } from './town_cue.js?v=7'; import { createDisc } from './town_disc.js?v=2';
 import { createMusic } from './town_music.js?v=4'; import { createFeel } from './town_feel.js?v=4'; import { createEfx } from './town_efx.js?v=2';     import { createSurp } from './town_surp.js?v=6'; import { createSki } from './town_ski.js?v=2';
@@ -128,13 +128,14 @@ export default async function start(map, params) {
   const TOSQ = createLineQ({ cut: true, show: (t, s) => HUDT0(t, s), vis: () => hudVis9('toast'), protect: t => readSec(t) });
   map.hud.banner = (t, s, info) => { if (dead) return HUDB0(t, s); BANQ.put(t, s, info); return { remove() {} }; };
   map.hud.toast = (t, s) => { if (dead) return HUDT0(t, s); TOSQ.put(t, s); };
+  const readDrop = () => { BANQ.clear(); TOSQ.clear(); if (SAYN.h) { clearTimeout(SAYN.h); SAYN.h = 0; } SAYN.q = ''; SAYN.last = performance.now() + 2500; const e = document.getElementById('toast'); if (e) e.style.display = 'none'; };
   const readLeft = () => BANQ.left(), afterRead = (fn, ms) => { const t0 = Date.now(), go = () => { if (dead) return; const w = readLeft(); if (w > 0 && Date.now() - t0 < 12000) setTimeout(go, Math.min(700, w + 60)); else fn(); }; setTimeout(go, ms || 0); };
   const FEEL = createFeel({ map, T3, mute: () => !!SET.mute, calm: () => !!SET.calm, taskEl: () => taskEl, total: () => GAME.S.money || 0, won: v => won(v), panel: () => (panel ? 1 : 0) | (DLG ? 2 : 0) | (PLAY ? 4 : 0) | (RHY.busy ? 8 : 0) | (HERD.busy ? 16 : 0) | (BOAT.on ? 32 : 0) | (SKR.mode ? 64 : 0) | (LIE ? 128 : 0) | (topH ? 256 : 0) | (SLEEP9 ? 512 : 0) | (JOBS.active ? 1024 : 0) | (BUSR ? 2048 : 0) | (SUBX ? 4096 : 0) | ((RF && RF.on) ? 8192 : 0) });
 
   const SAYR = ['', '', '', '', '', '', '', ''], SAYT = new Float64Array(8), SAYN = { i: 0, last: 0, q: '', qs: 0, qt: 0, h: 0, n0: 0, n1: 0, n2: 0, drop: 0, over: 0, pn: 0 }, SAY2 = { q: [], h: 0, cur: null }, NTF0 = [];
   function sayBusy(now) { if (now - SAYN.last < 4000 || TOSQ.busy()) return true;     const e = document.getElementById('toast'); return !!(e && e.style.display !== 'none' && e.textContent && e.textContent !== SAYR[(SAYN.i + 7) & 7]); }
   function sayHold() { try { return !!(panel || TITLE9 || SLEEP9 || DLG); } catch (e) { return true; } }
-  function sayQ() { SAYN.h = 0; if (dead || !SAYN.q) return; const now = performance.now(); if (now - SAYN.qt > 6000 + TOSQ.left()) { SAYN.q = ''; SAYN.drop++; return; }     if (sayBusy(now) || SAY2.q.length || SAY2.cur) { SAYN.h = setTimeout(sayQ, 400); return; } const t = SAYN.q; SAYN.q = ''; sayPut(t, SAYN.qs, now); SAYN.n1++; }
+  function sayQ() { SAYN.h = 0; if (dead || !SAYN.q) return; const now = performance.now(), w9 = now - SAYN.qt; if (w9 > 20000) { SAYN.q = ''; SAYN.drop++; return; }     if (sayBusy(now) || SAY2.q.length || SAY2.cur) { if (w9 > 6000 && !TOSQ.busy()) { SAYN.q = ''; SAYN.drop++; return; } SAYN.h = setTimeout(sayQ, 400); return; } const t = SAYN.q; SAYN.q = ''; sayPut(t, SAYN.qs, now); SAYN.n1++; }
   function sayPut(t, sec, now) { SAYN.last = now; SAYN.pn++; SAYR[SAYN.i] = t; SAYT[SAYN.i] = now; SAYN.i = (SAYN.i + 1) & 7; map.hud.toast(t, sec); }
   function ntfL() { try { const S9 = GAME.S; if (!Array.isArray(S9.ntf)) S9.ntf = []; if (NTF0.length) S9.ntf.push(...NTF0.splice(0)); return S9.ntf; } catch (e) { return NTF0; } }
   function ntfMark() { try { GAME.mark(); } catch (e) {   } }
@@ -145,6 +146,7 @@ export default async function start(map, params) {
   function say(t, sec, lv, cb) { if (!t || dead) return; const now = performance.now();
     if (lv === 2) { if ((SAY2.cur && SAY2.cur.t === t) || SAY2.q.some(q => q.t === t)) return; for (let i = 0; i < 8; i++) if (SAYR[i] === t && now - SAYT[i] < 30000) return;
       const e = ntfAdd(t); if (SAY2.q.length >= 3) { SAY2.q.shift(); SAYN.over++; }     SAY2.q.push({ t, sec: Math.max(sec || 0, 3.5), cb, e }); say2Pump(); return; }
+    if (lv === 3) { if (SAYN.q) { SAYN.drop++; return; } lv = 1; }
     if (lv !== 1) { sayPut(t, sec, now); SAYN.n0++; return; }
     for (let i = 0; i < 8; i++) if (SAYR[i] === t && now - SAYT[i] < 30000) return;
     if (sayBusy(now) || SAY2.q.length || SAY2.cur) { if (SAYN.q) SAYN.drop++; SAYN.q = t; SAYN.qs = sec; SAYN.qt = now; if (!SAYN.h) SAYN.h = setTimeout(sayQ, 400); return; } sayPut(t, sec, now); SAYN.n1++; }
@@ -5075,7 +5077,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     else BUN2.rebuild();
     if (!FEAST) FEAST = createFeast({ map, T3, GAME, on: () => LOOK === 'town' && !window.SM_PROMO && !dead, ready: () => hudOn('tasks') || feastGo()  , lang: () => LANG, esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), panel: () => !!(panel || DLG),
       busy: () => !!(PLAY || topH || LIE || SLEEP9 || BUSR || SUBX || INB || (RF && RF.on) || JOBS.active || HERD.on || SKR.mode || (RD && RD.active) || (TYP && TYP.storm()) || (JG && JG.active)), storm: () => !!(TYP && TYP.storm()), stormNote: t9 => !!(TYP && TYP.note(t9)), say: (t9, s9, l9) => say(t9, s9, l9), sfx: k => map.sfx && map.sfx(k),
-      banner: (t9, s9) => map.hud.banner(t9, s9), chip: (k9, t9, o) => map.hud.chip(k9, t9, o), route: p => showRoute(p, 'feast'), dialog: o => dialog(o), rec: (k, o) => REC.add(k, o), buildParts: fn => INS.buildParts(fn), gy: (x, z) => map.q.groundAt(x, z, ty(x, z) + 2), collider: o => map.collider.add(o),
+      banner: (t9, s9, i9) => map.hud.banner(t9, s9, i9), chip: (k9, t9, o) => map.hud.chip(k9, t9, o), route: p => showRoute(p, 'feast'), dialog: o => dialog(o), rec: (k, o) => REC.add(k, o), buildParts: fn => INS.buildParts(fn), gy: (x, z) => map.q.groundAt(x, z, ty(x, z) + 2), collider: o => map.collider.add(o),
       storyOn: () => !(GAME.S.story && GAME.S.story.done && GAME.S.story.done.f1), home: () => { const f9 = GAME.S.story && GAME.S.story.fest, p9 = f9 && f9.site ? PLACES.find(q => q.name === f9.site) : null; return p9 ? (p9.door ? [p9.door[0], p9.door[1]] : [p9.x, p9.z]) : null; },
       season: d => GAME.seasonAt(d), take: e9 => { const ok9 = GAME.take(e9, 1); if (ok9) bagShow(); return ok9; }, bag: () => BAG, item: e9 => ITEMS[e9] || null, me: () => map.player.pos(), spots: () => pathSpots(), site: (x, z) => feastSite(x, z), regions: () => [...new Set(WKP.map(w => regionOf(w.x, w.z)).filter(Boolean))], gather: L9 => feastGather(L9), cheer: () => feastCheer(), bubbleW: (i, t9) => feastBubble(i, t9),
       lampLine: (fr, to, n) => lampSpots(n, to, fr), nightMkt: () => { try { const q9 = NGT && NGT.info().site; return q9 && q9.mkt ? q9.mkt : null; } catch (e9) { return null; } }, janggu: () => !!(JG && JG.open('learn')), busk: () => !!(JG && JG.canBusk() && JG.busk()), jgOn: () => !!(JG && JG.active), photo: lab => (window.SM_PROMO ? null : takePhoto({ tone: map.tone, en: LANG === 'en', toast: (m, t9) => say(m, t9), label: () => lab })),
@@ -5118,7 +5120,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
       learn: ids => { const L9 = GAME.S.learn || (GAME.S.learn = {}); for (const id9 of ids) if (!L9[id9]) L9[id9] = { d: GAME.S.day || 1, box: 1, ok: 0, ng: 0 }; GAME.mark(); }, comp: on => { CB9.force = !!on; CB9.q2 = 9; },
       guide: (to, info) => !!(showRoute({ icon: '📍', name: '', ...(info || {}), door: to }, 'orient') || {}).ok, guideOff: () => guideOff('orient'), big: () => openBig(), reguide: () => { if (routeNow && routeNow.chal && routeNow.to) showRoute(routeNow.to, routeNow.own, 'redraw'); } });
     else OR.rebuild();
-    if (!TYP) TYP = createTyphoon({ map, T3, GAME, story: () => !!(QST && QST.on), other: () => !!(WXE && WXE.on()),     on: () => LOOK === 'town' && !window.SM_PROMO && !dead, lang: () => LANG, esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), panel: () => !!panel, say: (t9, s9) => say(t9, s9), sfx: k => map.sfx && map.sfx(k),
+    if (!TYP) TYP = createTyphoon({ map, T3, GAME, story: () => !!(QST && QST.on), other: () => !!(WXE && WXE.on()),     on: () => LOOK === 'town' && !window.SM_PROMO && !dead, lang: () => LANG, esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), panel: () => !!panel, say: (t9, s9, l9) => say(t9, s9, l9), sfx: k => map.sfx && map.sfx(k),
       bubble: (o, t) => bubbleAt(o, t), busy: () => !!(PLAY || DLG || topH || LIE || SLEEP9 || BUSR || SUBX || (INB && INB.busy) || JOBS.active || HERD.on || (RF && RF.on) || (STAM && STAM.busyBody())), inb: () => !!INB, inSchool: (x, z) => inSchool(x, z),
       places: () => PLACES, shops: () => BLD.filter(B9 => B9.name && B9.door && shopOf(B9.name)).map(B9 => ({ name: B9.name, door: B9.door, c: [B9.cx, B9.cz] })), harb: () => boatHome(), workers: () => WKP, home: () => (HOME && HOME.B9 && HOME.B9.door ? homeSpot() || HOME.B9.door : null), gate: () => [16.5, 50],
       homeDoor: () => (HOME && HOME.B9 && HOME.B9.door ? [HOME.B9.door[0], HOME.B9.door[1]] : null), fade: fn => map.fade(0.9, '#1a2440', fn), table: g => { if (panel) closeP(); return !!TBL.open(g, { from: 'home', who: LANG === 'en' ? 'Family' : '가족' }); },
@@ -6842,7 +6844,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
   async function sleepNow(late, ask) { if (SLEEP9 || dead) return; SLEEP9 = true; JOBS.abort('sleep'); if (EMG) EMG.abort('sleep'); BAKE.abort(); TBL.abort(); HERD.stop('sleep'); RHY.stop('sleep'); const en = LANG === 'en'; if (PLAY) playEnd(true); if (panel) closeP(); if (BOAT.on) boatOff(true); map.player.freeze(true);
     const pre9 = ask && !late && !document.body.classList.contains('mp-in') ? await recapFirst() : false; if (dead) { SLEEP9 = false; return; } map.player.freeze(true);
     map.hud.banner(late ? (en ? '🌙 It’s very late… zzz' : '🌙 밤이 깊었어요… 쿨쿨') : (en ? '😴 Good night… zzz' : '😴 잘 자요… 쿨쿨'), 1.8); map.sfx && map.sfx('pop');
-    let sch9 = ''; await map.fade(1.8, '#0b1430', () => { GAME.sleep(); if (!BUSR && !SUBX && !document.body.classList.contains('mp-in')) sch9 = homeWake(); }); SLEEP9 = false; if (!dead && !panel && !PLAY) map.player.freeze(false); if (!dead && GAME.lastDay && !pre9) dayRecap(GAME.lastDay); if (sch9 && !dead) { let wk9 = 0; const wake9 = () => { if (dead) return; if (panel && ++wk9 < 150) { setTimeout(wake9, 400); return; } if (TYP && TYP.quiet()) return;     say(sch9 === 'school' ? (en ? '🏫 A new day starts at school — out the gate to the town' : '🏫 새 하루는 학교에서 시작해요. 정문으로 나가면 마을이에요') : sch9 === 'bed' ? (en ? '🏠 You woke up in our house — news is on the board by the door' : '🏠 우리 집에서 일어났어요. 문 앞 칠판에 오늘 소식이 있어요') : (en ? '🏠 Today’s news is on the board by our door — the school gate is just over there' : '🏠 문 앞 칠판에 오늘 소식이 있어요. 학교 정문은 바로 저기예요'), 3.4); }; setTimeout(wake9, 600); } }
+    let sch9 = ''; await map.fade(1.8, '#0b1430', () => { readDrop(); GAME.sleep(); if (!BUSR && !SUBX && !document.body.classList.contains('mp-in')) sch9 = homeWake(); }); SLEEP9 = false; if (!dead && !panel && !PLAY) map.player.freeze(false); if (!dead && GAME.lastDay && !pre9) dayRecap(GAME.lastDay); if (sch9 && !dead) { let wk9 = 0; const wake9 = () => { if (dead) return; if (panel && ++wk9 < 150) { setTimeout(wake9, 400); return; } if (TYP && TYP.quiet()) return;     say(sch9 === 'school' ? (en ? '🏫 A new day starts at school — out the gate to the town' : '🏫 새 하루는 학교에서 시작해요. 정문으로 나가면 마을이에요') : sch9 === 'bed' ? (en ? '🏠 You woke up in our house — news is on the board by the door' : '🏠 우리 집에서 일어났어요. 문 앞 칠판에 오늘 소식이 있어요') : (en ? '🏠 Today’s news is on the board by our door — the school gate is just over there' : '🏠 문 앞 칠판에 오늘 소식이 있어요. 학교 정문은 바로 저기예요'), 3.4); }; setTimeout(wake9, 600); } }
 
   const recapFirst = () => new Promise(res => { const P9 = dayRecap({ day: GAME.S.day, ...GAME.S.today }, true); if (!P9) { res(false); return; } const iv = setInterval(() => { if (dead || panel !== P9) { clearInterval(iv); res(true); } }, 200); });
   function dayRecap(T, pre) { let DW9 = ''; const en = LANG === 'en', got = Object.entries(T.got || {}).sort((a, b) => b[1] - a[1]), row = (ic, t, v) => '<div class="st"><b class="n">' + ic + '</b><span>' + t + '</span><b>' + v + '</b></div>';
@@ -7221,7 +7223,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     toastOn: () => { const e9 = document.getElementById('toast'); return !!(e9 && e9.style.display !== 'none' && e9.textContent); }, banner: () => { const e9 = document.getElementById('hudBan'); return !!(e9 && e9.style.display !== 'none' && e9.textContent); }, off: () => planMode,
     trkRow: () => !!(TRK && TRK.rowOn()) });
 
-  TRK = window.SM_PROMO ? null : createTrack({ GAME, en: () => LANG === 'en', esc: t => esc(t), say: (t, s9) => say(t, s9), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(),
+  TRK = window.SM_PROMO ? null : createTrack({ GAME, en: () => LANG === 'en', esc: t => esc(t), say: (t, s9, l9) => say(t, s9, l9), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(),
     busy: () => !!(panel || DLG || PLAY || SLEEP9 || TITLE9 || topH), hidden: () => !!(dead || LOOK !== 'town' || topH || TITLE9 || OPEN9 || INB || SUBX || BUSR || PHM.on || planMode || SLEEP9),
     me: () => map.player.pos(), cell: (x, z) => cellOf(x, z), touch: () => TCH(), cands: () => trkCands(), draw: r => trkDraw(r), drawnK: () => (routeNow ? routeNow.k || '' : null),
     changed: () => { if (!dead) taskShow(); }, canHeal: () => !!(!dead && LOOK === 'town' && !INB && !SUBX && !BUSR && !topH && !TITLE9 && !SLEEP9 && !(XP && XP.goalHi)), goalSync: () => trkGoalSync(),
@@ -7237,7 +7239,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     b9.disabled = false; b9.textContent = '▶ 마을로 나가기'; b9.onclick = () => closeP(); const o9 = lastOK();
     if (o9) { b9.className = 'sub'; b9.textContent = '▶ ' + (LANG === 'en' ? 'Start at school' : '학교에서 시작'); const b8 = document.createElement('button'); b8.dataset.a = 'res'; b8.textContent = '📍 ' + (LANG === 'en' ? 'Continue — ' : '이어 하기 — ') + lastName(o9); b8.onclick = () => { closeP(); lastGo(); }; b9.parentElement.appendChild(b8); b8.focus?.(); const sm9 = LD.el.querySelector('.bx > .sm'); if (sm9) sm9.textContent = LANG === 'en' ? 'Where do you want to start? You can continue where you left off.' : '어디서 시작할까요? — 지난번에 놀던 자리에서 이어 할 수도 있어요'; } else b9.focus?.(); }
   else { LD.el.classList.add('out'); setTimeout(() => LD.el.remove(), 350); map.player.freeze(false); }
-  map.hud.banner('🏘 ' + D.title, 2);
+  map.hud.banner('🏘 ' + D.title, 2, 'low');
 
   function readyHome() { if (DOORF9 >= 0) { DOORF9 = -1; homePick(); doorFix(); } }
   function startSpot() { const B9 = HOME && HOME.B9; if (B9) { const p = homeSpot(), fw = B9.fw || [0, 1]; return { at: p, look: [p[0] + fw[0] * 12, p[1] + fw[1] * 12], home: true }; }
@@ -7253,7 +7255,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     say(en ? '📋 A help note has arrived on our porch board. Go back and press ' + (TCH9 ? '✋' : 'E') + ' to read it — or look around first.' : '📋 우리 집 현관 칠판에 도움 쪽지가 왔어요. 둘러보다가 칠판 앞에서 ' + (TCH9 ? '✋ 행동을' : 'E를') + ' 누르면 읽을 수 있어요.', 5, 1);
     map.hud.chip('twn-open', en ? '📋 Porch board note' : '📋 칠판 쪽지', { onClick: () => showRoute({ icon: '📋', name: en ? 'porch board' : '현관 칠판', door: [bd[0], bd[2]], arrive: en ? '📋 Press E at the board' : '📋 칠판 앞에서 E' }) }); }
   function goFresh() { readyHome(); let sp = startSpot(); const en = LANG === 'en'; if (sp.home && HOME.board) { const [bx, , bz] = HOME.board, fw = HOME.fw || [0, 1], x = bx + fw[0] * 1.9, z = bz + fw[1] * 1.9; if (!wAt(x, z) && !map.q.blocked(x, z, ty(x, z) + 1)) sp = { at: [x, z], look: [bx, bz], home: true }; }     startTp(sp); GAME.S.open = { d: GAME.S.day, at: Date.now(), home: sp.home }; GAME.mark(); openArm(sp);
-    map.hud.banner(sp.home ? (en ? '🏠 First morning at our house' : '🏠 우리 집에서 맞는 첫 아침') : (en ? '🏘 First morning in town' : '🏘 마을에서 맞는 첫 아침'), 3.4); }
+    map.hud.banner(sp.home ? (en ? '🏠 First morning at our house' : '🏠 우리 집에서 맞는 첫 아침') : (en ? '🏘 First morning in town' : '🏘 마을에서 맞는 첫 아침'), 3.4, 'low'); }
   function goResume() { readyHome(); const o = lastOK(); if (o) lastGo(); else { const sp = startSpot(); startTp(sp); say('📍 ' + (LANG === 'en' ? 'Picking up where you left off — ' : '지난번에 이어서 해요 — ') + (sp.home ? (LANG === 'en' ? 'in front of our house' : '우리 집 앞이에요') : (LANG === 'en' ? 'outside the school gate' : '학교 정문 밖이에요')), 2.8); } openArm(startSpot()); }
 
   function slotInfo(k) { const key = slotKey(id, k), j = k === SLOT9 ? SAVE0 : readSave(key).j, en = LANG === 'en'; if (!j) { const o = oldSave(key); return { k, empty: true, old: o }; }

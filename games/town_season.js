@@ -1,4 +1,4 @@
-import { nightsW } from './town_feast.js?v=7';
+import { nightsW } from './town_feast.js?v=8';
 export const SEASON_V = 1;
 const T2 = (ko, en) => [ko, en];
 const FONT = '"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic","NanumGothic",sans-serif';

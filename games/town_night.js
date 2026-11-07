@@ -1,4 +1,4 @@
-import { readSec } from './town_read.js?v=3';
+import { readSec } from './town_read.js?v=4';
 export const NIGHT_V = 1;
 const T2 = (ko, en) => [ko, en];
 export const NHRS = { mkt: [1080, 1380], sea: [1170, 1440], fish: [1140, 1440], star: [1170, 1440], patrol: [1230, 1410], late: [1110, 1440], auction: [360, 510], bake: [360, 420] };
