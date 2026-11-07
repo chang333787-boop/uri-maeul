@@ -1,6 +1,6 @@
 export const PBOX_V = 1;
 const TOP = 56, BOT = 22, WMAX = 0.74, ZCAP = 1.9, ZMIN = 0.8, PCAP = 1.5;
-const GAME_P = new Set(['table', 'janggu', 'bake']);
+const GAME_P = new Set(['table', 'janggu', 'bake', 'ent3']);
 const CSS = `
 .twn-play{position:fixed;inset:0;z-index:46;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:${TOP}px 16px ${BOT - 6}px;background:rgba(18,22,34,.36);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif,SMEmoji}
 .twn-play .pb{box-sizing:border-box;position:relative;background:#fff8ea;border:4px solid #2b2420;border-radius:18px;padding:0 16px 14px;width:min(460px,92vw);box-shadow:0 7px 0 #2b2420,0 18px 34px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:8px;color:#2b2420;animation:twnIn .2s ease-out both;overflow:auto;overscroll-behavior:contain}

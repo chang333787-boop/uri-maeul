@@ -107,7 +107,7 @@ export const won = n => (n | 0).toLocaleString('ko-KR') + '원';
 export const itemName = (e, en) => { const I = ITEMS[e]; return I ? (en ? I[1] : I[0]) : e; };
 
 export const RW_XP = { night: 6, job: 6, bus: 3, book: 1, stars: 1, summit: 1, boat: 2, stones: 3, metro: 3, sell: 8, buy: 6, away: 4, bundle: 6, mush: 8, farm: 6, cook: 8, quiz: 2, cell: 1, bug: 2, wild: 2, shore: 2, fish: 2, worm: 2, sweep: 6, flower: 6, photo: 1, kit: 2, fix: 1, bldg: 1, ent: 1 };
-export const RW_XP_DEF = 3, RW_GEN = { night: 4, job: 6, bake: 2, photo: 1, table: 1, card: 2 }, RW_HEART = 3;
+export const RW_XP_DEF = 3, RW_GEN = { night: 4, job: 6, bake: 2, photo: 1, table: 1, card: 2, ent: 3 }, RW_HEART = 3;
 export const RW_DAY = { v: 20000, x: 48, h: 3 }, RW_RD = 3;
 export const rdNow = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
 const rwVal = e => { const I = ITEMS[e]; return !I ? 100 : I[2] === 'stamp' ? 0 : Math.max(100, I[3] || 0); };
