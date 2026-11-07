@@ -50,7 +50,7 @@ import { createRes, wildOf } from './town_res.js?v=2'; import { createShore, SHO
 import { createTreasure } from './town_treasure.js?v=9';
 import { planBusLines, makeBusLines, busPlan, busLeg } from './town_bus.js?v=1';
 import { createEmerg, EMSTY } from './town_emerg.js?v=17'; import { createWhy } from './town_why.js?v=2';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=8';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=16'; import { createDay } from './town_day.js?v=13'; import { createTyphoon } from './town_typhoon.js?v=11'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=9'; import { createAsk, wayLine } from './town_ask.js?v=2'; import { createStam } from './town_stam.js?v=5';
-import { createEnter, entOf } from './town_enter.js?v=5';
+import { createEnter, entOf } from './town_enter.js?v=6';
 import { createAcad } from './town_acad.js?v=6';
 import { createJanggu } from './town_janggu.js?v=4';
 import { createTower } from './town_tower.js?v=2';
