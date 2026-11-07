@@ -1,4 +1,4 @@
-import { GIFT_OF } from './town_news.js?v=11';
+import { GIFT_OF } from './town_news.js?v=13';
 import { inSeason, seaKey } from './town_bundle.js?v=3';
 import { ITEMS, itemName, won } from './town_game.js?v=51';
 import { DECO } from './town_cozy.js?v=3';
