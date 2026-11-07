@@ -191,7 +191,7 @@ export function createGame(id, opt) {
       rw(kind, src, n, k) { const a = rwCheck(S, kind, src, n, k); G.rwWhy = rwCheck.last; if (rwCheck.last) { dirty = true; if (rwCheck.last === 'rd' && S.rw.r && !S.rw.r.said[kind]) { S.rw.r.said[kind] = 1; emit('cap'); } } else if (a > 0 && n > 0) dirty = true; return a; },
     rwLeft(kind, src) { const R = S.rw, fam = String(src).split(':')[0], lim = kind === 'xp' ? (RW_XP[fam] != null ? RW_XP[fam] : RW_XP_DEF) : RW_GEN[fam]; if (lim == null || rwCheck.off) return 99; const c = R && R.d === S.day && R.c ? R.c[kind[0] + '|' + src] || 0 : 0; return lim - c; },
     rwOff(v) { rwCheck.off = !!v; },
-    lastN: 0, rwWhy: '', add(e, n = 1, src) { n = G.rw('bag', src, n, e); G.lastN = n; if (!(n > 0)) return false; S.bag[e] = (S.bag[e] || 0) + n; const neu = G.found(e); if (S.today) S.today.got[e] = (S.today.got[e] || 0) + n; dirty = true; return neu; },
+    lastN: 0, rwWhy: '', onAdd: null, add(e, n = 1, src) { n = G.rw('bag', src, n, e); G.lastN = n; if (!(n > 0)) return false; S.bag[e] = (S.bag[e] || 0) + n; const neu = G.found(e); if (S.today) S.today.got[e] = (S.today.got[e] || 0) + n; dirty = true; if (G.onAdd) { try { G.onAdd(e, n, src); } catch (er) { console.warn('[가방] onAdd', er); } } return neu; },
 
     stamp9: null, found(k) { if (S.dex[k] != null) return false; S.dex[k] = G.stamp9 ? G.stamp9() : S.day; if (S.today) S.today.dex++; dirty = true; return true; },
     take(e, n = 1) { if ((S.bag[e] || 0) < n) return false; S.bag[e] -= n; if (S.bag[e] <= 0) delete S.bag[e]; const B8 = S.bought; if (B8 && B8[e]) { const r = Math.max(0, Math.min(B8[e] - n, S.bag[e] || 0)); if (r) B8[e] = r; else delete B8[e]; } dirty = true; return true; },
