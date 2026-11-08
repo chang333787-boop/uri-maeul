@@ -145,7 +145,7 @@ export function createHerd(o) {
 
   const near = (x, z) => { let best = null, bd = 60; for (const HP of PS) { if (!HP.sh.length || !HP.PM) continue; const d = Math.hypot(x - HP.x, z - HP.z) - Math.hypot(HP.W, HP.D) / 2; if (d < bd) { bd = d; best = HP; } } return best; };
   const can = w => !!(w && near(w.x, w.z));
-  function start(w, force) { if (H) { if (!H.done) stop('quit'); return true; } const HP = near(w.x, w.z), bz = force ? '' : o.busy(); if (!HP || bz) { LW = 'no:' + (bz || 'far'); return false; } const en = o.en(), sv = SV(), st = !!o.stWork(w), pr = !st && o.limit(w), F = HP.F, n = F.n;
+  function start(w, force) { if (H) return true;     const HP = near(w.x, w.z), bz = force ? '' : o.busy(); if (!HP || bz) { LW = 'no:' + (bz || 'far'); return false; } const en = o.en(), sv = SV(), st = !!o.stWork(w), pr = !st && o.limit(w), F = HP.F, n = F.n;
     const lv = force && force.lv ? force.lv : st ? 1 : sv.lv, cond = force && force.cond != null ? force.cond : st || sv.n < 3 ? '' : HP.amb === 'eave' ? 'rain' : o.phase() === 'sunset' ? 'dusk' : '';
     if (HP.amb === 'pen' && !force) { if (st) { release(HP); o.bubble(w, tx('rel', en)); } else o.bubble(w, tx('rest', en)); return true; }
     if (HP.amb === 'pen') sv.pen = 0;

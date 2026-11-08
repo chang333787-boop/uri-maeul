@@ -1,6 +1,6 @@
 import { CROPS, plotState } from './town_farm.js?v=3';
-import { lowsOf } from './town_shore.js?v=6';
-import { SKILLS, SK_ORDER, levelOf } from './town_skill.js?v=5';
+import { lowsOf } from './town_shore.js?v=9';
+import { SKILLS, SK_ORDER, levelOf } from './town_skill.js?v=8';
 export const DAY_V = 1;
 const T2 = (ko, en) => [ko, en];
 const jo = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return w + (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? a : b); };

@@ -177,7 +177,7 @@ export function jobSvg(key, f, k = 0) { const J = JOBS[key]; if (!J) return ''; 
 
 export const jobRow = (name, keys) => { let h = 7; for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return keys.map((k, i) => ({ k, f: (h + i) % 2 === 0, skin: (h + i) % 3 })); };
 
-export { PHOTOS, PHOTO_OF, photoKey, photoHtml, PHOTO_CSS } from './town_photos.js?v=2';
+export { PHOTOS, PHOTO_OF, photoKey, photoHtml, PHOTO_CSS } from './town_photos.js?v=5';
 
 export const LIB_CATS = [
   ['300', '사회과학', 'Social science', '#ef8b33', T2('사회·경제·교육·풍습', 'Society, money, school, customs')],

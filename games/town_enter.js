@@ -1,4 +1,4 @@
-import { CONTENT, MENU, HJOB, JOBKEY, HFIND, HEV, PCARDS, PC_WHERE, HMEM, HKNAME, homePlan, homeSpec, createPlay } from './town_enter2.js?v=2';
+import { CONTENT, MENU, HJOB, JOBKEY, HFIND, HEV, PCARDS, PC_WHERE, HMEM, HKNAME, homePlan, homeSpec, createPlay } from './town_enter2.js?v=5';
 export const ENT_V = 1;
 const T2 = (ko, en) => [ko, en];
 const hashS = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
@@ -425,7 +425,7 @@ export function createEnter(A) {
     return { S: S9, W, D, H, seats, extra: ex, cam: { d: 4.2, p: 0.6 }, spz: 3.0, show: [], owner: [ox - 2.8, oy, oz - hd + 1.3], items: ['이웃 부탁 게시판', '긴 탁자 둘 · 의자', '이웃(이름 없음)'] }; }
 
   const REGPAL = { 바다: [[0xeef5f8, 0xf4f7f2, 0xe8f0f6], [0x2f6f9a, 0x3a8ab0, 0x2a5a7a], [0xe8dcc8, 0xdcd0bc, 0xe2d6c0]], 들: [[0xf7f0dc, 0xf5ecd2, 0xf2ead8], [0xa2741e, 0x8a6a2a, 0x6b8a3a], [0xe8d2a0, 0xe0c890, 0xead8b0]], 산: [[0xf0ece0, 0xe9efe4, 0xf2eadc], [0x4e7a3a, 0x6b4a2f, 0x3f6a4a], [0xc8a070, 0xb8905e, 0xd0aa7a]], 강: [[0xeef6f2, 0xf2f6ee, 0xe8f2ee], [0x2f8f8a, 0x3a7a6a, 0x2a6a7a], [0xe0d4bc, 0xd8ccb4, 0xe6dac2]], 시내: [[0xf6efe2, 0xf2f4ee, 0xf7ecef], [0x8a5a34, 0x5a6b7a, 0x9a5a6a], [0xe8d2b0, 0xf0dcc0, 0xdcc4a0]] };
-  const FINDSP = (hw, hd) => [[[-0.3, 0.02, 1.25], [-0.3, 0, 1.95], '거실 깔개 곁'], [[2.75, 0.755, -0.18], [2.75, 0, 0.55], '부엌 식탁 위'], [[0.3, 0.02, -hd + 0.5], [0.3, 0, -hd + 1.25], '창가 바닥'], [[hw - 1.0, 0.02, hd - 0.95], [hw - 1.7, 0, hd - 1.25], '현관 쪽 화분 곁'], [[hw - 0.35, 0.765, 0.95], [hw - 1.15, 0, 0.95], '일 도구 놓는 곳']];
+  const FINDSP = (hw, hd) => [[[-0.3, 0.02, 1.25], [-0.3, 0, 1.95], '거실 깔개 옆'], [[2.75, 0.755, -0.18], [2.75, 0, 0.55], '부엌 식탁 위'], [[0.3, 0.02, -hd + 0.5], [0.3, 0, -hd + 1.25], '창가 바닥'], [[hw - 1.0, 0.02, hd - 0.95], [hw - 1.7, 0, hd - 1.25], '현관 쪽 화분 옆'], [[hw - 0.35, 0.765, 0.95], [hw - 1.15, 0, 0.95], '일 도구 놓는 곳']];
   function jobCorner(S9, K, E, jk, hw) { const P = S9.put, x = hw - 0.35, y = 0.76, R = -Math.PI / 2;
     P('b', x, 0, 1.6, 0.6, 0.72, 1.6, W0); P('b', x, 0.72, 1.6, 0.64, 0.04, 1.64, WD); P('b', x - 0.306, 0.1, 1.6, 0.012, 0.5, 1.5, 0xb8905e); K.colL(S9, x, 1.6, 0.32, 0.82, -0.5, 0.8);
     switch (jk) {

@@ -18,7 +18,7 @@ const keys = o => (o && typeof o === 'object' && !Array.isArray(o) ? Object.keys
 const NK = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두', '열세', '열네', '열다섯', '열여섯', '열일곱', '열여덟', '열아홉', '스무'];
 const NE = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
 
-export const nightsW = (n, en) => (n <= 0 ? (en ? 'today' : '오늘') : en ? (NE[n] || 'many') + (n === 1 ? ' night' : ' nights') : (NK[n] || '스무 넘는') + ' 밤');
+export const nightsW = (n, en) => (n <= 0 ? (en ? 'today' : '오늘') : en ? (NE[n] || 'many') + (n === 1 ? ' night' : ' nights') : (NK[n] ? NK[n] + ' 밤' : '스무 밤 넘게'));
 
 export const THEMES = {
   flower: { t: T2('꽃 잔치', 'Flower feast'), dish: [0xe48aa6, 0xf2c230, 0x9bc46a], fact: T2('봄에는 산에 핀 진달래꽃으로 화전을 부쳐 먹으며 꽃구경을 했어요. 이것을 화전놀이라고 해요.', 'In spring people fried azalea-petal pancakes (hwajeon) and went flower viewing. This is called hwajeon-nori.') },
@@ -283,7 +283,7 @@ export function createFeast(A) {
     return (s.n > 0 ? '🎉 ' : '') + out.join(' '); }
 
   function storyLine() { const s = S(), e = en(), Q = G().story || {}, F = Q.fest || {}, n = left(), when = isDay() ? (e ? 'It is today.' : '오늘이 그날이에요.') : (e ? nightsW(n, 1).replace(/^./, c => c.toUpperCase()) + ' to go.' : nightsW(n) + ' 남았어요.');
-    const D = Q.done || {}; if (s.n === 0) return '📜 ' + (e ? 'The feast the prologue note asked helpers for is this one. ' + (D.f1 ? '' : 'Finishing Act 4 of the story moves it to the next day. ') : '프롤로그 쪽지가 도우미를 찾던 그 첫 잔치가 바로 이 잔치예요. ' + (D.f1 ? '' : '이야기 4막을 마치면 그다음 날로 당겨져요. ')) + when;
+    const D = Q.done || {}; if (s.n === 0) return '📜 ' + (e ? 'The feast the first note asked helpers for is this one. ' + (D.f1 ? '' : 'Help the story to the end and the feast day is set. ') : '첫 쪽지가 도우미를 찾던 그 첫 잔치가 바로 이 잔치예요. ' + (D.f1 ? '' : '이야기를 끝까지 도우면 잔치 날이 정해져요. ')) + when;
     const fin = F.site && !D.f1 ? (e ? ' The story finale uses the next feast, at ' + F.site + '.' : ' 이야기 마지막 장은 ' + F.site + '에서 여는 다음 잔치를 써요.') : '';
     return '📜 ' + (e ? 'After the first feast, a town feast comes back every two weeks. ' : '첫 잔치 뒤로 두 이레마다 돌아오는 마을 잔치예요. ') + when + fin; }
 

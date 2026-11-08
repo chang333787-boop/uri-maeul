@@ -1,5 +1,5 @@
 export const CK_V = 1;
-import { seaLinesOf } from './town_sea4.js?v=2';
+import { seaLinesOf } from './town_sea4.js?v=5';
 const HG = '가나다라마바사아자차카타파하';
 export const FAMS = ['생', '손', '사'];
 export const SEAS = ['spring', 'summer', 'autumn', 'winter'];

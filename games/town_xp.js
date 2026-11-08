@@ -1,4 +1,4 @@
-import { tideLvl, lowAt, lowsOf, LOW_W, TIDE_P, hm, shoreAt, drawShore } from './town_shore.js?v=6';
+import { tideLvl, lowAt, lowsOf, LOW_W, TIDE_P, hm, shoreAt, drawShore } from './town_shore.js?v=9';
 export const XP_V = 1;
 const T2 = (a, b) => [a, b];
 

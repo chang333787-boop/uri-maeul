@@ -6,9 +6,9 @@ export const RWT = {
   work: {
     2: I('gloves', '🧤', 'gear', T2('목장갑', 'Work gloves'), T2('밧줄·쇠사슬 바위를 더 빨리 오르고 손이 덜 지쳐요', 'Climb rope and chain rocks faster, and your hands tire less'), { go: 'spot:climb' }),
     3: I('h:straw', '👒', 'hat', T2('밀짚모자', 'Straw hat'), T2('햇볕을 가려 주는 일꾼 모자예요', 'A worker’s hat that keeps the sun off'), { go: 'wear' }),
-    4: I('n:work', '🏷', 'nick', T2('이웃이 부르는 이름 「든든한 일손」', 'Neighbours call you “Reliable Hands”'), T2('일꾼 이웃 곁에 가면 알아보고 말을 걸어요', 'Worker neighbours recognise you and say something when you come close'), { go: 'spot:worker' }),
+    4: I('n:work', '🏷', 'nick', T2('이웃이 부르는 이름 「든든한 일손」', 'Neighbours call you “Reliable Hands”'), T2('일꾼 이웃 옆에 가면 알아보고 말을 걸어요', 'Worker neighbours recognise you and say something when you come close'), { go: 'spot:worker' }),
     5: { pick: [I('b:work', '🚲', 'bike', T2('자전거 밀짚색', 'Straw bike'), T2('자전거 뼈대를 밀짚색으로 칠해요', 'Paint your bike frame straw yellow'), { go: 'ride' }), I('g:work', '🎒', 'bag', T2('가방 밀짚색', 'Straw backpack'), T2('메고 다니는 가방이 밀짚색이 돼요', 'Your backpack turns straw yellow'), { go: 'wear' })] },
-    6: I('broom2', '🧹', 'gear', T2('넓은 빗자루', 'Wide broom'), T2('한 번 쓸 때 곁(3m)에 있는 낙엽·눈·쓰레기까지 같이 쓸려요', 'One sweep also clears leaves, snow or litter within 3 m'), { go: 'hold:broom' }),
+    6: I('broom2', '🧹', 'gear', T2('넓은 빗자루', 'Wide broom'), T2('한 번 쓸 때 옆(3m)에 있는 낙엽·눈·쓰레기까지 같이 쓸려요', 'One sweep also clears leaves, snow or litter within 3 m'), { go: 'hold:broom' }),
     7: I('f:work', '🚩', 'flag', T2('자전거 깃발 🌾', 'Bike flag 🌾'), T2('자전거 뒤에 일솜씨 깃발을 달아요', 'A helping-hands flag on the back of your bike'), { go: 'ride' }),
     8: I('d:🌻', '🌻', 'deco', T2('해바라기 화분', 'Sunflower pot'), T2('가방에 넣었어요. 우리 집 마당 자리에 놓아 보세요', 'It is in your bag. Put it in your yard'), { e: '🌻', go: 'spot:home' }),
     9: I('s:work', '🧣', 'scarf', T2('목수건 밀짚색', 'Straw neckerchief'), T2('땀을 닦는 일꾼 목수건이에요', 'A worker’s neckerchief for wiping sweat'), { go: 'wear' }),
@@ -148,7 +148,7 @@ export function createReward(A) {
     return { hat: pick('hat', 'h:'), scarf: pick('scarf', 's:'), bag: pick('bag', 'g:'), boots: has('boots') ? info('boots') : has('hike') ? info('hike') : null, lamp: has('lamp') && !r.lampOff, sig: [r.hat, r.scarf, r.bag, has('lamp') && !r.lampOff ? 1 : 0].join('|') }; }
   function effects() { const e = en(), r = S(), E = [], add = (id, ic, ko, en9) => { if (has(id)) E.push({ id, ic, t: e ? en9 : ko }); };
     add('gloves', '🧤', '오르기 +35% · 덜 지침', 'Climbing +35%, tire less'); add('hike', '🥾', '오르막 달리기 숨 ½', 'Uphill running breath ½'); add('flask', '🥤', '숨 돌아옴 1.5배', 'Breath back ×1.5'); add('lunch', '🍱', '먹은 힘 1.5배 오래', 'Food energy lasts ×1.5');
-    add('boots', '🥾', '갯벌·논에서 안 느려짐', 'No slowdown in mud or paddies'); add('tank', '💧', '물뿌리개 물 2배', 'Watering can ×2'); add('rod2', '🎣', '낚싯대 14m까지', 'Cast up to 14 m'); add('broom2', '🧹', '빗자루 곁 3m까지', 'Broom clears 3 m around');
+    add('boots', '🥾', '갯벌·논에서 안 느려짐', 'No slowdown in mud or paddies'); add('tank', '💧', '물뿌리개 물 2배', 'Watering can ×2'); add('rod2', '🎣', '낚싯대 14m까지', 'Cast up to 14 m'); add('broom2', '🧹', '빗자루 옆 3m까지', 'Broom clears 3 m around');
     if (has('lamp') && !r.lampOff) E.push({ id: 'lamp', ic: '🔦', t: e ? 'Head lamp at night' : '밤에 이마 전등' }); add('book', '📒', '장터마다 값 방위', 'Which market pays more'); if (has('stall')) E.push({ id: 'stall', ic: '🧺', t: e ? 'Market mat: ' + stMax() + ' spaces' : '좌판 ' + stMax() + '칸' });
     return E; }
   function bagClick(b) { if (A.promo()) return false; const d = b.dataset, r = S();
@@ -188,6 +188,16 @@ export function createReward(A) {
       if (!it) return; const o = l9 === RW_MAX ? otherOf(k) : null; if (R9.pick) { A.say(it.ic + ' ' + (e ? L(it.t) + ' — got it' : L(it.t) + ' — 받았어요') + (WEARK.includes(it.kind) || it.kind === 'gear' ? inBag(it.kind) : ''), 2.8); return; }
       if (W) { if (a === 'y') { putOn(W.kind, W.id.slice(2)); A.say(W.ic + ' ' + (e ? L(W.t) + ' — on now. Change it in the 👕 Clothes tab of your bag' : L(W.t) + ' — 지금 써요. 가방 👕 옷·꾸미기 탭에서 바꿀 수 있어요'), 2.8); } else A.say(W.ic + ' ' + (e ? L(W.t) + ' — in the 👕 Clothes tab of your bag' : L(W.t) + ' — 가방 👕 옷·꾸미기 탭에 넣었어요'), 2.6); return; }
       if (a === 'y') go(o || it); else A.say(it.ic + ' ' + (e ? L(it.t) + ' — got it' : L(it.t) + ' — 받았어요') + (['gear', 'nick', 'badge'].includes(it.kind) ? inBag(it.kind) : ''), 2.6); }; }
+
+  const VERB = { hat: ['썼어요', 'on now'], scarf: ['둘렀어요', 'on now'], bag: ['바꿔 멨어요', 'on now'], bike: ['칠했어요', 'painted on'], flag: ['자전거에 달았어요', 'on your bike'] }, FOOT = { hike: 1, boots: 1 };
+  const jo9 = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 ? a : b; };
+  function autoLine(it, on) { const e = en(), t = L(it.t), tb = it.kind === 'deco' ? ['물건', 'Items'] : it.kind === 'place' ? null : TABN[tabOf(it.kind)].map(x => x.replace(/^\S+\s/, '')), tail = tb ? ' (' + (e ? 'bag · ' + tb[1] : '가방 · ' + tb[0]) + ')' : '';
+    if (e) return it.ic + ' ' + t + ' — ' + (on && VERB[it.kind] ? VERB[it.kind][1] : 'got it') + tail;
+    if (it.kind === 'nick' || it.kind === 'place') return it.ic + ' ' + t + tail;
+    const v = on && VERB[it.kind] ? VERB[it.kind][0] : FOOT[it.id] ? '신었어요' : it.kind === 'recipe' ? '배웠어요' : '받았어요'; return it.ic + ' ' + t + jo9(t, '을', '를') + ' ' + v + tail; }
+  function autoTake(k9) { if (dead || A.promo()) return []; const out = []; for (const [k, l9] of pending()) { if (k9 && k !== k9) continue; const R9 = RWT[k][l9]; if (!R9 || R9.pick) continue; const P5 = RWT[k][RW_PICK]; if (l9 === RW_MAX && P5 && P5.pick && S().pick[k + ':' + RW_PICK] == null) continue;
+      const it = take(k, l9, false); if (!it) continue; let on = false; if (WEARK.includes(it.kind) && !curOf(it.kind)) { putOn(it.kind, it.id.slice(2)); on = true; } const o = l9 === RW_MAX ? otherOf(k) : null; if (o && WEARK.includes(o.kind) && !curOf(o.kind)) putOn(o.kind, o.id.slice(2)); out.push({ k, l: l9, id: it.id, on, line: autoLine(it, on) }); }
+    if (out.length) chip(); return out; }
   function goName(it) { const e = en(), g = (it.go || '').split(':')[0]; return g === 'hold' ? '🧰 ' + (e ? 'Hold it now' : '바로 들기') : g === 'ride' ? '🚲 ' + (e ? 'Ride and see (B)' : '타 보기(B)') : g === 'bag' ? '🎒 ' + (e ? 'Open the bag' : '가방 열어 보기') : g === 'spot' ? '🧭 ' + (e ? 'Go try it' : '써 보러 가기') : g === 'night' ? '🔦 ' + (e ? 'Got it' : '알겠어요') : '👀 ' + (e ? 'Put it on' : '해 보기'); }
 
   function next(k) { const lv9 = SK().lv(k); for (let l9 = Math.max(2, lv9 + 1); l9 <= RW_MAX; l9++) { const R9 = RWT[k][l9]; if (!R9) continue; const t = R9.pick ? R9.pick.map(q => q.ic + ' ' + L(q.t)).join(en() ? ' or ' : ' 또는 ') : R9.ic + ' ' + L(R9.t); return '<br><small>🎁 ' + l9 + (en() ? ': ' : '레벨 — ') + esc(t) + '</small>'; } return ''; }
@@ -276,10 +286,10 @@ export function createReward(A) {
 
   function tick(dt) { if (dead || A.promo() || !A.on()) return; if ((q4 += dt) >= 0.25) { q4 = 0; mudTick(); } if (SC.on && (SC.q -= dt) <= 0) { SC.q = 0.3; scopeTick(); }
     if ((q1 += dt) >= 1) { q1 = 0; if (RIG !== rig()) wear(); lampSync(); nickTick(); stPay(); } }
-  function init() { if (A.promo()) return; OWN = null; wear(); bagPaint(); matDraw(); chip(); }
+  function init() { if (A.promo()) return; OWN = null; wear(); bagPaint(); matDraw(); const g0 = autoTake(); if (g0.length) A.say('🎁 ' + (en() ? 'Rewards you had not taken are now yours: ' : '받지 않았던 보상을 챙겼어요: ') + g0.map(q => q.line.split(' (')[0]).join(', '), 5, 2); chip(); }
   function dispose() { dead = true; if (SC.on) scope(false); if (SC.el) SC.el.remove(); SC.el = null; if (HAT && HAT.parent) HAT.parent.remove(HAT); if (SCF && SCF.parent) SCF.parent.remove(SCF); if (LAMP && LAMP.parent) LAMP.parent.remove(LAMP); HAT = SCF = LAMP = null;
     if (CAPI && CAPP) capPaint(null); if (BAGI) { const C = BAGI.m.geometry.attributes.color; _c.set(0xe45c46); for (const i of BAGI.I[0]) C.setXYZ(i, _c.r, _c.g, _c.b); _c.set(0xc44a37); for (const i of BAGI.I[1]) C.setXYZ(i, _c.r, _c.g, _c.b); C.needsUpdate = true; } if (MAT) { map.remove(MAT); MAT = null; }
     for (const g of GEOS) g.dispose(); for (const m of MATS) m.dispose(); if (G9) for (const k in G9) G9[k].dispose(); GEOS.length = 0; MATS.length = 0; G9 = null; KMAT = null; }
   const API = { pending: () => pending().map(q => q.slice()), own: () => [...own()], has, take: (k, l9, p) => take(k, l9, p), go: it => go(it), item: (k, l9) => itemOf(k, l9), state: () => JSON.parse(JSON.stringify(S())), walkK, mud: () => MUDN, scope: () => ({ on: SC.on, text: SC.el ? SC.el.textContent : '' }), lamp: () => !!(LAMP && LAMP.visible && LAMP.children.some(o => o.userData.beam && o.visible)), hat: () => (HAT ? HAT.userData.k : ''), stall: () => S().st, stPay: () => { const st = S().st; if (st) st.d = -1; stPay(); }, wardrobe: () => wardrobe(), bagParts: () => bagParts(), wearNow: () => wearNow(), effects: () => effects(), scarf: () => (SCF ? SCF.userData.k : ''), bag: () => S().bag || '', spot: k => A.spot(k), soft: (x, z) => A.soft(x, z), open: () => open() };
-  return { init, tick, dispose, chip, open, has, walkK, next, wardrobeBtn, wardrobe, bagParts, wearNow, effects, info, bagClick, marketHtml, marketClick, bestLine, seeds, scope, pending, api: API };
+  return { init, tick, dispose, chip, open, autoTake, has, walkK, next, wardrobeBtn, wardrobe, bagParts, wearNow, effects, info, bagClick, marketHtml, marketClick, bestLine, seeds, scope, pending, api: API };
 }

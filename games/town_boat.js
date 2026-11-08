@@ -1,5 +1,5 @@
 export const BOAT_V = 1;
-import { lowAt, TIDE_P } from './town_shore.js?v=6';
+import { lowAt, TIDE_P } from './town_shore.js?v=9';
 const CUR_MAX = 2.6, ARM_MAX = 6, HARD = 3;
 const DIR8 = [['북', 'north'], ['북동', 'northeast'], ['동', 'east'], ['남동', 'southeast'], ['남', 'south'], ['남서', 'southwest'], ['서', 'west'], ['북서', 'northwest']], dir8 = (dx, dz) => Math.round(((Math.atan2(dx, -dz) * 57.29578 + 360) % 360) / 45) % 8;
 

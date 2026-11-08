@@ -13,7 +13,7 @@ const NOASK = new Set(['swim', 'guest']);
 const FR = {
   town: { on: (N, D, C) => [N + ' 지나서', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽으로 가요'], br: (N, D, C) => [N + ' 건너서', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽으로 가요'], near: (N, D, C) => [N + ' 바로 옆', C ? C + ' 칸이에요' : '거기 있어요'], off: (N, D, C) => [N + ' 알죠?', C ? '그 ' + D + '쪽 ' + C + ' 칸' : '그 ' + D + '쪽이에요'], none: (D, C) => [D + '쪽으로 가요', C ? C + ' 칸이에요' : '조금 더 가요'] },
   farm: { on: (N, D, C) => [N + ' 지나서', C ? D + '쪽 ' + C + ' 칸이야' : D + '쪽으로 가'], br: (N, D, C) => [N + ' 건너서', C ? D + '쪽 ' + C + ' 칸이야' : D + '쪽으로 가'], near: (N, D, C) => [N + ' 바로 옆이야', C ? C + ' 칸이야' : '가 보면 보여'], off: (N, D, C) => [N + ' 알지?', C ? '그 ' + D + '쪽 ' + C + ' 칸' : '그 ' + D + '쪽이야'], none: (D, C) => [D + '쪽으로 가', C ? C + ' 칸이야' : '조금 더 가'] },
-  sea: { on: (N, D, C) => [N + ' 지나가면', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽이에요'], br: (N, D, C) => [N + ' 건너가면', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽이에요'], near: (N, D, C) => [N + ' 곁이에요', C ? C + ' 칸에 있어요' : '가면 보여요'], off: (N, D, C) => [N + ' 보이죠?', C ? '거기서 ' + D + '쪽 ' + C : '거기서 ' + D + '쪽'], none: (D, C) => [D + '쪽이에요', C ? C + ' 칸이에요' : '조금 더 가요'] } };
+  sea: { on: (N, D, C) => [N + ' 지나가면', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽이에요'], br: (N, D, C) => [N + ' 건너가면', C ? D + '쪽 ' + C + ' 칸이에요' : D + '쪽이에요'], near: (N, D, C) => [N + ' 옆이에요', C ? C + ' 칸에 있어요' : '가면 보여요'], off: (N, D, C) => [N + ' 보이죠?', C ? '거기서 ' + D + '쪽 ' + C : '거기서 ' + D + '쪽'], none: (D, C) => [D + '쪽이에요', C ? C + ' 칸이에요' : '조금 더 가요'] } };
 const FRE = { on: (N, D, C) => ['Go past the ' + N, C ? 'then ' + D + ' to ' + C : 'then head ' + D], br: (N, D, C) => ['Cross the ' + N, C ? 'then ' + D + ' to ' + C : 'then head ' + D], near: (N, D, C) => ['Right by the ' + N, C ? 'in cell ' + C : 'you will see it'], off: (N, D, C) => ['Know the ' + N + '?', C ? 'It is ' + D + ' of it, ' + C : 'It is ' + D + ' of it'], none: (D, C) => ['Head ' + D, C ? 'to cell ' + C : 'a little further'] };
 const DW = [[250, T2('가까워요', 'It is close')], [700, T2('좀 걸어요', 'A bit of a walk')], [1e9, T2('자전거 타요', 'Take your bike')]];
 const DWF = [[250, '가까워'], [700, '좀 걸어'], [1e9, '자전거 타']];
@@ -79,7 +79,7 @@ export function createAsk(A) {
   return {
     tick(dt) { if ((Q += dt) < 0.5) return; Q = 0; sec(A.map.player.pos()); },
     sec, wayLine, get lmk() { return LMK; }, built: () => built, rebuild() { built = false; },
-    tail() { const W = A.GAME.S.way, a = W && W.ask; if (!a || a.d !== A.GAME.S.day) return ''; return (en() ? 'heard: ' : '들은 길: ') + (a.nm ? L(a.nm) + ' ' : '') + (a.mode === 'near' ? (en() ? 'nearby' : '곁') : a.dir + (en() ? '' : '쪽')); },
+    tail() { const W = A.GAME.S.way, a = W && W.ask; if (!a || a.d !== A.GAME.S.day) return ''; return (en() ? 'heard: ' : '들은 길: ') + (a.nm ? L(a.nm) + ' ' : '') + (a.mode === 'near' ? (en() ? 'nearby' : '옆') : a.dir + (en() ? '' : '쪽')); },
 
     askNow(i, to, icon, force) { if (!built) build(); const w = (A.workers() || [])[i]; if (!w) return null; const me = A.map.player.pos(); return tell(i, w, [to[0], to[1], icon || '📋'], me, force); },
 

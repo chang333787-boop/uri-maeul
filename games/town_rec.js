@@ -1,10 +1,10 @@
-import { CHAPTERS } from './town_story.js?v=42';
-import { BANK, DIR8 } from './town_quiz.js?v=14';
+import { CHAPTERS } from './town_story.js?v=44';
+import { BANK, DIR8 } from './town_quiz.js?v=17';
 import { tsum } from './town_tsum.js?v=2';
 export const REC_V = 1, REC_DAYS = 14, REC_MAX = 80 * 1024;
 const T2 = (ko, en) => [ko, en];
 
-export const KINDS = { st: [80, T2('이야기 단계', 'Story steps')], way: [60, T2('길 찾기 도움(헤맴 그물)', 'Way-finding help')], cd: [30, T2('끝낸 장', 'Chapters finished')], q: [60, T2('보너스 문제', 'Bonus questions')], help: [60, T2('일꾼 곁 거들기', 'Helping workers')], job: [20, T2('직업 체험', 'Job experience')], show: [20, T2('쇼', 'Shows')], rank: [30, T2('승급 미션', 'Rank missions')], play: [60, T2('강·들 놀이', 'River and field play')], tmap: [30, T2('보물 지도', 'Treasure maps')], road: [40, T2('길 위 사건', 'On the road')], add: [20, T2('직접 더하기(가게 값)', 'Adding shop prices')], acad: [40, T2('학원 수업', 'Academy lessons')] };
+export const KINDS = { st: [80, T2('이야기 단계', 'Story steps')], way: [60, T2('길 찾기 도움(헤맴 그물)', 'Way-finding help')], cd: [30, T2('끝낸 장', 'Chapters finished')], q: [60, T2('보너스 문제', 'Bonus questions')], help: [60, T2('일꾼 옆 거들기', 'Helping workers')], job: [20, T2('직업 체험', 'Job experience')], show: [20, T2('쇼', 'Shows')], rank: [30, T2('승급 미션', 'Rank missions')], play: [60, T2('강·들 놀이', 'River and field play')], tmap: [30, T2('보물 지도', 'Treasure maps')], road: [40, T2('길 위 사건', 'On the road')], add: [20, T2('직접 더하기(가게 값)', 'Adding shop prices')], acad: [40, T2('학원 수업', 'Academy lessons')] };
 const cut = (v, n) => (v == null ? undefined : String(v).slice(0, n));
 
 export function tidy(k, o) { const r = {};
@@ -83,7 +83,7 @@ export function createRec(A) {
     const JB = Object.entries(M.job), RK = Object.values(M.rank), HP = Object.entries(M.help), PL = Object.entries(M.play), SH = Object.entries(M.show);
     if (JB.length) { h += '<div class="grp">' + (e ? 'Job experience' : '직업 체험') + '</div>'; for (const [k, v] of JB) h += row(A.jobName(k), e ? 'finished ' + v[0] + (v[1] ? ', stopped ' + v[1] : '') : '끝냄 ' + v[0] + (v[1] ? ', 멈춤 ' + v[1] : '')); }
     if (RK.length) { h += '<div class="grp">' + (e ? 'Rank missions' : '승급 미션') + '</div>'; for (const X of RK) h += row(A.rankName(X.k, X.L), (e ? 'started ' + X.go + ', badge ' + X.done : '시작 ' + X.go + ', 배지 ' + X.done) + (X.done ? (X.h ? (e ? ', hints up to ' + X.h : ', 힌트 ' + X.h + '단계까지') : (e ? ', no hints' : ', 힌트 없이')) : '')); }
-    if (HP.length) { h += '<div class="grp">' + (e ? 'Helping workers' : '일꾼 곁 거들기') + '</div>'; for (const [k, v] of HP) h += row(A.helpName(k), g3(v)); }
+    if (HP.length) { h += '<div class="grp">' + (e ? 'Helping workers' : '일꾼 옆 거들기') + '</div>'; for (const [k, v] of HP) h += row(A.helpName(k), g3(v)); }
     if (PL.length) { h += '<div class="grp">' + (e ? 'River and field play' : '강·들 놀이') + '</div>'; for (const [k, v] of PL) h += row(A.playName(k), g3(v)); }
     if (SH.length) { h += '<div class="grp">' + (e ? 'Shows' : '쇼') + '</div>'; for (const [id, n] of SH) h += row(A.showName(id), e ? 'watched to the end ' + n : '끝까지 본 수 ' + n); }
     h += '<div class="row"><button class="sub" data-a="x">' + (e ? 'Close' : '닫기') + '</button></div>';

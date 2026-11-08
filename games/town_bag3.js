@@ -1,5 +1,5 @@
 import { ITEMS, itemName } from './town_game.js?v=60';
-import { TOOL, TOOL_ORDER } from './town_tools.js?v=17';
+import { TOOL, TOOL_ORDER } from './town_tools.js?v=20';
 export const BAG3_V = 1;
 const T2 = (ko, en) => [ko, en];
 export const TABS = [['item', '🎒', T2('물건', 'Items')], ['tool', '🧰', T2('도구·장비', 'Tools')], ['wear', '👕', T2('옷·꾸미기', 'Clothes')], ['col', '🏅', T2('모은 것', 'Collection')]];
@@ -14,6 +14,7 @@ const IDX = {}; Object.keys(ITEMS).forEach((e, i) => { IDX[e] = i; });
 const EQ = [['head', '🧢', T2('머리', 'Head'), 'l', 0], ['neck', '🧣', T2('목', 'Neck'), 'l', 1], ['back', '🎒', T2('등', 'Back'), 'l', 2], ['hand', '✋', T2('손', 'Hand'), 'r', 1], ['foot', '🥾', T2('발', 'Feet'), 'r', 3]];
 const kindOf = e => (ITEMS[e] || [])[2] || 'food';
 const tabOfE = e => ICAT[kindOf(e)] || 'item';
+export const bagTabName = (e, en) => { const t = TABS.find(q => q[0] === tabOfE(e)); return t ? t[2][en ? 1 : 0] : ''; };
 const fltOf = e => (kindOf(e) === 'farm' ? 'wild' : kindOf(e));
 const jo = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return w + (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? a : b); };
 const hex6 = c => '#' + ((c >>> 0) & 0xffffff).toString(16).padStart(6, '0');
@@ -112,7 +113,7 @@ export function createBag3(A) {
     return '<div class="b3-bar"><div class="b3-chips" role="group" aria-label="' + (e9 ? 'Filter' : '거르기') + '">' + chips + '</div><div class="b3-sort" role="group"><small>' + (e9 ? 'Sort' : '정렬') + '</small>' + SORTS.map(([k, t]) => '<button class="' + (PREF.sort === k ? 'on' : '') + '" data-b3o="' + k + '" aria-pressed="' + (PREF.sort === k) + '">' + esc(L(t)) + '</button>').join('') + '</div></div>'; }
 
   function paneItem(c) { const e9 = en(), all = bagKeys().filter(e => tabOfE(e) === 'item');
-    return '<div class="b3-pane" data-pane="item" role="tabpanel">' + (c.giftCtx || '') + (all.length ? itemBar() + '<div class="b3-grid" data-grid="item" data-min="4">' + itemGrid() + '</div>' : '<div class="b3-none">' + esc(e9 ? 'Empty! Press E next to workers around town, pick mushrooms, get the summit stamp…' : '아직 비어 있어요! 마을 일꾼 곁에서 E · 버섯 따기 · 산꼭대기 도장…') + '</div><div class="b3-grid" data-grid="item" data-min="3"></div>') + '</div>'; }
+    return '<div class="b3-pane" data-pane="item" role="tabpanel">' + (c.giftCtx || '') + (all.length ? itemBar() + '<div class="b3-grid" data-grid="item" data-min="4">' + itemGrid() + '</div>' : '<div class="b3-none">' + esc(e9 ? 'Empty! Press E next to workers around town, pick mushrooms, get the summit stamp…' : '아직 비어 있어요! 마을 일꾼 옆에서 E · 버섯 따기 · 산꼭대기 도장…') + '</div><div class="b3-grid" data-grid="item" data-min="3"></div>') + '</div>'; }
   function toolCard(k, parts) { const e9 = en(), T = TL(), H = T ? T.have : {}, own = !!H[k], o = T ? T.order() : TOOL_ORDER, j = o.indexOf(k), cur = T && T.api.info().cur === k, ups = (parts.ups || {})[k] || [], d = TOOL[k];
     const away = k === 'can' && !!T && !H.can;
     return '<div class="b3-tc st' + (own ? '' : ' lock') + (UI.pick === k ? ' picked' : '') + '"' + (own ? ' data-b3="' + ['t:' + k].concat(ups.map(u => u.id)).join(' ') + '" data-b3drag="' + k + '"' : ' data-b3lock="' + k + '"') + '><b class="n">' + d.ic + '</b><span style="flex:1;min-width:0"><b>' + esc(L(d.t)) + '</b> <small class="b3-key">' + (e9 ? 'slot ' : '띠 ') + (j + 1) + '</small>' + ups.filter(u => u.id !== k).map(u => ' <small class="b3-up" title="' + esc(u.use) + '">⬆ ' + esc(u.t) + '</small>').join('') + (cur ? ' <small class="b3-on">✋ ' + (e9 ? 'in hand' : '손에 듦') + '</small>' : '')

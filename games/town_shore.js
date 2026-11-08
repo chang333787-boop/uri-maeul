@@ -1,4 +1,4 @@
-import { photoHtml } from './town_places.js?v=4';
+import { photoHtml } from './town_places.js?v=7';
 export const SHORE_V = 1;
 const ALL = ['spring', 'summer', 'autumn', 'winter'], WARM = ['spring', 'summer', 'autumn'];
 export const SHORE = [

@@ -1,4 +1,4 @@
-import { LIB_CATS } from './town_places.js?v=4';
+import { LIB_CATS } from './town_places.js?v=7';
 export const INDOOR_CS = 0.8;
 const WALL_IDS = { d_i4: 1, in_w_curtain: 1, in_w_window2: 1, in_w_clock: 1, in_w_board: 1, in_w_shelf: 1, in_w_bookshelf: 1 };
 const SIZE = { d_i5: [2, 1], d_i6: [1, 2], d_i7: [2, 1], d_i8: [3, 1], d_i9: [2, 2], d_i10: [2, 2], d_i11: [3, 1], d_i12: [2, 2], d_i13: [1, 2], d_i14: [1, 2], d_i15: [2, 2], d_i16: [3, 2], in_w_window2: [2, 1], in_w_board: [2, 1], in_table_long: [4, 2], deco_bookshelf: [2, 2] };
