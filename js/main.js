@@ -1135,7 +1135,7 @@ let locT = 0;
 function updateLoc() {
   const Z = MAP ? MAP.zoneAt(P.x, P.y, P.z) : null;
   inCorr = !!(Z && Z.kind === 'corridor' && Z.id !== 'music-passage');
-  locBox.textContent = '📍 ' + (Z ? Z.label : '학교');
+  const t = '📍 ' + (Z ? Z.label : '학교'); if (t !== locBox.textContent) locBox.textContent = t;
 }
 
 const DETAIL_LITE = GFX.mode !== 'desktop';

@@ -59,8 +59,9 @@ body.small .twn-wcard{top:calc(6px + env(safe-area-inset-top));font-size:clamp(1
 `;
 
 export function createPbox(o = {}) {
-  let css = null, mo = null, tm = 0, card = null, cardT = '';
+  let css = null, mo = null, card = null, cardT = '', ro = null, mi = null;
   const B = new Set(), P = new Set(), WL = new Set();
+  const OWN = new WeakMap(), OBS = new Map(), FIT = new WeakSet(), LATE = new Set();
   const body = () => document.body, small = () => body().classList.contains('small');
   const en = () => !!(o.en && o.en());
   function addCss() { if (css) return; css = document.createElement('style'); css.id = 'twn-pbox-css'; css.textContent = CSS; document.head.appendChild(css); }
@@ -84,17 +85,27 @@ export function createPbox(o = {}) {
     if (shrink && z0 && z >= z0 - 0.01) return; if (Math.abs(z - z0) > 0.004) bx.style.zoom = String(z); bx.style.setProperty('max-width', Math.floor(vw * 0.94 / z) + 'px', 'important'); bx.style.setProperty('max-height', Math.floor(vh * 0.9 / z) + 'px', 'important'); }
   const over = el => { const r = el.getBoundingClientRect(); return r.top < 2 || r.bottom > innerHeight - 2; };
   function tags() { const b = body(); const nb = [...B].some(e => e.isConnected); b.classList.toggle('h-pbox', nb); const nw = [...WL].some(e => e.isConnected); b.classList.toggle('h-wplay', !!cardT || nw); b.classList.toggle('h-pwl', nw); }
-  function tick() { for (const el of B) { if (!el.isConnected) { B.delete(el); continue; } addX(el); const pb = el.querySelector('.pb'); if (pb && !el.dataset.pzDn && (over(pb) || (!pb.classList.contains('mg-end') && pb.scrollHeight > pb.clientHeight + 4))) fitB(el, true); }
-    for (const el of P) { if (!el.isConnected) { P.delete(el); continue; } const bx = el.querySelector('.bx'); if (bx && over(bx)) fitP(el, true); }
-    for (const el of WL) { if (!el.isConnected) WL.delete(el); else { addX(el); wplace(el); } }
-    tags(); if (!B.size && !P.size && !WL.size && tm) { clearInterval(tm); tm = 0; } }
-  const arm = () => { if (!tm) tm = setInterval(tick, 500); };
-  function onBoard(el) { if (el.classList.contains('pz-world')) { WL.add(el); addX(el); wplace(el); tags(); arm(); return; }
-    el.classList.add('pz-board'); B.add(el); addX(el); fitB(el, false); tags(); arm();
+
+  const boxOf = el => el.querySelector(B.has(el) || WL.has(el) ? '.pb' : '.bx');
+  function track(el) { if (!ro) return; const bx = boxOf(el); let L = OBS.get(el); if (!L) OBS.set(el, L = new Set());
+    for (const t of L) if (!t.isConnected || t.parentElement !== bx) { ro.unobserve(t); L.delete(t); }
+    if (!bx) return; for (const c of bx.children) if (!L.has(c)) { L.add(c); OWN.set(c, el); ro.observe(c); } }
+  function untrack(el) { const L = OBS.get(el); if (L && ro) for (const t of L) ro.unobserve(t); OBS.delete(el); LATE.delete(el); if (mi && !OBS.size) mi.disconnect(); }
+  function drop(el) { B.delete(el); P.delete(el); WL.delete(el); untrack(el); }
+
+  function check(el) { if (!el.isConnected) { drop(el); tags(); return; }
+    if (WL.has(el)) { wplace(el); return; }
+    if (B.has(el)) { const pb = el.querySelector('.pb'); if (!pb) return; if (!FIT.has(el)) { FIT.add(el); fitB(el, false); requestAnimationFrame(() => { if (el.isConnected) fitB(el, false); }); return; } if (el.dataset.pzDn) { LATE.add(el); return; } if (over(pb) || (!pb.classList.contains('mg-end') && pb.scrollHeight > pb.clientHeight + 4)) fitB(el, true); return; }
+    if (P.has(el)) { const bx = el.querySelector('.bx'); if (!bx) return; if (!FIT.has(el)) { FIT.add(el); fitP(el, false); requestAnimationFrame(() => { if (el.isConnected) fitP(el, false); }); return; } if (over(bx)) fitP(el, true); } }
+  const onRO = E => { const S9 = new Set(); for (const e of E) { const el = OWN.get(e.target); if (el) S9.add(el); } for (const el of S9) check(el); };
+
+  const onMI = L => { const S9 = new Set(); for (const m of L) { for (let n = m.target; n; n = n.parentElement) { if (OBS.has(n)) { S9.add(n); break; } } } for (const el of S9) { if (!el.isConnected) { drop(el); continue; } if (!P.has(el)) addX(el); track(el); } };
+  function watchEl(el) { if (!ro) ro = new ResizeObserver(onRO); if (!mi) mi = new MutationObserver(onMI); track(el); mi.observe(el, { childList: true, subtree: true }); }
+  function onBoard(el) { if (el.classList.contains('pz-world')) { WL.add(el); addX(el); watchEl(el); tags(); return; }
+    el.classList.add('pz-board'); B.add(el); addX(el); watchEl(el); tags();
     el.addEventListener('pointerdown', () => { el.dataset.pzDn = '1'; }, true);
-    el.addEventListener('click', e => { if (e.target === el) e.stopPropagation(); });
-    requestAnimationFrame(() => { if (el.isConnected) fitB(el, false); }); }
-  function onPanel(el) { if (!isGameP(el)) return; el.classList.add('pz-game'); P.add(el); bandP(el); fitP(el, false); arm(); requestAnimationFrame(() => { if (el.isConnected) fitP(el, false); }); }
+    el.addEventListener('click', e => { if (e.target === el) e.stopPropagation(); }); }
+  function onPanel(el) { if (!isGameP(el)) return; el.classList.add('pz-game'); P.add(el); bandP(el); watchEl(el); }
   function onRz() { for (const el of B) if (el.isConnected) fitB(el, false); for (const el of P) if (el.isConnected) fitP(el, false); for (const el of WL) if (el.isConnected) wplace(el); if (cardT) cardB(); }
 
   function wplace(el) { const pb = el.querySelector('.pb'); if (!pb) return; const r = pb.getBoundingClientRect(); body().style.setProperty('--wcB', Math.round(r.bottom) + 'px'); }
@@ -102,9 +113,9 @@ export function createPbox(o = {}) {
 
   function wcard(t) { t = t ? String(t) : ''; if (t === cardT) return; cardT = t; if (t && !card) { addCss(); card = document.createElement('div'); card.className = 'twn-wcard'; card.setAttribute('role', 'status'); document.body.appendChild(card); }
     if (card) { if (card.textContent !== t) card.textContent = t; card.classList.toggle('on', !!t); } tags(); if (t) cardB(); }
-  const clrDn = () => { for (const el of B) delete el.dataset.pzDn; };
-  function watch() { addCss(); if (mo) return; mo = new MutationObserver(L => { for (const m of L) for (const n of m.addedNodes) { if (n.nodeType !== 1) continue; if (n.classList.contains('twn-play')) onBoard(n); else if (n.classList.contains('twn-p')) onPanel(n); } for (const m of L) if (m.removedNodes.length) { tags(); break; } });
+  const clrDn = () => { for (const el of B) delete el.dataset.pzDn; if (LATE.size) { const L9 = [...LATE]; LATE.clear(); requestAnimationFrame(() => { for (const el of L9) if (B.has(el)) check(el); }); } };
+  function watch() { addCss(); if (mo) return; mo = new MutationObserver(L => { for (const m of L) for (const n of m.addedNodes) { if (n.nodeType !== 1) continue; if (n.classList.contains('twn-play')) onBoard(n); else if (n.classList.contains('twn-p')) onPanel(n); } let rm = false; for (const m of L) for (const n of m.removedNodes) { if (OBS.has(n) && !n.isConnected) drop(n); rm = true; } if (rm) tags(); });
     mo.observe(document.body, { childList: true }); addEventListener('resize', onRz); addEventListener('pointerup', clrDn, true); addEventListener('pointercancel', clrDn, true); for (const n of document.querySelectorAll('body>.twn-play')) onBoard(n); }
-  function dispose() { if (mo) { mo.disconnect(); mo = null; } removeEventListener('resize', onRz); removeEventListener('pointerup', clrDn, true); removeEventListener('pointercancel', clrDn, true); if (tm) { clearInterval(tm); tm = 0; } if (card) { card.remove(); card = null; } cardT = ''; B.clear(); P.clear(); WL.clear(); const b = body(); if (b) { b.classList.remove('h-pbox', 'h-wplay', 'h-pwl'); b.style.removeProperty('--wcB'); } if (css) { css.remove(); css = null; } }
+  function dispose() { if (mo) { mo.disconnect(); mo = null; } removeEventListener('resize', onRz); removeEventListener('pointerup', clrDn, true); removeEventListener('pointercancel', clrDn, true); if (ro) { ro.disconnect(); ro = null; } if (mi) { mi.disconnect(); mi = null; } OBS.clear(); LATE.clear(); if (card) { card.remove(); card = null; } cardT = ''; B.clear(); P.clear(); WL.clear(); const b = body(); if (b) { b.classList.remove('h-pbox', 'h-wplay', 'h-pwl'); b.style.removeProperty('--wcB'); } if (css) { css.remove(); css = null; } }
   return { watch, wcard, dispose, busy: () => { for (const el of B) if (el.isConnected) return true; return false; }, info: () => ({ boards: [...B].filter(e => e.isConnected).map(e => { const pb = e.querySelector('.pb'); return { z: pb ? parseFloat(pb.style.zoom) || 1 : 0 }; }), panels: [...P].filter(e => e.isConnected).map(e => { const bx = e.querySelector('.bx'); return { k: e.dataset.k, z: bx ? parseFloat(bx.style.zoom) || 1 : 0 }; }), card: cardT, world: [...WL].filter(e => e.isConnected).length }) };
 }
