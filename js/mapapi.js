@@ -503,7 +503,7 @@ export function createMapApi(host, NAV, META) {
     if (game.current) stopGame('replace');
     const my = ++game.seq;
     try {
-      const reg = await import(new URL('../games/registry.js?t=' + Date.now(), import.meta.url));
+      const reg = id === 'town' && window.SM_TOWNV > 0 && new URLSearchParams(location.search).get('town') ? { GAMES: { town: { v: window.SM_TOWNV } } } : await import(new URL('../games/registry.js?t=' + Date.now(), import.meta.url));
       if (my !== game.seq) return null;
       const ent = reg.GAMES && reg.GAMES[id]; if (!ent) { hud.toast('없는 게임이에요: ' + id); return null; }
       if (window.SM_PROMO && ent.use === 'town') return null;
