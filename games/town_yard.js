@@ -63,7 +63,8 @@ export function createYards({ T3, map, onCollider, removeCollider, en, animals, 
   function pushPart(A, p, world, col) { const g = geoOf(p), P = g.attributes.position, N = g.attributes.normal; partMatrix(p, MP); MW.multiplyMatrices(world, MP); NM.getNormalMatrix(MW);
     for (let i = 0; i < P.count; i++) { pv.fromBufferAttribute(P, i).applyMatrix4(MW); nv.fromBufferAttribute(N, i).applyMatrix3(NM).normalize(); A.p.push(pv.x, pv.y, pv.z); A.n.push(nv.x, nv.y, nv.z); A.c.push(col[0], col[1], col[2]); } }
   const newA = () => ({ p: [], n: [], c: [] });
-  const meshOf = (A, mat) => { if (!A.p.length) return null; const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.Float32BufferAttribute(A.p, 3)); g.setAttribute('normal', new T3.Float32BufferAttribute(A.n, 3)); g.setAttribute('color', new T3.Float32BufferAttribute(A.c, 3)); g.computeBoundingSphere(); const m = new T3.Mesh(g, mat); m.userData.fx = 1; return m; };
+  const freeArr = function () { this.array = null; }, KEEPARR = typeof location !== 'undefined' && /[?&]keeparr=1/.test(location.search);
+  const meshOf = (A, mat) => { if (!A.p.length) return null; const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.Float32BufferAttribute(A.p, 3)); g.setAttribute('normal', new T3.Float32BufferAttribute(A.n, 3)); g.setAttribute('color', new T3.Float32BufferAttribute(A.c, 3)); g.computeBoundingSphere(); if (!KEEPARR) for (const k in g.attributes) g.attributes[k].onUpload(freeArr); const m = new T3.Mesh(g, mat); m.userData.fx = 1; return m; };
   const IDN = new T3.Matrix4();
 
   function buildFloor(Yd, F, A) { const y = Yd.y + 0.03, fam = {}, [c0, r0, c1, r1] = Yd.ext, put = (x0, z0, x1, z1, yy, col) => { A.p.push(x0, yy, z0, x0, yy, z1, x1, yy, z1, x0, yy, z0, x1, yy, z1, x1, yy, z0); for (let i = 0; i < 6; i++) { A.n.push(0, 1, 0); A.c.push(col[0], col[1], col[2]); } };

@@ -451,7 +451,7 @@ export function buildWorld(scene) {
     const at = document.createElement('canvas'); at.width = AW; at.height = AH;
     const g = at.getContext('2d');
     for (const [c, [ux, uy, uw]] of uv) g.drawImage(c, ux, uy, uw, RH);
-    const tex = new THREE.CanvasTexture(at); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const tex = new THREE.CanvasTexture(at); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; tex.onUpdate = t => { const c9 = t.image; if (c9 && c9.width > 1) { c9.width = 1; c9.height = 1; if (/[?&]debug=1/.test(location.search)) { const st = Object.getOwnPropertyDescriptor(THREE.Texture.prototype, 'needsUpdate').set; Object.defineProperty(t, 'needsUpdate', { configurable: true, set(v) { if (v) console.error('[world] 픽셀을 놓은 팻말 아틀라스에 needsUpdate — 1×1 빈 판이 올라감', new Error().stack); st.call(t, v); } }); } } };
     const pos = [], uvs = [], v = new THREE.Vector3();
     for (const { m, c, w, h } of signList) {
       m.updateMatrix();
@@ -6438,6 +6438,7 @@ export function buildWorld(scene) {
   }
   details.brect = BRECT; details.wing = 2; details.FH = FH;
   for (const g of CYLC.values()) g.dispose(); CYLC.clear();
+  chunks.clear(); DNEAR.clear(); PAT.clear(); PG9.clear();
   for (const o of OBJS) {
     if (glassMesh && o.g1 > o.g0) o.parts.push({ mesh: glassMesh, start: o.g0 / 3, count: (o.g1 - o.g0) / 3 });
     if (signMesh && o.s1 > o.s0) o.parts.push({ mesh: signMesh, start: o.s0 * 12, count: (o.s1 - o.s0) * 12 });
