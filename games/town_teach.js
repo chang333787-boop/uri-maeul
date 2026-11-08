@@ -1,6 +1,6 @@
-import { CHAPTERS } from './town_story.js?v=41';
+import { CHAPTERS } from './town_story.js?v=42';
 import { tsum, tsumDays } from './town_tsum.js?v=2';
-import { pickLabel, dayKey } from './town_rec.js?v=23';
+import { pickLabel, dayKey } from './town_rec.js?v=24';
 import { cloudTeach, cloudOn } from './town_cloud.js?v=6';
 
 const CSS = `.twn-p[data-k=tch]{--rib:#2f4f7a}.twn-p[data-k=tch] .bx{max-height:96vh}
@@ -58,12 +58,12 @@ export function createTeach(A) {
       + (due ? card(T('다시 세는 날로 넘기기', 'Skip to the count-again day'), T('며칠 뒤 다시 보는 의뢰를 오늘로 당겨요.', 'Brings the wait-a-few-days request to today.'), 'due', '⏩ ' + T('넘기기', 'Skip')) : '')
       + '<div class="grp">' + T('날씨와 계절', 'Weather and season') + '</div>' + card(T('날씨·계절 바꾸기', 'Change weather or season'), T('수업에서 비, 눈, 계절을 보여 줄 때 써요. 아이 화면에는 달력대로·예보대로 돌아가기만 있어요.', 'For showing rain, snow or a season in class. Pupils only see “back to calendar / forecast”.'), 'wx', '🌦 ' + T('날씨 창', 'Weather'))
       + '<div class="grp">' + T('이 기기 기록', 'This device') + '</div>' + card(T('학급 기록(이 기기)', 'Class record (this device)'), T('최근 14일 단계, 힌트, 고른 것, 한 줄 카드예요. 복사해서 반 표에 붙여 넣을 수 있어요.', 'Last 14 days of steps, hints, choices and line cards. Copy it into the class table.'), 'rec', '📊 ' + T('열기', 'Open'))
-      + '<div class="row"><button class="sub" data-a="lock">🔒 ' + T('잠그고 닫기', 'Lock and close') + '</button><button class="sub" data-a="x">' + T('닫기', 'Close') + '</button></div>', false, 'tch');
+      + '<div class="row"><button class="sub" data-a="lock">🔒 ' + T('잠그고 닫기', 'Lock and close') + '</button></div>', false, 'tch');
     P.onclick = ev => { const b = ev.target.closest('button'); if (!b) return; const a = b.dataset.a;
-      if (a === 'x') return A.closeP(); if (a === 'lock') return lock();
+      if (a === 'x' || a === 'lock') return lock();
       if (!A.tchOn()) { A.closeP(); return open(); }
       if (a === 'board') return board(); if (a === 'ch') return A.chapters(() => home()); if (a === 'due') { A.closeP(); A.dueSkip(); A.say(T('⏩ 다시 세는 날로 넘겼어요', '⏩ Skipped to the count-again day'), 2.4); return; }
-      if (a === 'wx') { A.closeP(); A.wx(); return; } if (a === 'rec') { A.rec(); return; } };
+      if (a === 'wx') { A.wx(); return; }     if (a === 'rec') { A.rec(); return; } };
     return P; }
   function lock() { tkey = ''; RS.dev = []; RS.paste = []; RS.cloud = []; src = 'dev'; paste = ''; pN = 0; claim = 0; A.tchOff(); A.closeP(); A.say(T('🔒 선생님 칸을 잠갔어요', '🔒 Teacher section locked'), 2.4); }
 
