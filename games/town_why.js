@@ -171,7 +171,7 @@ export function createWhy(A) {
     const hx = m.x, hy = m.y + 0.95, hz = m.z, nx = W.x + Math.sin(W.g.rotation.y) * 0.25, ny = gy + 0.42, nz = W.z + Math.cos(W.g.rotation.y) * 0.25, ll = Math.hypot(hx - nx, hy - ny, hz - nz);
     W.lead.position.set((hx + nx) / 2, (hy + ny) / 2, (hz + nz) / 2); W.lead.scale.set(1, 1, Math.max(0.05, ll)); W.lead.lookAt(_v.set(hx, hy, hz)); }
 
-  const won = v => (en() ? '₩' + (v | 0).toLocaleString('en') : (v | 0).toLocaleString('ko') + '원');
+  const n9 = v => String(v | 0).replace(/\B(?=(\d{3})+(?!\d))/g, ','), won = v => (en() ? '₩' + n9(v) : n9(v) + '원');
   const hotNear = re => { const m = me(); let b = null, bd = 4; for (const h of map.interact.list({ kind: 'game' })) { if (h.off || !re.test(h.label || '')) continue; const d = Math.hypot(h.x - m.x, h.z - m.z); if (d < bd) { bd = d; b = h; } } return b; };
   const SND2 = { baa: () => { tone(320, 0, 0.12, 'triangle', 0.05, 300); tone(305, 0.12, 0.28, 'triangle', 0.05, 262); }, moo: () => tone(150, 0, 0.7, 'triangle', 0.07, 112), splash: () => { tone(1400, 0, 0.05, 'sine', 0.03, 900); tone(1100, 0.06, 0.06, 'sine', 0.025, 700); },
     beep: () => { tone(1320, 0, 0.06, 'square', 0.015); tone(1320, 0.1, 0.06, 'square', 0.015); }, print: () => { for (let i = 0; i < 5; i++) tone(220 + i * 10, i * 0.07, 0.05, 'triangle', 0.02); }, squeak: () => { tone(1500, 0, 0.06, 'sine', 0.03, 1800); tone(1500, 0.12, 0.06, 'sine', 0.03, 1800); }, bubble: () => { tone(500, 0, 0.05, 'sine', 0.03, 800); tone(650, 0.08, 0.05, 'sine', 0.025, 950); } };

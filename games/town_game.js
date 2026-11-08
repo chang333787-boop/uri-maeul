@@ -104,7 +104,8 @@ export const TASK_TP = {
 };
 export const TASK_POOLS = [['work', 'mush', 'farm'], ['sell', 'away', 'buy', 'cook', 'share', 'eat', 'bundle'], ['summit', 'bus', 'boat', 'stones', 'book', 'stars', 'night']];
 export const shopOf = name => { if (/동물 카페|키즈 카페|보드게임 카페|꼬리 용품|반려/.test(name || '')) return null;     for (const S of SHOPS) if (S[0].test(name || '')) return S; return null; };
-export const won = n => (n | 0).toLocaleString('ko-KR') + '원';
+export const num9 = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const won = n => num9(n | 0) + '원';
 export const itemName = (e, en) => { const I = ITEMS[e]; return I ? (en ? I[1] : I[0]) : e; };
 
 export const RW_XP = { night: 6, job: 6, bus: 3, book: 1, stars: 1, summit: 1, boat: 2, stones: 3, metro: 3, sell: 8, buy: 6, away: 4, bundle: 6, mush: 8, farm: 6, cook: 8, quiz: 2, cell: 1, bug: 2, wild: 2, shore: 2, fish: 2, worm: 2, sweep: 6, flower: 6, photo: 1, kit: 2, fix: 1, bldg: 1, ent: 1, acad: 1 };
