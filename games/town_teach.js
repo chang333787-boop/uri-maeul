@@ -1,6 +1,6 @@
-import { CHAPTERS } from './town_story.js?v=44';
+import { CHAPTERS } from './town_story.js?v=45';
 import { tsum, tsumDays } from './town_tsum.js?v=2';
-import { pickLabel, dayKey } from './town_rec.js?v=26';
+import { pickLabel, dayKey } from './town_rec.js?v=27';
 import { cloudTeach, cloudOn } from './town_cloud.js?v=6';
 
 const CSS = `.twn-p[data-k=tch]{--rib:#2f4f7a}.twn-p[data-k=tch] .bx{max-height:96vh}

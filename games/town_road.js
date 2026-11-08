@@ -250,20 +250,26 @@ export function createRoad(A) {
       if (a.kind === 'hat' && a.h && !a.carry) { const h = a.h.hot; h.x = a.hx; h.z = a.hz; h.y = a.hy; h.off = a.fly > 0; }
       const dw = Math.hypot(me.x - a.w.x, me.z - a.w.z); if (dw < 3.6 && ((a.kind === 'hat' && a.carry) || (a.kind === 'pick' && a.got === 7))) { actEnd(true); return; }
       if (a.el > a.lim) { actEnd(false, 'time'); return; } }
-    const g = goalNow(me); if (g !== goalT) goalT = g; }
+    const g = goalNow(me); if (g !== goalT) goalT = g; sideSync(me); }
+
+  let sideT = null;
+  function sideNow(me) { if (RACE || ACT) return null; const e = en(); if (REQ) return '🙋 ' + (e ? 'The ' + who(REQ.w) + ' worker is waving — go and press E' : who(REQ.w) + ' 일꾼이 손을 들었어요 — 가서 E');
+    if (PAPER && PAPER.fly <= 0 && Math.hypot(me.x - PAPER.x, me.z - PAPER.z) < 50) return '🗺 ' + (e ? 'A paper blew in — pick it up (E)' : '날아온 종이 — 주워 봐요 (E)');
+    if (goalT && goalT.startsWith('🚲')) return '🚲 ' + (e ? 'Ring course — ride through the green ring to start' : '고리 코스 — 초록 고리를 자전거로 지나면 시작'); return null; }
+  function sideSync(me) { if (!A.chip) return; const t = sideNow(me); if (t === sideT) return; sideT = t; A.chip('twn-rd', t); }
   function sec() { if (!A.on()) return; if (!built) { build(false); if (!built) return; } const me = map.player.pos(), mv = Math.hypot(me.x - lx, me.z - lz); lx = me.x; lz = me.z; nearSec(me);
     const m9 = A.GAME.S.min, dm = lastMin >= 0 && m9 > lastMin && m9 - lastMin < 6 ? m9 - lastMin : 0; lastMin = m9;
     if (RACE) { raceSec(me); return; }
     if (ACT) { if (A.away() || A.night()) actEnd(false, 'away'); return; }
     if (REQ) { REQ.t++; const w = REQ.w, d = Math.hypot(me.x - w.x, me.z - w.z); if (A.away() || A.night() || REQ.t > 50 || d > 120) { reqEnd(d > 120 || REQ.t > 50); movMin = 30; return; } if (!A.busy() && (REQ.bq += 1) >= 6 && d < 60) { REQ.bq = 0; A.bubble({ x: w.x, y: w.g, z: w.z, sc: 1 }, en() ? 'Excuse me! Can you help?' : '저기요! 잠깐 도와줄래요?'); } return; }
     if (PAPER) { PAPER.life++; if (PAPER.life > 120 || Math.hypot(me.x - PAPER.x, me.z - PAPER.z) > 100 || A.away()) paperGone(); return; }
-    if (A.busy() || A.away() || A.inSchool(me.x, me.z) || (A.emCall && A.emCall())) return;
+    if (A.busy() || A.away() || A.inSchool(me.x, me.z) || (A.emCall && A.emCall()) || (A.hold && A.hold())) return;
     const moving = mv > 1.2 && mv < 40; if (!moving) return; movMin += dm; movP += dm;
     if (!A.night() && movMin >= (A.story() ? 200 : 100) && A.GAME.uses('road:help') < 4) { if (!helpTry(me)) movMin -= 25; return; }
     if (movP >= 50 && !A.GAME.uses('road:paper')) { if (!paperTry(me)) movP -= 15; } }
 
   function abort() { if (RACE) { if (RACE.hold > 0 && !modal()) map.player.freeze(false); RACE = null; } blkOff(); if (ACT) { const a = ACT; ACT = null; const M = A.wkMesh(); if (M) { M.reset(a.i); if (M.hat) M.hat(a.i, true); } hotOff(a.w, false); if (a.h) a.h.remove(); if (a.hs) for (const h of a.hs) h.remove(); }
-    if (REQ) reqEnd(true); if (PAPER) paperGone(); if (HAT) HAT.visible = false; if (ITEM) ITEM.visible = false; goalT = null; }
+    if (REQ) reqEnd(true); if (PAPER) paperGone(); if (HAT) HAT.visible = false; if (ITEM) ITEM.visible = false; goalT = null; if (sideT && A.chip) A.chip('twn-rd', null); sideT = null; }
 
   function warm() { const R9 = window.SD2 && window.SD2.renderer, root = A.root(), sc = root && root.parent; ringMesh(); if (root && !RING.parent) root.add(RING); if (!ITEM) itemBuild(); if (!PAP) papMake(); if (!HAT) hatBuild(0xe8d38a);
     if (!R9 || !R9.compile || !sc) return; try { for (const o of [RING, ITEM, PAP, HAT]) R9.compile(o, map.camera, sc); } catch (e) {   } }
@@ -275,7 +281,7 @@ export function createRoad(A) {
 
   function audit() { const out = []; for (const c of CS) { let blk = 0, off = 0, wet = 0, sch = 0, n = 0; const P = c.path; for (let i = 0; i < P.x.length; i++) { const x = P.x[i], z = P.z[i], y = A.gy(x, z); n++; if (A.blocked(x, z, y + 0.6)) blk++; if (!A.onLane(x, z)) off++; if (A.water(x, z)) wet++; if (A.inSchool(x, z)) sch++; }
       let clr = 0; for (const r of c.rings) if (!ringClear(r.x, r.z, r.y - RY, r.dx, r.dz)) clr++; out.push({ id: c.id, n, blk, off, wet, sch, ringBlk: clr }); } return out; }
-  return { init, tick, sec, dispose, abort, get goal() { return goalT; }, get active() { return !!(RACE || ACT || REQ); },
+  return { init, tick, sec, dispose, abort, get goal() { return goalT; }, get active() { return !!(RACE || ACT || REQ); }, get mine() { return !!(RACE || ACT); }, ringNear: r => { const me = map.player.pos(); return NEAR.some(c => Math.hypot(me.x - c.rings[0].x, me.z - c.rings[0].z) < (r || 120)); },
     info: () => ({ built, buildMs, courses: CS.map(c => ({ id: c.id, k: c.k, n: c.rings.length, L: Math.round(c.L), gold: c.gold, silver: c.silver, place: c.place, cell: c.cell, rings: c.rings.map(r => [+r.x.toFixed(1), +r.y.toFixed(2), +r.z.toFixed(1), +r.dx.toFixed(3), +r.dz.toFixed(3)]) })), near: NEAR.map(c => c.k), drawn: RING ? RING.count : 0, ringVis: !!(RING && RING.visible),
       race: RACE && { k: RACE.c.k, i: RACE.i, t: +RACE.t.toFixed(1), bike: RACE.bike }, req: REQ && { kind: REQ.kind, i: REQ.i, t: REQ.t, x: REQ.w.x, z: REQ.w.z, g: REQ.w.g }, act: ACT && { kind: ACT.kind, el: +ACT.el.toFixed(1), lim: ACT.lim, carry: ACT.carry, got: ACT.got, hat: ACT.kind === 'hat' ? [+ACT.hx.toFixed(1), +ACT.hz.toFixed(1)] : null, fly: ACT.fly, sp: ACT.kind === 'pick' ? ACT.plan.sp.map(p => [+p[0].toFixed(1), +p[2].toFixed(1)]) : null, wx: ACT.w.x, wz: ACT.w.z, wg: ACT.w.g, i: ACT.i },
       paper: PAPER && { x: +PAPER.x.toFixed(1), z: +PAPER.z.toFixed(1), fly: PAPER.fly > 0, h: !!PAPER.h }, blk: BK ? { id: BK.c.id, kind: BK.p.kind, j: BK.p.j, w: BK.p.w, x: +BK.p.x.toFixed(1), z: +BK.p.z.toFixed(1), y: +BK.p.y.toFixed(2), d: [BK.p.dx, BK.p.dz], n: [BK.p.nx, BK.p.nz], cols: BK.cols.length } : null,
