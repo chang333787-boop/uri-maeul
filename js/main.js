@@ -7,7 +7,7 @@ import { buildWorld } from './world.js?v=159';
 import { SCHOOL } from './layout.js?v=16';
 import * as NAV from './nav.js?v=7';
 import { makeMeta } from './mapmeta.js?v=12';
-import { createMapApi } from './mapapi.js?v=98';
+import { createMapApi } from './mapapi.js?v=100';
 import { createTouch, touchPrimary } from './touch.js?v=11';
 import { createTitle } from './title.js?v=29';
 import { createFilm } from './film.js?v=17';
@@ -33,8 +33,10 @@ const canvas = document.getElementById('scene');
     const l = document.createElement('link'); l.rel = 'apple-touch-icon'; l.href = c.toDataURL('image/png'); H.appendChild(l); } catch (e) {   } } })();
 
 { const HAS = ['#tour-talk', '#tour-media', '#tour-card', '#story-talk', '#story-end', '#memo-board', '#memo-form', '#memo-pick', '.eng-note', '.esc-lock', '.hudAsk', '.lb-pop', '.wg-lobby', '#mmap.mm-ov|mm-ov'];
-  let pend = false; const sync = () => { pend = false; const B = document.body; if (!B) return; for (const q0 of HAS) { const [q, n] = q0.split('|'), c = 'h-' + (n || q.slice(1)), on = !!document.querySelector(q); if (B.classList.contains(c) !== on) B.classList.toggle(c, on); } };
-  new MutationObserver(() => { if (!pend) { pend = true; requestAnimationFrame(sync); } }).observe(document.documentElement, { childList: true, subtree: true }); }
+  let pend = false, MM9 = null; const kick = () => { if (!pend) { pend = true; requestAnimationFrame(sync); } }, MO9 = new MutationObserver(kick); const sync = () => { pend = false; const B = document.body; if (!B) return; for (const q0 of HAS) { const [q, n] = q0.split('|'), c = 'h-' + (n || q.slice(1)), on = !!document.querySelector(q); if (B.classList.contains(c) !== on) B.classList.toggle(c, on); } const mm = document.getElementById('mmap'); if (mm !== MM9) { MO9.disconnect(); MM9 = mm; if (mm) MO9.observe(mm, { attributes: true, attributeFilter: ['class'] }); } };
+
+  const el9 = L => { for (let i = 0; i < L.length; i++) if (L[i].nodeType === 1) return true; return false; };
+  new MutationObserver(R => { if (pend) return; for (const r of R) if (el9(r.addedNodes) || el9(r.removedNodes)) { kick(); return; } }).observe(document.documentElement, { childList: true, subtree: true }); }
 
 if (/iP(hone|od)/.test(navigator.userAgent || '')) { const m = document.querySelector('meta[name=viewport]'); if (m && /viewport-fit=cover/.test(m.content)) m.content = m.content.replace(/,?\s*viewport-fit=cover/, ''); document.documentElement.style.background = '#0b1220'; if (document.body) document.body.style.background = '#0b1220'; }
 const GFX = (() => { const q = new URLSearchParams(location.search), hq = q.get('hq') === '1', lq = q.get('lq') === '1', dev = window.devicePixelRatio || 1;
@@ -69,6 +71,7 @@ if (NORENDER) {
 }
 
 renderer.debug.checkShaderErrors = /[?&](debug|check)=1/.test(location.search);
+const DBG9 = /[?&]debug=1/.test(location.search);
 
 canvas.addEventListener('webglcontextlost', e => { e.preventDefault();
   const d = document.createElement('div'); d.className = 'ttl-keep'; d.textContent = '🔄 화면을 다시 불러오는 중이에요…';
@@ -1776,8 +1779,8 @@ function loop(ts) {
     const fps = Math.round(n / acc);
     const dc = renderer.info.render.calls; FM.fps1 = fps; FM.dc = dc;
     fpsBox.textContent = fps + ' fps · ' + Math.round(GFX.dpr * 100) / 100 + 'x · ' + dc + ' dc · sim ' + simMs.toFixed(2) + 'ms' + (MAP.game.current ? ' · game ' + MAP.game.lastMs.toFixed(2) + 'ms' : '');
-    if (dc > 300) console.warn('예산 초과: drawCalls', dc);
-    if (simMs > 1) console.warn('예산 초과: sim ms', simMs.toFixed(2));
+    if (DBG9 && dc > 300) console.warn('예산 초과: drawCalls', dc);
+    if (DBG9 && simMs > 1) console.warn('예산 초과: sim ms', simMs.toFixed(2));
     acc = 0; n = 0; simMs = 0;
   }
 }
