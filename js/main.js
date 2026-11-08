@@ -14,7 +14,7 @@ import { createFilm } from './film.js?v=17';
 import { createTop } from './topview.js?v=11';
 import { createActions } from './actions.js?v=5';
 
-const TOWN_PRE = ['games/town.js?v=338', 'games/town_yard.js?v=12', 'games/town_indoor.js?v=21', 'games/town_fire.js?v=1', 'games/town_jobs.js?v=29', 'games/town_bake.js?v=3', 'games/town_table.js?v=19', 'games/town_game.js?v=60', 'games/town_story.js?v=41', 'js/look.js?v=1', 'js/kid.js?v=5', 'js/keytext.js?v=1', 'games/town_tips.js?v=8', 'games/town_track.js?v=3', 'games/town_read.js?v=4', 'games/town_go.js?v=5', 'games/town_map2.js?v=3', 'games/town_friends.js?v=1', 'js/settings.js?v=8', 'js/photo.js?v=7', 'games/town_bugs.js?v=2', 'games/town_photos.js?v=2', 'games/town_anim.js?v=2', 'games/town_herd.js?v=2', 'games/town_worker.js?v=9', 'games/town_rhy.js?v=1', 'games/town_sim.js?v=2', 'games/town_show.js?v=3', 'games/town_showfind.js?v=2', 'games/town_outcrop.js?v=3', 'games/town_lifem.js?v=2', 'games/town_skill.js?v=5', 'games/town_minigame.js?v=15', 'games/town_lad.js?v=6', 'games/town_rank.js?v=6', 'games/town_reward.js?v=4', 'games/town_sea4.js?v=2', 'games/town_beach.js?v=3', 'games/town_rf.js?v=4', 'games/town_quiz.js?v=14', 'games/town_rec.js?v=23', 'js/lobby.js?v=19', 'games/town_boat.js?v=6', 'games/town_pollen.js?v=1', 'games/town_res.js?v=2', 'games/town_shore.js?v=6', 'games/town_xp.js?v=9', 'games/town_news.js?v=14', 'games/town_treasure.js?v=9', 'games/town_bus.js?v=1', 'games/town_emerg.js?v=17', 'games/town_why.js?v=7', 'games/town_fix.js?v=2', 'games/town_case.js?v=8', 'games/town_bldg.js?v=16', 'games/town_day.js?v=13', 'games/town_typhoon.js?v=11', 'games/town_wxev.js?v=1', 'games/town_road.js?v=9', 'games/town_ask.js?v=2', 'games/town_stam.js?v=5', 'games/town_enter.js?v=6', 'games/town_janggu.js?v=4', 'games/town_tower.js?v=2', 'games/town_night.js?v=6', 'games/town_chem.js?v=13', 'games/town_cellkit.js?v=7', 'games/town_tools.js?v=17', 'games/town_spend.js?v=6', 'games/town_cozy.js?v=3', 'games/town_bag.js?v=15', 'games/town_bag3.js?v=13', 'games/town_routine.js?v=4', 'games/town_wild.js?v=14', 'games/town_path.js?v=19', 'games/town_bundle2.js?v=1', 'games/town_regen.js?v=5', 'games/town_orient.js?v=5', 'games/town_photo.js?v=11', 'games/town_nb.js?v=2', 'games/town_after.js?v=2', 'games/town_feast.js?v=8', 'games/town_season.js?v=6', 'games/town_market.js?v=1', 'games/town_cue.js?v=8', 'games/town_disc.js?v=3', 'games/town_music.js?v=4', 'games/town_feel.js?v=4', 'games/town_efx.js?v=2', 'games/town_surp.js?v=6', 'games/town_ski.js?v=2', 'games/town_heal.js?v=1', 'games/town_subway.js?v=8', 'games/town_look.js?v=6', 'games/town_region.js?v=1', 'games/town_kidlook.js?v=7', 'games/town_pbox.js?v=8', 'games/town_cloud.js?v=6', 'games/town_dex.js?v=23', 'games/town_bundle.js?v=3', 'games/town_sky.js?v=1', 'games/town_farm.js?v=3', 'games/town_fish.js?v=2', 'games/town_deco.js?v=2', 'games/town_places.js?v=4', 'games/town_fire5.js?v=1', 'games/town_animals.js?v=1', 'games/town_salt.js?v=2', 'games/town_tsum.js?v=2', 'js/chatfilter.js?v=1', 'games/town_cine.js?v=2', 'games/town_enter2.js?v=2', 'games/town_laws.js?v=5', 'games/town_close.js?v=1'];
+const TOWN_PRE = ['games/town.js?v=339', 'games/town_yard.js?v=12', 'games/town_indoor.js?v=21', 'games/town_fire.js?v=1', 'games/town_jobs.js?v=29', 'games/town_bake.js?v=3', 'games/town_table.js?v=19', 'games/town_game.js?v=60', 'games/town_story.js?v=41', 'js/look.js?v=1', 'js/kid.js?v=5', 'js/keytext.js?v=1', 'games/town_tips.js?v=8', 'games/town_track.js?v=3', 'games/town_read.js?v=4', 'games/town_go.js?v=5', 'games/town_map2.js?v=3', 'games/town_friends.js?v=1', 'js/settings.js?v=8', 'js/photo.js?v=7', 'games/town_bugs.js?v=2', 'games/town_photos.js?v=2', 'games/town_anim.js?v=2', 'games/town_herd.js?v=2', 'games/town_worker.js?v=9', 'games/town_rhy.js?v=1', 'games/town_sim.js?v=2', 'games/town_show.js?v=3', 'games/town_showfind.js?v=2', 'games/town_outcrop.js?v=3', 'games/town_lifem.js?v=2', 'games/town_skill.js?v=5', 'games/town_minigame.js?v=15', 'games/town_lad.js?v=6', 'games/town_rank.js?v=6', 'games/town_reward.js?v=4', 'games/town_sea4.js?v=2', 'games/town_beach.js?v=3', 'games/town_rf.js?v=4', 'games/town_quiz.js?v=14', 'games/town_rec.js?v=23', 'js/lobby.js?v=19', 'games/town_boat.js?v=6', 'games/town_pollen.js?v=1', 'games/town_res.js?v=2', 'games/town_shore.js?v=6', 'games/town_xp.js?v=9', 'games/town_news.js?v=14', 'games/town_treasure.js?v=9', 'games/town_bus.js?v=1', 'games/town_emerg.js?v=17', 'games/town_why.js?v=7', 'games/town_fix.js?v=2', 'games/town_case.js?v=8', 'games/town_bldg.js?v=16', 'games/town_day.js?v=13', 'games/town_typhoon.js?v=11', 'games/town_wxev.js?v=1', 'games/town_road.js?v=9', 'games/town_ask.js?v=2', 'games/town_stam.js?v=5', 'games/town_enter.js?v=6', 'games/town_janggu.js?v=4', 'games/town_tower.js?v=2', 'games/town_night.js?v=6', 'games/town_chem.js?v=13', 'games/town_cellkit.js?v=7', 'games/town_tools.js?v=17', 'games/town_spend.js?v=6', 'games/town_cozy.js?v=3', 'games/town_bag.js?v=15', 'games/town_bag3.js?v=13', 'games/town_routine.js?v=4', 'games/town_wild.js?v=14', 'games/town_path.js?v=19', 'games/town_bundle2.js?v=1', 'games/town_regen.js?v=5', 'games/town_orient.js?v=5', 'games/town_photo.js?v=11', 'games/town_nb.js?v=2', 'games/town_after.js?v=2', 'games/town_feast.js?v=8', 'games/town_season.js?v=6', 'games/town_market.js?v=1', 'games/town_cue.js?v=8', 'games/town_disc.js?v=3', 'games/town_music.js?v=4', 'games/town_feel.js?v=4', 'games/town_efx.js?v=2', 'games/town_surp.js?v=6', 'games/town_ski.js?v=2', 'games/town_heal.js?v=1', 'games/town_subway.js?v=8', 'games/town_look.js?v=6', 'games/town_region.js?v=1', 'games/town_kidlook.js?v=7', 'games/town_pbox.js?v=8', 'games/town_cloud.js?v=6', 'games/town_dex.js?v=23', 'games/town_bundle.js?v=3', 'games/town_sky.js?v=1', 'games/town_farm.js?v=3', 'games/town_fish.js?v=2', 'games/town_deco.js?v=2', 'games/town_places.js?v=4', 'games/town_fire5.js?v=1', 'games/town_animals.js?v=1', 'games/town_salt.js?v=2', 'games/town_tsum.js?v=2', 'js/chatfilter.js?v=1', 'games/town_cine.js?v=2', 'games/town_enter2.js?v=2', 'games/town_laws.js?v=5', 'games/town_close.js?v=1'];
 { const q9 = new URLSearchParams(location.search); if (q9.get('town') && !window.SM_PROMO && TOWN_PRE.length) { window.SM_TOWNV = +TOWN_PRE[0].split('?v=')[1] || 0; for (const u of TOWN_PRE) { const l9 = document.createElement('link'); l9.rel = 'modulepreload'; l9.href = new URL('../' + u, import.meta.url).href; document.head.appendChild(l9); } } }
 var inCorr = false;
 
@@ -52,16 +52,21 @@ const GFX = (() => { const q = new URLSearchParams(location.search), hq = q.get(
   const adapt = !hq && !fix && q.get('adapt') !== '0' && !/[?&](check|health)=1/.test(location.search) && !q.get('shot');
   const aaQ = q.get('aa'), aa = aaQ === '1' ? true : aaQ === '0' ? false : !low && !cros;
 
-  return { mode: low ? 'low' : mobile ? 'mobile' : cros ? 'cb' : 'desktop', dpr: fix || start, cap: fix || cap, start: fix || start, floor: fix || Math.min(start, mobile || (low && window.SM_PROMO) ? 1 : low ? 0.75 : 0.6), ios, shadow: low ? 0 : mobile || cros ? 1024 : 2048, adapt, aa, dev }; })();
+  return { mode: low ? 'low' : mobile ? 'mobile' : cros ? 'cb' : 'desktop', dpr: fix || start, cap: fix || cap, start: fix || start, floor: fix || Math.min(start, mobile || (low && window.SM_PROMO) ? 1 : low || (cros && !window.SM_PROMO) ? 0.75 : 0.6), ios, shadow: low ? 0 : mobile || cros ? 1024 : 2048, adapt, aa, dev }; })();
 if (NORENDER) { const p = Math.min(0.25, 64 / Math.max(64, innerWidth)); Object.assign(GFX, { dpr: p, cap: p, start: p, floor: p, adapt: false, aa: false, norender: true }); }
 
 const FM = (() => { const q = new URLSearchParams(location.search), fixed = !!(window.SM_PROMO || NORENDER || q.get('hq') === '1' || +q.get('dpr') || q.get('adapt') === '0' || /[?&](check|health)=1/.test(location.search) || q.get('shot'));
-  return { on: !fixed, q: false, mode: 'fixed', target: 60, lv: 0, step: '기본', fps: 0, fk: 1, dk: 1, shOff: false, slowN: 0, goodT: 0, cool: 0, hold: 0, upAt: -1e9, pre: 0, fail: [0, 0, 0], bt: 0, bn: 0, last: 0, lt: 0, draws: 0, fa: 0, fb: 0, nb: 0, ca: 0, cb: 0, town: false, log: [] }; })();
+  return { on: !fixed, q: false, mode: 'fixed', target: 60, lv: 0, step: '기본', fps: 0, fk: 1, dk: 1, shOff: false, slowN: 0, goodT: 0, cool: 0, hold: 0, upAt: -1e9, pre: 0, fail: [0, 0, 0], bt: 0, bn: 0, last: 0, lt: 0, draws: 0, vOn: 0, fb: 0, nb: 0, cb: 0, town: false, log: [] }; })();
 const FM_STEP = ['기본', '안개 당김', '디테일 줄임', '그림자 끔'];
 const FM_LITE = GFX.mode === 'cb' || GFX.mode === 'low', FM_LOW30 = GFX.mode === 'low';
-function fmMode() { const a30 = FM.on && !SET.gm && FM_LOW30; FM.q = FM.on && (SET.gm === 1 || a30); FM.mode = !FM.on ? 'fixed' : SET.gm === 1 ? 'graphics' : SET.gm === 2 ? 'smooth' : 'auto'; FM.target = FM.q ? 30 : 60; FM.st = FM.mode === 'smooth' || (FM.mode === 'auto' && FM_LITE); }
+
+function fmMode() { const a30 = FM.on && !SET.gm && FM_LOW30 && !!document.body && document.body.classList.contains('h-town'); FM.q = FM.on && (SET.gm === 1 || a30); FM.mode = !FM.on ? 'fixed' : SET.gm === 1 ? 'graphics' : SET.gm === 2 ? 'smooth' : 'auto'; FM.target = FM.q ? 30 : 60; FM.st = FM.mode === 'smooth' || (FM.mode === 'auto' && FM_LITE); }
 fmMode(); GFX.fm = FM;
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: GFX.aa, powerPreference: 'high-performance' });
+
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: GFX.aa, powerPreference: 'high-performance' }); } catch (e) {
+  console.warn('[화면] WebGL을 만들지 못했어요', e); const d = document.createElement('div'); d.className = 'ttl-keep'; d.textContent = '3D 화면을 열지 못했어요. 크롬(브라우저)을 완전히 껐다가 다시 켜 주세요.';
+  Object.assign(d.style, { position: 'fixed', inset: '0', zIndex: '100000', display: 'grid', placeItems: 'center', padding: '16px', textAlign: 'center', background: '#10213f', color: '#fff', font: '700 18px/1.5 sans-serif' });
+  document.body.appendChild(d); throw e; } })();
 if (NORENDER) {
 
   const fr = new THREE.Frustum(), pm = new THREE.Matrix4(), upv = new WeakMap();
@@ -76,11 +81,17 @@ if (NORENDER) {
 renderer.debug.checkShaderErrors = /[?&](debug|check)=1/.test(location.search);
 const DBG9 = /[?&]debug=1/.test(location.search);
 
-canvas.addEventListener('webglcontextlost', e => { e.preventDefault();
-  const d = document.createElement('div'); d.className = 'ttl-keep'; d.textContent = '🔄 화면을 다시 불러오는 중이에요…';
-  Object.assign(d.style, { position: 'fixed', inset: '0', zIndex: '99999', display: 'grid', placeItems: 'center', background: 'rgba(16,33,63,.88)', color: '#fff', font: '700 18px sans-serif' });
-  document.body.appendChild(d); setTimeout(() => location.reload(), 1800); }, false);
-canvas.addEventListener('webglcontextrestored', () => location.reload(), false);
+let CTXB = false;
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (CTXB) return;
+  let L = []; try { L = JSON.parse(sessionStorage.getItem('sm-ctxlost') || '[]').filter(t => Date.now() - t < 600000); } catch (er) { L = []; }
+  L.push(Date.now()); try { sessionStorage.setItem('sm-ctxlost', JSON.stringify(L.slice(-5))); } catch (er) {   }
+  CTXB = L.length >= 2; console.warn('[화면] WebGL 문맥 잃음 — 10분 안 ' + L.length + '번째' + (CTXB ? ' · 단추로 다시 불러오기' : ' · 저절로 다시 불러오기'));
+  const d = document.createElement('div'); d.className = 'ttl-keep';
+  Object.assign(d.style, { position: 'fixed', inset: '0', zIndex: '99999', display: 'grid', placeItems: 'center', padding: '16px', textAlign: 'center', background: 'rgba(16,33,63,.88)', color: '#fff', font: '700 18px/1.5 sans-serif' });
+  if (!CTXB) { d.textContent = '🔄 화면을 다시 불러오는 중이에요…'; document.body.appendChild(d); setTimeout(() => location.reload(), 1800); return; }
+  d.id = 'ctxLost'; d.innerHTML = '<div>🔄 화면이 또 멈췄어요.<br>다른 탭을 닫고 아래 단추를 눌러 주세요.<br><button type="button" style="margin-top:14px;min-height:48px;padding:8px 24px;font:800 18px sans-serif;color:#10213f;background:#ffd23c;border:3px solid #fff;border-radius:12px;cursor:pointer">다시 불러오기</button></div>';
+  document.body.appendChild(d); const b9 = d.querySelector('button'); b9.onclick = () => location.reload(); try { if (document.exitPointerLock) document.exitPointerLock(); b9.focus(); } catch (er) {   } }, false);
+canvas.addEventListener('webglcontextrestored', () => { if (!CTXB) location.reload(); }, false);
 
 function audioUnlock() {
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)();
@@ -1338,11 +1349,15 @@ function adaptWin() {
   for (let j = 0; j < m; j++) s += S[j];
   return s / m;
 }
+
+let BLD9 = 0;
+function building() { if (!(window.SM_BUILD > 0)) { BLD9 = 0; return false; } const t = performance.now(); if (!BLD9) BLD9 = t; return t - BLD9 < 90000; }
 function adaptReset(cool) { const A = ADAPT; A.bn = 0; A.winT = 0; A.evT = 0; A.slowT = A.goodT = 0; if (cool != null) A.coolT = Math.max(A.coolT, cool); }
 function adaptTick(ts) {
   const A = ADAPT, raw = A.last ? ts - A.last : 0; A.last = ts;
   if (!GFX.adapt || !(raw > 0) || document.hidden) return;
   if (A.hold && A.hold()) { if (A.bn || A.winT) adaptReset(2); return; }
+  if (building()) { adaptReset(3); return; }
   if (raw > 250) { if (++A.big < 3) return; } else A.big = 0;
   const d = Math.min(100, raw), sec = d / 1000;
   if (A.coolT > 0) { A.coolT -= sec; return; }
@@ -1384,32 +1399,32 @@ function fmEval(fps, now) {
   if (F.pre) { const p0 = F.pre; F.pre = 0; if (fps < p0 * 1.04 + 0.5 && F.lv > 0) { F.log.push([+now.toFixed(1), 'nohelp', F.lv, F.fps]); fmSet(F.lv - 1); F.hold = now + 120; F.cool = 2; return; } }
   if (fps < (F.q ? 27 : 50)) { F.slowN++; F.goodT = 0; } else F.slowN = 0;
   const A = ADAPT, dprDone = !GFX.adapt || A.lvl >= A.ladder.length - 1 || (A.capT && performance.now() < A.capT);
-  if (F.slowN >= 2 && F.lv < (GFX.shadow > 0 ? 3 : 2) && now >= F.hold && dprDone) { if (now - F.upAt < 12) F.fail[F.lv] = Math.min(4, F.fail[F.lv] + 1);
+  if (F.slowN >= 2 && F.lv < (F.town ? 1 : GFX.shadow > 0 ? 3 : 2) && now >= F.hold && dprDone) {     if (now - F.upAt < 12) F.fail[F.lv] = Math.min(4, F.fail[F.lv] + 1);
     F.pre = fps; fmSet(F.lv + 1); F.cool = 3; F.slowN = 0; F.log.push([+now.toFixed(1), 'down', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); return; }
-  if (F.lv > 0 && fps >= (F.q ? 29.5 : 57)) { F.goodT++; if (F.goodT >= 6 * 2 ** F.fail[F.lv - 1]) { F.upAt = now; fmSet(F.lv - 1); F.cool = 3; F.goodT = 0; F.log.push([+now.toFixed(1), 'up', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); } } else F.goodT = 0;
+  if (F.lv > 0 && fps >= (F.q ? 29.5 : 57)) { F.goodT++; if (F.goodT >= (F.q ? 30 : 6) * 2 ** F.fail[F.lv - 1]) {     F.upAt = now; fmSet(F.lv - 1); F.cool = 3; F.goodT = 0; F.log.push([+now.toFixed(1), 'up', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); } } else F.goodT = 0;
 }
 function fmTick(ts) {
   const F = FM, raw = F.last ? ts - F.last : 0; F.last = ts; F.draws++;
   if (!F.on || !(raw > 0)) return;
   if (document.hidden || window.SM_HOLD3D > 0 || (ADAPT.hold && ADAPT.hold())) { F.bt = F.bn = 0; return; }
-  if (window.SM_BUILD > 0) { F.bt = F.bn = 0; F.cool = Math.max(F.cool, 3); return; }
+  if (building()) { F.bt = F.bn = 0; F.cool = Math.max(F.cool, 3); return; }
   if (raw > 250) { F.bt = F.bn = 0; return; }
   F.bt += raw; F.bn++; if (F.bt < 1000) return;
-  const fps = F.bn * 1000 / F.bt; F.bt = F.bn = 0; F.town = document.body.classList.contains('h-town');
+  const fps = F.bn * 1000 / F.bt; F.bt = F.bn = 0; const tw = document.body.classList.contains('h-town');
+  if (tw !== F.town) { F.town = tw; const q0 = F.q; fmMode(); if (F.q !== q0) { F.cool = Math.max(F.cool, 2); F.pre = 0; adaptReset(2); F.log.push([+(ts / 1000).toFixed(1), 'mode', F.mode + (F.q ? '30' : '60')]); if (F.log.length > 40) F.log.splice(0, 20); return; } }
   if (F.q && !F.st) { F.fps = Math.round(fps * 10) / 10; return; }
   fmEval(fps, ts / 1000);
 }
 function fmView() {
-  const F = FM, f = scene.fog; if (!f || (F.fk === 1 && !F.fa)) return;
-  if (f.far !== F.fa) { F.fb = f.far; F.nb = f.near; }
-  if (F.fk === 1) { f.far = F.fb; f.near = F.nb; F.fa = 0; } else { f.far = F.fb * F.fk; f.near = F.nb * F.fk; F.fa = f.far; }
-  const ck = F.town ? 1 : F.fk;
-  if (ck === 1 && !F.ca) return;
-  if (camera.far !== F.ca) F.cb = camera.far;
-  const nf = ck === 1 ? F.cb : Math.max(f.far + 10, F.cb * ck);
-  if (camera.far !== nf) { camera.far = nf; camera.updateProjectionMatrix(); }
-  F.ca = ck === 1 ? 0 : nf; skyDome.scale.setScalar(ck === 1 ? 1 : Math.min(1, nf * 0.95 / 290));
+
+  const F = FM, f = scene.fog; F.vOn = 0; if (!f || F.fk === 1) return;
+  F.nb = f.near; F.fb = f.far; f.near = F.nb * F.fk; f.far = F.fb * F.fk; F.vOn = 1;
+  if (F.town) return;
+  F.cb = camera.far; const nf = Math.max(f.far + 10, F.cb * F.fk);
+  if (nf !== F.cb) { camera.far = nf; camera.updateProjectionMatrix(); F.vOn |= 2; }
+  skyDome.scale.setScalar(Math.min(1, nf * 0.95 / 290)); F.vOn |= 4;
 }
+function fmViewEnd() { const F = FM, v = F.vOn; if (!v) return; F.vOn = 0; const f = scene.fog; if (f) { f.near = F.nb; f.far = F.fb; } if (v & 2) { camera.far = F.cb; camera.updateProjectionMatrix(); } if (v & 4) skyDome.scale.setScalar(1); }
 addEventListener('sm-set', (e) => { const d = e && e.detail, was = FM.mode; if (d && d.gm != null && d.gm !== SET.gm) SET.gm = d.gm; fmMode(); if (was === FM.mode) return;
   fmSet(0); FM.fail.fill(0); FM.hold = 0; FM.cool = 2; FM.pre = 0; FM.lt = 0; FM.bt = FM.bn = 0; adaptReset(1.5); FM.log.push([+(performance.now() / 1000).toFixed(1), 'mode', FM.mode]); });
 
@@ -1773,6 +1788,7 @@ function loop(ts) {
   const tR0 = performance.now();
   renderer.render(scene, camera);
   afterRender(canvas);
+  fmViewEnd();
   const tR1 = performance.now();
   acc += dt; n++;
   locT += dt;
@@ -1942,7 +1958,7 @@ window.SD2 = {
   tp(x, z, y = null) { P.x = x; P.z = z; P.y = y ?? (world.baseAt(x, z) + 0.01); P.vy = 0; },
   yaw(v) { camYaw = v; }, pitch(v) { if (v != null) camPitch = Math.max(-0.2, Math.min(1.1, v)); return camPitch; },
   pos: () => [P.x.toFixed(1), P.y.toFixed(1), P.z.toFixed(1)],
-  step(nn = 1, keyList = []) { keyList.forEach(k => keys.add(k)); for (let i = 0; i < nn; i++) { mouseApply(); step(1/60); doorTick(1/60); hotTick(1/60); MAP.tick(1/60); keysFrameEnd(); } keyList.forEach(k => keys.delete(k)); detailTick(1); renderer.render(scene, camera); },
+  step(nn = 1, keyList = []) { keyList.forEach(k => keys.add(k)); for (let i = 0; i < nn; i++) { mouseApply(); step(1/60); doorTick(1/60); hotTick(1/60); MAP.tick(1/60); keysFrameEnd(); } keyList.forEach(k => keys.delete(k)); detailTick(1); fmView(); renderer.render(scene, camera); fmViewEnd(); },
   doors: () => DOORS.length, doorCheck,
   near: () => hotNear && hotNear.label, act: () => hotNear && act(hotNear),
   film: FILM, top: TOP, acts: ACTS, hotNow: () => hotNear, actOn: h => act(h), camOvr: f => { CAM_OVR = f; }, pg,
