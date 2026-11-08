@@ -136,7 +136,8 @@ export function createGame(id, opt) {
     let genMk = false; if (!RS.j) { let dd = null; try { const m = JSON.parse(LS.get(KEY + ':gen') || 'null'); if (m && Array.isArray(m.dead)) { dd = m.dead.filter(x => typeof x === 'string' && x); genMk = true; } } catch (e) { dd = null; } if (!dd) { const o9 = oldSave(KEY); if (o9) { try { const g9 = genOf(JSON.parse(o9.raw)); dd = genKill(g9, g9.id); } catch (e) { dd = null; } } } if (dd && dd.length) S.gen.dead = dd.slice(-20); }
     const SUB0 = {}; for (const k of Object.keys(S)) { const o = S[k]; if (o && typeof o === 'object' && !Array.isArray(o) && o.v != null && k !== 'vold') SUB0[k] = o; }
   if (!(S.min >= 0 && S.min < DAY_END)) S.min = 7 * 60;
-  let dirty = false, since = 0, acc = 0, ph = phaseOf(S.min), on = null; const T0 = () => ({ earned: 0, got: {}, cells: 0, tasks: 0, cooked: 0, shared: 0, dex: 0, gift: 0, farmW: 0, sold: 0, rainW: 0 });     if (!S.today || typeof S.today !== 'object') S.today = T0(); else for (const [k, v] of Object.entries(T0())) if (typeof S.today[k] !== typeof v) S.today[k] = v;
+
+  let dirty = false, lite = false, idleQ = false, ownT = 0, since = 0, acc = 0, ph = phaseOf(S.min), on = null; const LITE_S = 30; const T0 = () => ({ earned: 0, got: {}, cells: 0, tasks: 0, cooked: 0, shared: 0, dex: 0, gift: 0, farmW: 0, sold: 0, rainW: 0 });     if (!S.today || typeof S.today !== 'object') S.today = T0(); else for (const [k, v] of Object.entries(T0())) if (typeof S.today[k] !== typeof v) S.today[k] = v;
   const emit = (t) => { if (on) on(t); };
   let ro = !!(opt && opt.ro), roSay = ro, failSaid = false, bakAt = 0;
     const onHide = e => { if (ro) return; G.flush(true); if (e && e.type === 'pagehide') LS.set(KEY + ':own', JSON.stringify({ id: null, rel: TAB_ID, at: Date.now() })); }, onVis = () => { if (typeof document !== 'undefined' && document.visibilityState === 'hidden') onHide(); };
@@ -146,17 +147,21 @@ export function createGame(id, opt) {
     if (v.req && v.req !== TAB_ID) { if (G.flush(true)) { ro = true; LS.set(KEY + ':own', JSON.stringify({ id: null, rel: TAB_ID, at: Date.now() })); emit('save-tab'); } else LS.set(KEY + ':own', JSON.stringify({ id: TAB_ID, at: Date.now(), deny: v.req })); }
     else if (v.id && v.id !== TAB_ID) { ro = true; emit('save-tab'); } };
   if (typeof addEventListener === 'function') { addEventListener('storage', onStore); addEventListener('pagehide', onHide); addEventListener('beforeunload', onHide); if (typeof document !== 'undefined') document.addEventListener('visibilitychange', onVis); }
+  const idleRun = f => (typeof requestIdleCallback === 'function' ? requestIdleCallback(f, { timeout: 1000 }) : setTimeout(f, 40)), flushIdle = () => { idleQ = false; G.st.idle++; G.flush(); };
   const G = {
     S,
     on(fn) { on = fn; if (roSay) { roSay = false; setTimeout(() => emit('save-ro'), 0); } },
     mark() { dirty = true; },
-    flush(force) { since = 0; if (ro || (!dirty && !force)) return !ro; const now = Date.now();
+    markLite() { lite = true; },
+    st: { n: 0, lite: 0, ms: 0, max: 0, len: 0, idle: 0 },
+    flush(force) { since = 0; if (ro || (!dirty && !lite && !force)) return !ro; const now = Date.now(), t0 = typeof performance !== 'undefined' ? performance.now() : 0, liteOnly = !dirty && !force;
       for (const k in SUB0) { const o = S[k], o0 = SUB0[k]; if (o !== o0) { if (o && o0 && o.v !== o0.v) { const V = S.vold && typeof S.vold === 'object' ? S.vold : (S.vold = {}); V[k] = { at: now, o: o0 }; } delete SUB0[k]; } }
       const sv = S.sv && typeof S.sv === 'object' ? S.sv : (S.sv = { at: 0, n: 0 }); const at0 = sv.at, n0 = sv.n; sv.at = now; sv.n = (sv.n | 0) + 1; let str; try { str = JSON.stringify(S); } catch (e) { sv.at = at0; sv.n = n0; return false; }
       if (prevRaw && now - bakAt > 60000) { if (LS.set(KEY + ':bak', prevRaw)) bakAt = now; }
       let ok = LS.set(KEY, str); if (!ok) { LS.del(KEY + ':bak'); LS.del('sm-town-stuck'); ok = LS.set(KEY, str); for (let n = 0; !ok && n < 6 && evictOld(); n++) ok = LS.set(KEY, str); }
       if (!ok) { sv.at = at0; sv.n = n0; G.saveErr = now; if (!failSaid) { failSaid = true; emit('save-fail'); } return false; }
-      prevRaw = str; dirty = false; G.savedAt = now; G.saveErr = 0; LS.set(KEY + ':own', JSON.stringify({ id: TAB_ID, at: now })); if (genMk) { genMk = false; LS.del(KEY + ':gen'); } return true; },
+      prevRaw = str; dirty = false; lite = false; ownT = 0; G.savedAt = now; G.saveErr = 0; LS.set(KEY + ':own', JSON.stringify({ id: TAB_ID, at: now })); if (genMk) { genMk = false; LS.del(KEY + ':gen'); }
+      { const Q = G.st, d = t0 ? performance.now() - t0 : 0; Q.n++; if (liteOnly) Q.lite++; Q.ms += d; if (d > Q.max) Q.max = d; Q.len = str.length; } return true; },
     get readOnly() { return ro; }, get migFrom() { return migFrom; }, get loadSrc() { return RS.src; }, had: !!RS.j, savedAt: (S.sv && S.sv.at) || 0, saveErr: 0, key: KEY, why: '',
 
     newGame() { G.why = ''; if (ro) { G.why = 'ro'; return false; } let str = ''; try { str = JSON.stringify(S); } catch (e) { str = ''; } if (!delSave(KEY, str)) { G.why = delSave.why || 'full'; return false; } ro = true; return true; },
@@ -167,11 +172,12 @@ export function createGame(id, opt) {
       if (typeof removeEventListener !== 'function') return; removeEventListener('storage', onStore); removeEventListener('pagehide', onHide); removeEventListener('beforeunload', onHide); if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVis); },
 
     tick(dt, paused) {
-      since += dt; if (dirty && since >= 2) G.flush();
+      since += dt; if (!idleQ && ((dirty && since >= 2) || (lite && since >= LITE_S))) { idleQ = true; idleRun(flushIdle); }
+      if (lite && !ro && (ownT += dt) >= 5) { ownT = 0; LS.set(KEY + ':own', '{"id":"' + TAB_ID + '","at":' + Date.now() + '}'); }
       if (!S.clock || paused) return;
       acc += dt; if (acc < SPM) return;
       while (acc >= SPM) { acc -= SPM; S.min++; }
-      if (S.min % 10 === 0) { dirty = true; emit('clock'); }
+      if (S.min % 10 === 0) { lite = true; emit('clock'); }
       const p = phaseOf(S.min); if (p !== ph) { ph = p; emit('phase'); }
       if (S.min >= DAY_END) emit('midnight');
     },

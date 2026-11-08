@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { buildKid } from './kid.js?v=5';
 import { attachLook, openLookPanel, parseLook, lookColors } from './look.js?v=1';
-import { SET, openSetPanel, openGfxPick } from './settings.js?v=6';
-import { afterRender, takePhoto, openPhotoPanel } from './photo.js?v=6';
+import { SET, openSetPanel, openGfxPick } from './settings.js?v=8';
+import { afterRender, takePhoto, openPhotoPanel } from './photo.js?v=7';
 import { buildWorld } from './world.js?v=159';
 import { SCHOOL } from './layout.js?v=16';
 import * as NAV from './nav.js?v=7';
@@ -46,13 +46,15 @@ const GFX = (() => { const q = new URLSearchParams(location.search), hq = q.get(
 
   const adapt = !hq && !fix && q.get('adapt') !== '0' && !/[?&](check|health)=1/.test(location.search) && !q.get('shot');
   const aaQ = q.get('aa'), aa = aaQ === '1' ? true : aaQ === '0' ? false : !low && !cros;
-  return { mode: low ? 'low' : mobile ? 'mobile' : cros ? 'cb' : 'desktop', dpr: fix || start, cap: fix || cap, start: fix || start, floor: fix || Math.min(start, mobile || low ? 1 : 0.6), ios, shadow: low ? 0 : mobile || cros ? 1024 : 2048, adapt, aa, dev }; })();
+
+  return { mode: low ? 'low' : mobile ? 'mobile' : cros ? 'cb' : 'desktop', dpr: fix || start, cap: fix || cap, start: fix || start, floor: fix || Math.min(start, mobile || (low && window.SM_PROMO) ? 1 : low ? 0.75 : 0.6), ios, shadow: low ? 0 : mobile || cros ? 1024 : 2048, adapt, aa, dev }; })();
 if (NORENDER) { const p = Math.min(0.25, 64 / Math.max(64, innerWidth)); Object.assign(GFX, { dpr: p, cap: p, start: p, floor: p, adapt: false, aa: false, norender: true }); }
 
 const FM = (() => { const q = new URLSearchParams(location.search), fixed = !!(window.SM_PROMO || NORENDER || q.get('hq') === '1' || +q.get('dpr') || q.get('adapt') === '0' || /[?&](check|health)=1/.test(location.search) || q.get('shot'));
   return { on: !fixed, q: false, mode: 'fixed', target: 60, lv: 0, step: '기본', fps: 0, fk: 1, dk: 1, shOff: false, slowN: 0, goodT: 0, cool: 0, hold: 0, upAt: -1e9, pre: 0, fail: [0, 0, 0], bt: 0, bn: 0, last: 0, lt: 0, draws: 0, fa: 0, fb: 0, nb: 0, ca: 0, cb: 0, town: false, log: [] }; })();
 const FM_STEP = ['기본', '안개 당김', '디테일 줄임', '그림자 끔'];
-function fmMode() { FM.q = FM.on && SET.gm === 1; FM.mode = !FM.on ? 'fixed' : FM.q ? 'graphics' : SET.gm === 2 ? 'smooth' : 'auto'; FM.target = FM.q ? 30 : 60; }
+const FM_LITE = GFX.mode === 'cb' || GFX.mode === 'low', FM_LOW30 = GFX.mode === 'low';
+function fmMode() { const a30 = FM.on && !SET.gm && FM_LOW30; FM.q = FM.on && (SET.gm === 1 || a30); FM.mode = !FM.on ? 'fixed' : SET.gm === 1 ? 'graphics' : SET.gm === 2 ? 'smooth' : 'auto'; FM.target = FM.q ? 30 : 60; FM.st = FM.mode === 'smooth' || (FM.mode === 'auto' && FM_LITE); }
 fmMode(); GFX.fm = FM;
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: GFX.aa, powerPreference: 'high-performance' });
 if (NORENDER) {
@@ -1371,23 +1373,24 @@ function fmSet(lv) {
   const off = lv >= 3 && GFX.shadow > 0; if (off !== FM.shOff) { FM.shOff = off; sun.castShadow = !off; renderer.shadowMap.enabled = !off && GFX.shadow > 0; if (!off) bakeShadows(); }
 }
 function fmEval(fps, now) {
-  const F = FM; F.fps = Math.round(fps * 10) / 10; if (F.mode !== 'smooth') { if (F.lv) fmSet(0); return; }
+  const F = FM; F.fps = Math.round(fps * 10) / 10; if (!F.st) { if (F.lv) fmSet(0); return; }
   if (F.cool > 0) { F.cool--; F.slowN = 0; F.goodT = 0; return; }
   if (F.pre) { const p0 = F.pre; F.pre = 0; if (fps < p0 * 1.04 + 0.5 && F.lv > 0) { F.log.push([+now.toFixed(1), 'nohelp', F.lv, F.fps]); fmSet(F.lv - 1); F.hold = now + 120; F.cool = 2; return; } }
-  if (fps < 50) { F.slowN++; F.goodT = 0; } else F.slowN = 0;
+  if (fps < (F.q ? 27 : 50)) { F.slowN++; F.goodT = 0; } else F.slowN = 0;
   const A = ADAPT, dprDone = !GFX.adapt || A.lvl >= A.ladder.length - 1 || (A.capT && performance.now() < A.capT);
   if (F.slowN >= 2 && F.lv < (GFX.shadow > 0 ? 3 : 2) && now >= F.hold && dprDone) { if (now - F.upAt < 12) F.fail[F.lv] = Math.min(4, F.fail[F.lv] + 1);
     F.pre = fps; fmSet(F.lv + 1); F.cool = 3; F.slowN = 0; F.log.push([+now.toFixed(1), 'down', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); return; }
-  if (F.lv > 0 && fps >= 57) { F.goodT++; if (F.goodT >= 6 * 2 ** F.fail[F.lv - 1]) { F.upAt = now; fmSet(F.lv - 1); F.cool = 3; F.goodT = 0; F.log.push([+now.toFixed(1), 'up', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); } } else F.goodT = 0;
+  if (F.lv > 0 && fps >= (F.q ? 29.5 : 57)) { F.goodT++; if (F.goodT >= 6 * 2 ** F.fail[F.lv - 1]) { F.upAt = now; fmSet(F.lv - 1); F.cool = 3; F.goodT = 0; F.log.push([+now.toFixed(1), 'up', F.lv, F.fps]); if (F.log.length > 40) F.log.splice(0, 20); } } else F.goodT = 0;
 }
 function fmTick(ts) {
   const F = FM, raw = F.last ? ts - F.last : 0; F.last = ts; F.draws++;
   if (!F.on || !(raw > 0)) return;
   if (document.hidden || window.SM_HOLD3D > 0 || (ADAPT.hold && ADAPT.hold())) { F.bt = F.bn = 0; return; }
+  if (window.SM_BUILD > 0) { F.bt = F.bn = 0; F.cool = Math.max(F.cool, 3); return; }
   if (raw > 250) { F.bt = F.bn = 0; return; }
   F.bt += raw; F.bn++; if (F.bt < 1000) return;
   const fps = F.bn * 1000 / F.bt; F.bt = F.bn = 0; F.town = document.body.classList.contains('h-town');
-  if (F.q) { F.fps = Math.round(fps * 10) / 10; return; }
+  if (F.q && !F.st) { F.fps = Math.round(fps * 10) / 10; return; }
   fmEval(fps, ts / 1000);
 }
 function fmView() {
@@ -1937,7 +1940,7 @@ window.SD2 = {
   doors: () => DOORS.length, doorCheck,
   near: () => hotNear && hotNear.label, act: () => hotNear && act(hotNear),
   film: FILM, top: TOP, acts: ACTS, hotNow: () => hotNear, actOn: h => act(h), camOvr: f => { CAM_OVR = f; }, pg,
-  perf: () => ({ fps: FM.fps1 || 0, mode: FM.mode, target: FM.target, step: FM.lv, stepName: FM.step, dpr: GFX.dpr, dprLvl: ADAPT.lvl + '/' + (ADAPT.ladder.length - 1), fog: FM.fk, detail: FM.dk, shadow: !FM.shOff && GFX.shadow > 0, drawCalls: FM.dc || 0, gfxMode: GFX.mode, log: FM.log.slice(-8) }),
+  perf: () => ({ fps: FM.fps1 || 0, mode: FM.mode, steps: !!FM.st, target: FM.target, step: FM.lv, stepName: FM.step, dpr: GFX.dpr, dprLvl: ADAPT.lvl + '/' + (ADAPT.ladder.length - 1), fog: FM.fk, detail: FM.dk, shadow: !FM.shOff && GFX.shadow > 0, drawCalls: FM.dc || 0, gfxMode: GFX.mode, log: FM.log.slice(-8) }),
   touch: TOUCH, gfx: GFX, title: TITLE, input: { keys, KEY_NEW, KEY_UP, MOUSE, clear: keysClear }, prewarm, setDpr, setShadowSize, adaptTick,
   cam: () => [+camYaw.toFixed(3), +camPitch.toFixed(3), camFirst, +camZ.toFixed(3)],
 

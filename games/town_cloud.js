@@ -2,9 +2,9 @@ const CF_HTTP = (() => { try { const q = new URLSearchParams(location.search).ge
 const CLS_K = 'sm-town-cls';
 export function classCode() { try { const q = new URLSearchParams(location.search).get('cls'); if (q != null) { const c = /^[A-Za-z0-9]{4,8}$/.test(q) ? q.toLowerCase() : ''; if (c) localStorage.setItem(CLS_K, c); else localStorage.removeItem(CLS_K); return CF_HTTP ? c : ''; } return CF_HTTP ? (localStorage.getItem(CLS_K) || '') : ''; } catch (e) { return ''; } }
 
-export async function cloudCall(kind, code, num, body, ms = 5000) {
-  if (!CF_HTTP || !code) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0;
-  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + '/' + num, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined, keepalive: kind === 'save' && body.k9 }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
+export async function cloudCall(kind, code, num, body, ms = 5000, ka) {
+  if (!CF_HTTP || !code) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0, raw = typeof body === 'string';
+  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + '/' + num, { method: 'POST', headers: { 'content-type': 'application/json' }, body: raw ? body : JSON.stringify(body), signal: ac ? ac.signal : undefined, keepalive: kind === 'save' && !!(ka != null ? ka : !raw && body.k9) }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
   catch (e) { return { st: 0, j: null }; } finally { if (t) clearTimeout(t); } }
 
 export async function cloudTeach(kind, code, body, ms = 8000) {
@@ -39,9 +39,10 @@ export function cloudSync({ key, code, num, pin, alive, onFail, flush, more, onG
     const gw = genWin(r.j.data, loc); if (gw === 'a') return 'dead'; if (gw === 'b') return 'ok';
     if (!(meta.at && r.j.at <= meta.at) && prog(r.j.data) > prog(loc)) return 'behind';
     return 'ok'; };
-  const push = async (k9) => { if (busy || stop9 || !alive()) return; if (flush) { try { if (flush() === false) return; } catch (e) {   } } let s = '';     try { s = localStorage.getItem(key) || ''; } catch (e) { return; } if (!s || s === lastS) return; let data; try { data = JSON.parse(s); } catch (e) { return; }
-    if (!chk || Date.now() - chk > CHK_MS) { if (k9) { if (!chk) return; } else { busy = true; const c = await check(); busy = false; if (stop9 || !alive() || !c) return; if (c !== 'ok') { stop9 = true; blk = c; if (onGen) onGen(c); return; } try { s = localStorage.getItem(key) || ''; data = JSON.parse(s); } catch (e) { return; } if (!s || s === lastS) return; } }
-    busy = true; const r = await cloudCall('save', code, num, { pin, data, k9: !!k9 }); busy = false;
+  const okJ = s => s.charCodeAt(0) === 123 && s.charCodeAt(s.length - 1) === 125;
+  const push = async (k9) => { if (busy || stop9 || !alive()) return; if (flush) { try { if (flush() === false) return; } catch (e) {   } } let s = '';     try { s = localStorage.getItem(key) || ''; } catch (e) { return; } if (!s || s === lastS || !okJ(s)) return;
+    if (!chk || Date.now() - chk > CHK_MS) { if (k9) { if (!chk) return; } else { busy = true; const c = await check(); busy = false; if (stop9 || !alive() || !c) return; if (c !== 'ok') { stop9 = true; blk = c; if (onGen) onGen(c); return; } try { s = localStorage.getItem(key) || ''; } catch (e) { return; } if (!s || s === lastS || !okJ(s)) return; } }
+    busy = true; const r = await cloudCall('save', code, num, '{' + (pin == null ? '' : '"pin":' + JSON.stringify(pin) + ',') + '"data":' + s + ',"k9":' + !!k9 + '}', 5000, !!k9); busy = false;
     if (r.st === 200 && r.j && r.j.ok) { lastS = s; failed = false; try { localStorage.setItem(metaK(key), JSON.stringify({ at: r.j.at })); } catch (e) {   } } else if (!failed) { failed = true; if (onFail) onFail(r.j && r.j.m); } };
   const iv = setInterval(() => { if (!alive()) { clearInterval(iv); removeEventListener('pagehide', ph); return; } push(false); }, 45000);
   const ph = () => { let n = 0; try { n = (localStorage.getItem(key) || '').length; } catch (e) {   } if (n < 60000) push(true); };
