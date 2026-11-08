@@ -176,7 +176,9 @@ const SANDMAP = `
 
 const FORB = `
 { vec2 q = vWP_a.xz; float fd = 1.0 - smoothstep(70.0, 170.0, distance(cameraPosition, vWP_a)), fw = vFw_a.x * fd, td = mix(6.0, 6.0 - vFw_a.y, fd), au = uSea_a.z, wi = uSea_a.w;    
-  float n1 = texture2D(uNz_a, q / 13.0).r, n2 = texture2D(uNz_a, q / 3.7 + 0.29).r, lu = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)), sn = smoothstep(0.42, 0.62, lu);    
+  vec2 dqx9 = dFdx(q), dqy9 = dFdy(q);    
+  if (uG3F_a < 0.5 || fw > 0.01 || td < 3.21) {    
+  float n1 = textureGrad(uNz_a, q / 13.0, dqx9 / 13.0, dqy9 / 13.0).r, n2 = textureGrad(uNz_a, q / 3.7 + 0.29, dqx9 / 3.7, dqy9 / 3.7).r, lu = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)), sn = smoothstep(0.42, 0.62, lu);    
   float eb = smoothstep(0.03, 0.16, fw) * (1.0 - smoothstep(0.3, 0.6, fw)), vg = max(1.0 - smoothstep(0.4, 2.6, td + (n2 - 0.5) * 1.2), eb * 0.8) * (1.0 - sn);    
   if (vg > 0.01) { vec3 gc = mix(mix(vec3(0.30, 0.46, 0.10), vec3(0.42, 0.50, 0.12), n1), vec3(0.58, 0.48, 0.22), au * 0.8); gc = mix(gc, vec3(0.50, 0.44, 0.32), wi);
     float bl = texture2D(uNz_a, vec2(q.x * 1.9 + q.y * 0.4, q.y * 0.33 - q.x * 0.21)).r; diffuseColor.rgb = mix(diffuseColor.rgb, gc * (0.8 + 0.42 * bl), vg * 0.75); }    
@@ -199,7 +201,7 @@ const FORB = `
       float tone = 0.85 + 0.2 * n2;
 #endif
       vec3 rcol = mix(vec3(0.40, 0.39, 0.35), vec3(0.47, 0.45, 0.40), n1) * tone; rcol = mix(rcol, vec3(0.38, 0.42, 0.22), smoothstep(0.62, 0.7, n2) * 0.45 * (1.0 - wi));
-      diffuseColor.rgb = mix(diffuseColor.rgb, rcol, rk * (1.0 - 0.6 * sn)); } } }
+      diffuseColor.rgb = mix(diffuseColor.rgb, rcol, rk * (1.0 - 0.6 * sn)); } } } }
 `;
 const FORL = `
 { float fw = vFw_a.x;
@@ -263,7 +265,7 @@ export function createLook({ T3, map, lite, tideLvl, TEX, MATS, scene, game, pha
   const gameMin = () => (game && game() ? game().min : 600);
   const OFF = new Set(((typeof location !== 'undefined' && new URLSearchParams(location.search).get('artoff')) || '').split(','));
   const LITE = !!lite, CA = new T3.Color(), CB = new T3.Color(), V3 = new T3.Vector3();
-  const U = { uSkyH_a: { value: new T3.Color(0xd0e7f5) }, uSkyZ_a: { value: new T3.Color(0x5a9de0) }, uGlow_a: { value: new T3.Color(0x000000) }, uSunW_a: { value: new T3.Vector3(0.4, 0.7, 0.3).normalize() }, uSunC_a: { value: new T3.Color(0xffffff) },
+  const U = { uSkyZW_a: { value: 0 }, uG3F_a: { value: 1 }, uSkyH_a: { value: new T3.Color(0xd0e7f5) }, uSkyZ_a: { value: new T3.Color(0x5a9de0) }, uGlow_a: { value: new T3.Color(0x000000) }, uSunW_a: { value: new T3.Vector3(0.4, 0.7, 0.3).normalize() }, uSunC_a: { value: new T3.Color(0xffffff) },
     uT_a: { value: 0 }, uNz_a: { value: null }, uRefl_a: { value: 0.6 }, uFoam_a: { value: new T3.Color(0xffffff) }, uWetK_a: { value: 1 }, uWind_a: { value: 1 }, uDisc_a: { value: new T3.Color(0xffffff) }, uDiscK_a: { value: 1 }, uDiscW_a: { value: new T3.Vector3(0, 1, 0) }, uSea_a: { value: new T3.Vector4(0, 1, 0, 0) }, uRain_a: { value: 0 }, uWlv_a: { value: 0 }, uPud_a: { value: 0 } };
 
   { const N = 128, c = document.createElement('canvas'); c.width = c.height = N; const g = c.getContext('2d'), im = g.createImageData(N, N), F = new Float32Array(N * N); let sd = 9127; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
@@ -289,7 +291,7 @@ export function createLook({ T3, map, lite, tideLvl, TEX, MATS, scene, game, pha
     const at = o.base ? '#include <alphamap_fragment>' : '#include <envmap_fragment>';
     if (o.pre) sh.fragmentShader = sh.fragmentShader.replace('#include <alphamap_fragment>', o.pre + '#include <alphamap_fragment>');
     if (o.map) sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', o.map);
-    sh.fragmentShader = dv + (hf ? '' : 'varying vec3 vWP_a;\n') + WLVU + 'uniform vec4 uSea_a;\nuniform float uRain_a;\nuniform float uWind_a;\nuniform vec3 uFoam_a;\nuniform float uRefl_a;\nuniform float uWetK_a;\n' + SKYF + sh.fragmentShader.replace(at, F + at); defs(sh, false); }, ck); };
+    sh.fragmentShader = dv + (hf ? '' : 'varying vec3 vWP_a;\n') + WLVU + 'uniform vec4 uSea_a;\nuniform float uRain_a;\nuniform float uWind_a;\nuniform vec3 uFoam_a;\nuniform float uRefl_a;\nuniform float uWetK_a;\nuniform float uG3F_a;\n' + SKYF + sh.fragmentShader.replace(at, F + at); defs(sh, false); }, ck); };
   const forest = art3('forest', 'forest3', FORL, { fw: true, pre: FORB }), pave = art3('pave', 'pave3', PAVEF, { pd: true });
   const salt = art3('saltpan', 'salt3', SALTF, {}), sand = art3('sand', 'sand3', SANDF, { sand: true, map: SANDMAP }), paddy = art3('paddy', 'paddy3', PADDYF, { ac: true }), field = art3('field', 'field3', FARMF, { ac: true }), river = art3('river', 'river3', RIVF, {}), bank = art3('river', 'bank3', BANKF, { sd: true, base: true });
 
@@ -340,10 +342,13 @@ export function createLook({ T3, map, lite, tideLvl, TEX, MATS, scene, game, pha
   let SKY = null, OLD = null, CLD = null, HEMI = null, SUN = null;
   function findSky() { const sc = scene(); if (!sc) return; for (const o of sc.children) { if (!OLD && o.isMesh && o.renderOrder === -1 && o.geometry && o.geometry.type === 'SphereGeometry' && o.material && o.material.vertexColors && o.material.depthWrite === false) OLD = o; if (!HEMI && o.isHemisphereLight) HEMI = o; if (!SUN && o.isDirectionalLight) SUN = o;
       if (!CLD && o.isMesh && o.material && o.material.vertexColors && o !== OLD && o.geometry) { const g = o.geometry; if (!g.boundingBox) g.computeBoundingBox(); const bb = g.boundingBox; if (bb && bb.min.y > 40 && bb.max.x - bb.min.x > 150 && bb.max.y < 200) CLD = o; } } }
+
+  const G3SKY = !/[?&]g3=0/.test(location.search);
+  function skyLast(on) { U.uSkyZW_a.value = on ? 1 : 0; if (SKY) SKY.renderOrder = on ? 1e6 : -1; return !!on; }
   function skyOn() { if (SKY || OFF.has('sky')) return; findSky(); const g = new T3.SphereGeometry(280, 48, 24), mat = new T3.ShaderMaterial({ uniforms: U, side: T3.BackSide, depthWrite: false, fog: false, toneMapped: false,
-      vertexShader: SKYF + 'varying vec3 vD_a;\nvarying vec3 vC_a;\nvoid main() { vD_a = position; vC_a = ' + (LITE ? 'skyCol_a' : 'skyFog_a') + '(normalize(position)); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      vertexShader: SKYF + 'uniform float uSkyZW_a;\nvarying vec3 vD_a;\nvarying vec3 vC_a;\nvoid main() { vD_a = position; vC_a = ' + (LITE ? 'skyCol_a' : 'skyFog_a') + '(normalize(position)); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); if (uSkyZW_a > 0.5) gl_Position.z = gl_Position.w; }',
       fragmentShader: SKYF + 'uniform vec3 uDisc_a; uniform float uDiscK_a; uniform vec3 uDiscW_a;\nvarying vec3 vD_a;\nvarying vec3 vC_a;\nvoid main() { vec3 d = normalize(vD_a); vec3 c = vC_a; float s = dot(d, uDiscW_a);' + (LITE ? '' : ' float s0 = max(dot(d, uSunW_a), 0.0), s8 = s0 * s0; s8 *= s8; s8 *= s8; float s32 = s8 * s8; s32 *= s32; c += uGlow_a * s32 * s8 * 0.35; float sh = max(s, 0.0); sh *= sh; sh *= sh; sh *= sh; sh *= sh; sh *= sh; sh *= sh; sh *= sh; c += uGlow_a * sh * 0.5 * uDiscK_a;') + '\n c = mix(c, uDisc_a, smoothstep(0.99955, 0.99975, s) * uDiscK_a * smoothstep(-0.01, 0.01, d.y)); gl_FragColor = vec4(c, 1.0);\n #include <colorspace_fragment>\n}' });
-    SKY = new T3.Mesh(g, mat); SKY.frustumCulled = false; SKY.renderOrder = -1; SKY.matrixAutoUpdate = true; SKY.userData.fx = 1; map.add(SKY); if (OLD) OLD.visible = false; MATS.push(mat); }
+    SKY = new T3.Mesh(g, mat); SKY.frustumCulled = false; SKY.renderOrder = -1; skyLast(G3SKY); SKY.matrixAutoUpdate = true; SKY.userData.fx = 1; map.add(SKY); if (OLD) OLD.visible = false; MATS.push(mat); }
   function skyOff() { if (OLD) OLD.visible = true; if (SKY) { map.remove(SKY); SKY.geometry.dispose(); SKY = null; } }
 
   let lastM = -1, lastW = '', lastP = '', lastI = false, PH = 'day', acc = 0;
@@ -376,7 +381,7 @@ export function createLook({ T3, map, lite, tideLvl, TEX, MATS, scene, game, pha
       { const w4 = SEAW[season ? season() : 'summer'] || SEAW.summer; U.uSea_a.value.set(w4[0], w4[1], w4[2], w4[3]); const rt = wet ? Math.min(1, wet()) : wx && wx() === 'rain' ? 1 : 0; U.uRain_a.value += (rt - U.uRain_a.value) * (rt > U.uRain_a.value ? 0.12 : 0.03); } } }
   function setPhase() { apply(true); }
   function dispose() { skyOff(); if (REED) { REED.parent && REED.parent.remove(REED); REED.dispose(); REED = null; } if (REEDG) { REEDG.dispose(); REEDG = null; } }
-  return { U, off: k => OFF.has(k), fogFn: () => (OFF.has('fog') ? 'uSkyH_a' : LITE ? 'skyFogL_a(fd9)' : 'skyFog_a(normalize(fd9))'), ground, water, tide, mudMat, mud, reeds, wlv, waterSet, water9: () => ({ lv: U.uWlv_a.value, pud: U.uPud_a.value, up: WLV.up, down: WLV.down, off: OFF.has('wlv') }), paddy, field, river, bank, salt, sand, forest, pave, skyOn, skyOff, tick, phase: setPhase, apply, dispose, get lite() { return LITE; }, get tideMat() { return TIDE; },
+  return { U, off: k => OFF.has(k), fogFn: () => (OFF.has('fog') ? 'uSkyH_a' : LITE ? 'skyFogL_a(fd9)' : 'skyFog_a(normalize(fd9))'), ground, water, tide, mudMat, mud, reeds, skyLast, wlv, waterSet, water9: () => ({ lv: U.uWlv_a.value, pud: U.uPud_a.value, up: WLV.up, down: WLV.down, off: OFF.has('wlv') }), paddy, field, river, bank, salt, sand, forest, pave, skyOn, skyOff, tick, phase: setPhase, apply, dispose, get lite() { return LITE; }, get tideMat() { return TIDE; },
     reedAt: i => { if (!REED || i >= REED.count) return null; const M4 = new T3.Matrix4(); REED.getMatrixAt(i, M4); return [+M4.elements[12].toFixed(1), +M4.elements[14].toFixed(1)]; },
     info: () => ({ sky: !!SKY, old: !!OLD, reeds: REED ? REED.count : 0, reedVis: REED ? REED.visible : false, mud: !!MUDM, ph: PH, m: lastM, sunW: U.uSunW_a.value.toArray().map(v => +v.toFixed(2)), exp: window.SD2 && +SD2.renderer.toneMappingExposure.toFixed(2) }) };
 }
