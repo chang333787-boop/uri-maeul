@@ -264,7 +264,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     return at >= d0 ? (en ? 'today ' : '오늘 ') + hm : at >= d0 - 864e5 ? (en ? 'yesterday ' : '어제 ') + hm : en ? (d.getMonth() + 1) + '/' + d.getDate() : (d.getMonth() + 1) + '월 ' + d.getDate() + '일'; }
   function svLine(j, where, en) { if (!j) return ''; const w = whenTxt(j.sv && j.sv.at, en); return (en ? 'Last time: Day ' + (j.day || 1) : '지난번: ' + (j.day || 1) + '일째') + (where ? ' · ' + where : '') + (w ? ' · ' + w + (en ? ' saved' : ' 저장') : ''); }
   const OPEN0 = !window.SM_PROMO;
-  window.SM_BUILD = 1;
+  window.SM_BUILD = 1; window.SM_T_RDY = 0;
   const LD = (() => { let first = true; try { first = OPEN0 ? !SAVE0 : SID9 ? !localStorage.getItem(SAVEK9) : sessionStorage.getItem('sm.town.how') !== '1'; } catch (e) {   }
     const E9 = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])), el = document.createElement('div'); el.className = 'twn-p twn-ld';
     el.innerHTML = '<div class="bx"><h3>🏘 ' + E9(D.title) + (first ? '에 온 걸 환영해요' : '') + '</h3><div class="ldb"><i></i></div><div class="ldt"><span class="sp"></span><span class="tx">마을을 짓기 시작해요</span><b>0%</b></div>'
@@ -606,7 +606,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
 
   let RCB = null; const RCT = { ms: 0, n: 0, long: 0 }, NOOP9 = () => {};
   const armRC = (e, attrs) => { const G = e.grp; if (!G) { armFree(e.m, attrs); return; } for (const u of G.subs) { armFree(u.m, attrs); if (u.f) armFree(u.f, attrs); } for (const P of G.pool) for (const pm of P) armFree(pm, attrs); if (G.sup && G.sup.mesh) armFree(G.sup.mesh, attrs); };
-  const ARMED = new Set(), armFree = (m, attrs) => { if (!m) return; ARMED.add(m); m.onAfterRender = () => { for (const a of attrs) if (a.usage === T3.StaticDrawUsage) a.array = null; m.onAfterRender = NOOP9; ARMED.delete(m); }; };
+  const ARMED = new Set(), KEEPA9 = /[?&]keeparr=1/.test(location.search), armFree = (m, attrs) => { if (!m || KEEPA9) return; ARMED.add(m); m.onAfterRender = () => { for (const a of attrs) if (a.usage === T3.StaticDrawUsage) a.array = null; m.onAfterRender = NOOP9; ARMED.delete(m); }; };
 
   const Q8OFF = /[?&]q8=0/.test(location.search), Q8S = { n: 0, c: 0, skipC: 0, ms: 0 };
   const q8ok = a => !!a && !a.isInterleavedBufferAttribute && a.g9 === 1 && !a.up9 && a.usage === T3.StaticDrawUsage && !a.normalized && a.itemSize === 3 && a.array instanceof Float32Array && a.array.length === a.count * 3;
@@ -5467,7 +5467,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
 
   const tchOff = () => { try { sessionStorage.removeItem('sm.t'); } catch (e) {   } hudRefresh(); };
 
-  let TEA9 = null, TEA9P = null, TEA9W = 0, TEA9R = 0, TEA9U = 0; const teaLoad = () => TEA9P || (TEA9P = import('./town_teach.js?v=10' + (TEA9R ? '&r=' + TEA9R : '')).then(m => { if (dead) return null; if (!TEA9) TEA9 = m.createTeach({ GAME, id, key: SAVEK9, en: () => LANG === 'en', esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), say: (t, s9, lv) => say(t, s9, lv), pin: () => teacherPin((m9, t9) => say(m9, t9 || 2.5)), tchOn: () => tchOn(), tchOff: () => tchOff(),
+  let TEA9 = null, TEA9P = null, TEA9W = 0, TEA9R = 0, TEA9U = 0; const teaLoad = () => TEA9P || (TEA9P = import('./town_teach.js?v=11' + (TEA9R ? '&r=' + TEA9R : '')).then(m => { if (dead) return null; if (!TEA9) TEA9 = m.createTeach({ GAME, id, key: SAVEK9, en: () => LANG === 'en', esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), say: (t, s9, lv) => say(t, s9, lv), pin: () => teacherPin((m9, t9) => say(m9, t9 || 2.5)), tchOn: () => tchOn(), tchOff: () => tchOff(),
     cls: () => CLS9 || classCode(), chapters: back => qst().tlist(back), due: () => !!qst().due(), dueSkip: () => qst().dueSkip(), wx: () => openWx(), rec: () => REC.view() }); return TEA9; }).catch(e => { TEA9P = null; TEA9R++; console.warn('[선생님 칸] 불러오기', e); return null; }));
   const teaDo = (k, ...a) => { if (TEA9) return TEA9[k](...a); if (TEA9W) return; TEA9W = 1; const p0 = panel; teaLoad().then(T => { TEA9W = 0; if (!T && !dead) say(TEA9U++ ? '불러오지 못했어요. 새로고침해 주세요' : '불러오지 못했어요 — 한 번 더 눌러 주세요', 3); if (T && !dead && panel === p0) T[k](...a); }); };
   const TEAL = { open: () => teaDo('open'), home: () => teaDo('home'), board: s9 => teaDo('board', s9), lock: () => teaDo('lock') };
@@ -5892,7 +5892,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
   let QUIT9 = false; const quitEarly = () => { if (QUIT9) return; QUIT9 = true; dead = true; window.SM_BUILD = 0;     const T = f => { try { f(); } catch (e) { console.error('[마을] 짓기 취소 정리', e); } };
     T(() => { if (CSY9) CSY9.stop(); }); T(() => PBX.dispose()); T(() => undoCommit()); T(() => GAME.flush()); T(() => GAME.dispose()); T(() => JOBS.dispose()); T(() => DISC.dispose()); T(() => EFX.dispose()); T(() => FEEL.dispose()); if (SAYN.h) { clearTimeout(SAYN.h); SAYN.h = 0; }
     T(() => LD.el.remove()); T(() => css.remove()); T(() => HUDCSS.remove()); T(() => { if (KEYEL) KEYEL.remove(); }); T(() => { if (TIPS) TIPS.stop(); }); T(() => map.player.freeze(false)); };
-  if (OPEN0 && !params.plan) titleShow(true);
+  if (OPEN0 && !params.plan) { titleShow(true); window.SM_T_RDY = performance.now(); }
   let built9 = false; try { await build({ step: LD.step, set: LD.set }); built9 = true; } finally { if (GATE9) clearInterval(GATE9); GATE9 = null; if (!built9) quitEarly(); } if (map.gone) { quitEarly(); return {}; } LOOKX.skyOn(); LOOKX.apply(true); g3Set();     farmInit(); snowDraw(); sapDraw();
   if (!RANGE) { const P = [], C = [], N = [], R = rng0(77), n = 46, r0 = 286;
     for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2, w = 0.16 + R() * 0.12, hgt = 16 + R() * 34 + (Math.sin(a * 3) + 1) * 6, back = R() < 0.5, rr = r0 + (back ? 8 : 0), col = back ? [0.62, 0.74, 0.78] : [0.5, 0.66, 0.62];
@@ -7560,7 +7560,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
   Object.assign(window.SM_TOWN, { read: { stat: () => ({ ban: BANQ.stat(), toast: TOSQ.stat() }), left: () => readLeft(), tleft: () => TOSQ.left(), sec: t => readSec(t), memo: () => (QST && QST.memo ? QST.memo() : ''), ban: (t, s9) => map.hud.banner(t, s9), toast: (t, s9) => map.hud.toast(t, s9) } });
   Object.assign(window.SM_TOWN, { region: () => ({ cur: REGX.cur(), log: REGX.log().slice(), stones: RSTN.map(q => ({ ...q })), labels: regCenters().map(q => ({ ...q, t: q.kid ? q.t : regName(q.rg, LANG === 'en') })), kids: kidH().groups.map(g => ({ id: g.id, t: g.t, names: g.names, cells: g.cells.map(q => q.cell) })), kidNow: REGX.kid(), names: REGN }), regionAt: (x, z) => regionOf(x, z), regionReset: () => REGX.reset() });
   Object.assign(window.SM_TOWN, { openShow: (id, from) => openShow(id, from), showFor: n => showFor(n), show: () => SHOW.info(), showSeek: T => SHOW.seek(T), showPause: v => SHOW.pause(v) });
-  if (BENCH9) import('./town_bench.js?v=2').then(m => m.runBench({ map, id, url: import.meta.url })).catch(e => console.error('🧪 bench', e));
+  if (BENCH9) import('./town_bench.js?v=5').then(m => m.runBench({ map, id, url: import.meta.url })).catch(e => console.error('🧪 bench', e));
 
   function makeLife() {
     if (!GRAPH || !GRAPH.nodes.length) return null; const NO = GRAPH.nodes, AD = GRAPH.adj, R = rng0(hashS('life' + LID)), O3 = new T3.Object3D(), C9 = new T3.Color(), geos = [], mats = [], meshes = [], TEX9L = [];

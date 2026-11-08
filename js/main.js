@@ -12,9 +12,10 @@ import { createTouch, touchPrimary } from './touch.js?v=11';
 import { createTitle } from './title.js?v=29';
 import { createFilm } from './film.js?v=17';
 import { createTop } from './topview.js?v=11';
+import { createDiag } from './diag.js?v=4';
 import { createActions } from './actions.js?v=5';
 
-const TOWN_PRE = ['games/town.js?v=343', 'games/town_yard.js?v=12', 'games/town_indoor.js?v=24', 'games/town_fire.js?v=1', 'games/town_jobs.js?v=32', 'games/town_bake.js?v=6', 'games/town_table.js?v=22', 'games/town_game.js?v=60', 'games/town_story.js?v=45', 'js/look.js?v=1', 'js/kid.js?v=5', 'js/keytext.js?v=1', 'games/town_tips.js?v=11', 'games/town_track.js?v=6', 'games/town_read.js?v=4', 'games/town_go.js?v=5', 'games/town_map2.js?v=3', 'games/town_friends.js?v=1', 'js/settings.js?v=8', 'js/photo.js?v=7', 'games/town_bugs.js?v=2', 'games/town_photos.js?v=5', 'games/town_anim.js?v=2', 'games/town_herd.js?v=5', 'games/town_worker.js?v=9', 'games/town_rhy.js?v=1', 'games/town_sim.js?v=2', 'games/town_show.js?v=3', 'games/town_showfind.js?v=5', 'games/town_outcrop.js?v=6', 'games/town_lifem.js?v=2', 'games/town_skill.js?v=8', 'games/town_minigame.js?v=18', 'games/town_lad.js?v=6', 'games/town_rank.js?v=9', 'games/town_reward.js?v=7', 'games/town_sea4.js?v=5', 'games/town_beach.js?v=3', 'games/town_rf.js?v=4', 'games/town_quiz.js?v=17', 'games/town_rec.js?v=27', 'js/lobby.js?v=20', 'games/town_boat.js?v=9', 'games/town_pollen.js?v=1', 'games/town_res.js?v=2', 'games/town_shore.js?v=9', 'games/town_xp.js?v=12', 'games/town_news.js?v=14', 'games/town_treasure.js?v=13', 'games/town_bus.js?v=1', 'games/town_emerg.js?v=21', 'games/town_why.js?v=10', 'games/town_fix.js?v=2', 'games/town_case.js?v=11', 'games/town_bldg.js?v=19', 'games/town_day.js?v=16', 'games/town_typhoon.js?v=14', 'games/town_wxev.js?v=1', 'games/town_road.js?v=10', 'games/town_ask.js?v=5', 'games/town_stam.js?v=5', 'games/town_enter.js?v=9', 'games/town_janggu.js?v=4', 'games/town_tower.js?v=2', 'games/town_night.js?v=6', 'games/town_chem.js?v=16', 'games/town_cellkit.js?v=10', 'games/town_tools.js?v=21', 'games/town_spend.js?v=6', 'games/town_cozy.js?v=3', 'games/town_bag.js?v=15', 'games/town_bag3.js?v=17', 'games/town_routine.js?v=4', 'games/town_wild.js?v=17', 'games/town_path.js?v=23', 'games/town_bundle2.js?v=1', 'games/town_regen.js?v=8', 'games/town_orient.js?v=9', 'games/town_photo.js?v=14', 'games/town_nb.js?v=2', 'games/town_after.js?v=5', 'games/town_feast.js?v=11', 'games/town_season.js?v=9', 'games/town_market.js?v=1', 'games/town_cue.js?v=11', 'games/town_disc.js?v=6', 'games/town_music.js?v=4', 'games/town_feel.js?v=4', 'games/town_efx.js?v=2', 'games/town_surp.js?v=9', 'games/town_ski.js?v=2', 'games/town_heal.js?v=1', 'games/town_subway.js?v=8', 'games/town_look.js?v=9', 'games/town_region.js?v=1', 'games/town_kidlook.js?v=7', 'games/town_pbox.js?v=11', 'games/town_cloud.js?v=6', 'games/town_dex.js?v=26', 'games/town_bundle.js?v=3', 'games/town_sky.js?v=1', 'games/town_farm.js?v=3', 'games/town_fish.js?v=2', 'games/town_deco.js?v=2', 'games/town_places.js?v=7', 'games/town_fire5.js?v=4', 'games/town_animals.js?v=1', 'games/town_salt.js?v=2', 'games/town_tsum.js?v=2', 'js/chatfilter.js?v=1', 'games/town_cine.js?v=2', 'games/town_enter2.js?v=5', 'games/town_laws.js?v=8', 'games/town_close.js?v=1'];
+const TOWN_PRE = ['games/town.js?v=344', 'games/town_yard.js?v=12', 'games/town_indoor.js?v=24', 'games/town_fire.js?v=1', 'games/town_jobs.js?v=32', 'games/town_bake.js?v=6', 'games/town_table.js?v=22', 'games/town_game.js?v=60', 'games/town_story.js?v=45', 'js/look.js?v=1', 'js/kid.js?v=5', 'js/keytext.js?v=1', 'games/town_tips.js?v=11', 'games/town_track.js?v=6', 'games/town_read.js?v=4', 'games/town_go.js?v=5', 'games/town_map2.js?v=3', 'games/town_friends.js?v=1', 'js/settings.js?v=8', 'js/photo.js?v=7', 'games/town_bugs.js?v=2', 'games/town_photos.js?v=5', 'games/town_anim.js?v=2', 'games/town_herd.js?v=5', 'games/town_worker.js?v=9', 'games/town_rhy.js?v=1', 'games/town_sim.js?v=2', 'games/town_show.js?v=3', 'games/town_showfind.js?v=5', 'games/town_outcrop.js?v=6', 'games/town_lifem.js?v=2', 'games/town_skill.js?v=8', 'games/town_minigame.js?v=18', 'games/town_lad.js?v=6', 'games/town_rank.js?v=9', 'games/town_reward.js?v=7', 'games/town_sea4.js?v=5', 'games/town_beach.js?v=3', 'games/town_rf.js?v=4', 'games/town_quiz.js?v=17', 'games/town_rec.js?v=27', 'js/lobby.js?v=20', 'games/town_boat.js?v=9', 'games/town_pollen.js?v=1', 'games/town_res.js?v=2', 'games/town_shore.js?v=9', 'games/town_xp.js?v=12', 'games/town_news.js?v=14', 'games/town_treasure.js?v=13', 'games/town_bus.js?v=1', 'games/town_emerg.js?v=21', 'games/town_why.js?v=10', 'games/town_fix.js?v=2', 'games/town_case.js?v=11', 'games/town_bldg.js?v=19', 'games/town_day.js?v=16', 'games/town_typhoon.js?v=14', 'games/town_wxev.js?v=1', 'games/town_road.js?v=10', 'games/town_ask.js?v=5', 'games/town_stam.js?v=5', 'games/town_enter.js?v=9', 'games/town_janggu.js?v=4', 'games/town_tower.js?v=2', 'games/town_night.js?v=6', 'games/town_chem.js?v=16', 'games/town_cellkit.js?v=10', 'games/town_tools.js?v=21', 'games/town_spend.js?v=6', 'games/town_cozy.js?v=3', 'games/town_bag.js?v=15', 'games/town_bag3.js?v=17', 'games/town_routine.js?v=4', 'games/town_wild.js?v=17', 'games/town_path.js?v=23', 'games/town_bundle2.js?v=1', 'games/town_regen.js?v=8', 'games/town_orient.js?v=9', 'games/town_photo.js?v=14', 'games/town_nb.js?v=2', 'games/town_after.js?v=5', 'games/town_feast.js?v=11', 'games/town_season.js?v=9', 'games/town_market.js?v=1', 'games/town_cue.js?v=11', 'games/town_disc.js?v=6', 'games/town_music.js?v=4', 'games/town_feel.js?v=4', 'games/town_efx.js?v=2', 'games/town_surp.js?v=9', 'games/town_ski.js?v=2', 'games/town_heal.js?v=1', 'games/town_subway.js?v=8', 'games/town_look.js?v=9', 'games/town_region.js?v=1', 'games/town_kidlook.js?v=7', 'games/town_pbox.js?v=11', 'games/town_cloud.js?v=6', 'games/town_dex.js?v=26', 'games/town_bundle.js?v=3', 'games/town_sky.js?v=1', 'games/town_farm.js?v=3', 'games/town_fish.js?v=2', 'games/town_deco.js?v=2', 'games/town_places.js?v=7', 'games/town_fire5.js?v=4', 'games/town_animals.js?v=1', 'games/town_salt.js?v=2', 'games/town_tsum.js?v=2', 'js/chatfilter.js?v=1', 'games/town_cine.js?v=2', 'games/town_enter2.js?v=5', 'games/town_laws.js?v=8', 'games/town_close.js?v=1'];
 { const q9 = new URLSearchParams(location.search); if (q9.get('town') && !window.SM_PROMO && TOWN_PRE.length) { window.SM_TOWNV = +TOWN_PRE[0].split('?v=')[1] || 0; for (const u of TOWN_PRE) { const l9 = document.createElement('link'); l9.rel = 'modulepreload'; l9.href = new URL('../' + u, import.meta.url).href; document.head.appendChild(l9); } } }
 var inCorr = false;
 
@@ -92,6 +93,8 @@ canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (CTXB)
   d.id = 'ctxLost'; d.innerHTML = '<div>🔄 화면이 또 멈췄어요.<br>다른 탭을 닫고 아래 단추를 눌러 주세요.<br><button type="button" style="margin-top:14px;min-height:48px;padding:8px 24px;font:800 18px sans-serif;color:#10213f;background:#ffd23c;border:3px solid #fff;border-radius:12px;cursor:pointer">다시 불러오기</button></div>';
   document.body.appendChild(d); const b9 = d.querySelector('button'); b9.onclick = () => location.reload(); try { if (document.exitPointerLock) document.exitPointerLock(); b9.focus(); } catch (er) {   } }, false);
 canvas.addEventListener('webglcontextrestored', () => { if (!CTXB) location.reload(); }, false);
+
+const DIAG = window.SM_PROMO ? null : createDiag({ canvas, env: () => ({ renderer, GFX, FM, ADAPT, TIMING }) });
 
 function audioUnlock() {
   try { AC = AC || new (window.AudioContext || window.webkitAudioContext)();
@@ -1368,7 +1371,7 @@ function adaptTick(ts) {
   const L0 = A.ladder;
   if (A.pre) {
     const P0 = A.pre; A.pre = null;
-    if (A.ft > P0.ft * 0.88) { A.lvl = P0.lvl; setDpr(L0[A.lvl]); if (A.shadow0 > 1024 && GFX.shadow !== A.shadow0) setShadowSize(A.shadow0); A.capT = performance.now() + 300000; A.log.push(['cap', +A.ft.toFixed(1)]); adaptReset(2); return; }
+    if (A.ft > P0.ft * 0.88) { A.lvl = P0.lvl; setDpr(L0[A.lvl]); if (A.shadow0 > 1024 && GFX.shadow !== A.shadow0) setShadowSize(A.shadow0); A.capT = performance.now() + 300000; A.log.push(['cap', +A.ft.toFixed(1), +(performance.now() / 1000).toFixed(1)]);     adaptReset(2); return; }
   }
   if (A.capT && performance.now() < A.capT) { A.slowT = 0; return; }
   if (A.ft > (FM.q ? 36.5 : 18.5)) { A.slowT += dtE; A.goodT = 0; } else A.slowT = 0;
@@ -1426,8 +1429,13 @@ function fmView() {
   skyDome.scale.setScalar(Math.min(1, nf * 0.95 / 290)); F.vOn |= 4;
 }
 function fmViewEnd() { const F = FM, v = F.vOn; if (!v) return; F.vOn = 0; const f = scene.fog; if (f) { f.near = F.nb; f.far = F.fb; } if (v & 2) { camera.far = F.cb; camera.updateProjectionMatrix(); } if (v & 4) skyDome.scale.setScalar(1); }
-addEventListener('sm-set', (e) => { const d = e && e.detail, was = FM.mode; if (d && d.gm != null && d.gm !== SET.gm) SET.gm = d.gm; fmMode(); if (was === FM.mode) return;
-  fmSet(0); FM.fail.fill(0); FM.hold = 0; FM.cool = 2; FM.pre = 0; FM.lt = 0; FM.bt = FM.bn = 0; adaptReset(1.5); FM.log.push([+(performance.now() / 1000).toFixed(1), 'mode', FM.mode]); });
+function fmApply() { const was = FM.mode; fmMode(); if (was === FM.mode) return;
+  fmSet(0); FM.fail.fill(0); FM.hold = 0; FM.cool = 2; FM.pre = 0; FM.lt = 0; FM.bt = FM.bn = 0; adaptReset(1.5); FM.log.push([+(performance.now() / 1000).toFixed(1), 'mode', FM.mode]); }
+addEventListener('sm-set', (e) => { const d = e && e.detail; if (d && d.gm != null && d.gm !== SET.gm) SET.gm = d.gm; fmApply(); });
+
+const FMLK = { sv: null };
+function fmLock(off) { if (off) { if (FMLK.sv || !FM.on) return false; FMLK.sv = { ad: GFX.adapt, dpr: GFX.dpr }; FM.on = false; GFX.adapt = false; fmApply(); return true; }
+  const sv = FMLK.sv; if (!sv) return false; FMLK.sv = null; setDpr(sv.dpr); GFX.adapt = sv.ad; FM.on = true; fmApply(); adaptReset(2); return true; }
 
 function prewarm() {
   if (NORENDER) return 0;
@@ -1772,7 +1780,8 @@ function loop(ts) {
   if (FM.q && ts) { const g = ts - FM.lt; if (g < 29.3) return; FM.lt = g > 50 ? ts : FM.lt + 33.34; }
   if (ts) fmTick(ts);
   if (!ADAPT.ext) adaptTick(ts || performance.now());
-  const dt = Math.min(0.05, clock.getDelta());
+  const rd = clock.getDelta(), dt = Math.min(0.05, rd);
+  if (DIAG) DIAG.frame(ts, rd, dt);
   const t0 = performance.now();
   if (ts) { if (MOUSE.fl) MOUSE.fd = Math.min(120, Math.max(1, ts - MOUSE.fl)); MOUSE.fl = ts; }
   mouseApply(dt);
@@ -1806,6 +1815,7 @@ function loop(ts) {
 }
 loop();
 TIMING.firstFrameMs = performance.now();
+if (DIAG) DIAG.boot();
 
 const TITLE = TITLE_ON ? createTitle({ THREE, camera, P, CTRL, keys, touch: TOUCH, SCHOOL, tone, toast, game: MAP.game, picker: MAP.picker, setCam: f => { CAM_OVR = f; }, film: FILM, world }) : null;
 if (TITLE) ADAPT.hold = () => TITLE.phase !== 'off';
@@ -1964,7 +1974,7 @@ window.SD2 = {
   near: () => hotNear && hotNear.label, act: () => hotNear && act(hotNear),
   film: FILM, top: TOP, acts: ACTS, hotNow: () => hotNear, actOn: h => act(h), camOvr: f => { CAM_OVR = f; }, pg,
   perf: () => ({ fps: FM.fps1 || 0, mode: FM.mode, steps: !!FM.st, target: FM.target, step: FM.lv, stepName: FM.step, dpr: GFX.dpr, dprLvl: ADAPT.lvl + '/' + (ADAPT.ladder.length - 1), fog: FM.fk, detail: FM.dk, shadow: !FM.shOff && GFX.shadow > 0, drawCalls: FM.dc || 0, gfxMode: GFX.mode, log: FM.log.slice(-8) }),
-  touch: TOUCH, gfx: GFX, title: TITLE, input: { keys, KEY_NEW, KEY_UP, MOUSE, clear: keysClear }, prewarm, setDpr, setShadowSize, adaptTick,
+  touch: TOUCH, gfx: GFX, title: TITLE, input: { keys, KEY_NEW, KEY_UP, MOUSE, clear: keysClear }, prewarm, setDpr, setShadowSize, adaptTick, fmLock,
   cam: () => [+camYaw.toFixed(3), +camPitch.toFixed(3), camFirst, +camZ.toFixed(3)],
 
   map: MAP, phys: { groundAt, blockedAt, ceilAt, camHit, PHY, pGround, pBlocked, pCeil }, ACT, CTRL, camPose: (...a) => ({ ...camPose(...a) }),
@@ -1975,5 +1985,8 @@ window.SD2 = {
     occP95: { get: () => rbPct(RB.occ, RB.oi, 0.95), enumerable: true }, reset: { value: () => { RB.ci = RB.oi = 0; } } }),
 };
 if (!window.SD) window.SD = { perf: window.SD2.perf };
+
+Object.assign(window.SD, DIAG ? { diag: DIAG.get, diagClear: DIAG.clear, diagText: DIAG.text } : { diag: () => ({ off: '홍보판은 기록하지 않아요' }), diagClear: () => '', diagText: () => '' });
+window.SD2.diag = window.SD.diag;
 
 { const QS = new URLSearchParams(location.search), G0 = QS.get('game') || (QS.get('tour') === '1' ? 'tour' : null) || (QS.get('town') && !window.SM_PROMO ? 'town' : null), GAME = window.SM_PROMO && G0 === 'town' ? null : G0;   if (GAME && !SHOT) MAP.game.load(GAME, Object.fromEntries(new URLSearchParams(location.search))); }
