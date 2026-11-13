@@ -67,7 +67,7 @@ import { createSubway } from './town_subway.js?v=8';
 import { createLook, SKYF as SKYF9 } from './town_look.js?v=9';
 import { REGN, REG_KEYS, regName, createRegion, kidHoods } from './town_region.js?v=1';
 import { createKidLook } from './town_kidlook.js?v=7';
-import { createPbox } from './town_pbox.js?v=11';
+import { createPbox } from './town_pbox.js?v=12';
 import { classCode, cloudCall, cloudPull, cloudSync } from './town_cloud.js?v=6';
 import { dexBook, dexLine, dexStamp, DEX_HINT } from './town_dex.js?v=26'; import { bundleBook, bundlePut, inSeason, ALL_STAMP } from './town_bundle.js?v=3'; import { STARS as SKYSTARS, SKY_OF, drawSky } from './town_sky.js?v=1'; import { CROPS, seedsOf, plotState, farmGrow, plantSpots, FARM_MAX } from './town_farm.js?v=3'; import { FISH } from './town_fish.js?v=2';
 const KALIAS = { market: 'shop', museum: 'public', aquarium: 'public', hut: 'shop', pension: 'house', aquadom: 'public', kidscafe: 'shop', clinic: 'hospital', terminal: 'public', mart: 'shop', store: 'shop' };
