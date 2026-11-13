@@ -285,8 +285,8 @@ export function createEmerg(A) {
     void e; if (typeof bodies === 'function') bodies(); notify(); return true; }
   function styWalk() { const e = en(), o = EV.sty; hotOff(EV.kidH); EV.kidH = null; EV.st = 'sw'; STY.st = 'sw'; drop(EV.kidG); EV.kidG = null; EV.kx = null; kidLook(false); if (A.friend) A.friend.pin(null); EV.x = EV.par.x; EV.z = EV.par.z;
     trailStart(); copWalk(); toast('👮 ' + (e ? 'Officer: Well found! Let’s go together — you lead the way.' : '경찰관: 잘 찾았어요! 같이 가요 — 앞장서서 길을 알려 줘요.'), 3.6); sfx('ding'); if (o.onWalk) o.onWalk(); }
-  function stySec() { const e = en(); EV.t = Math.min(EV.t, 200); if (EV.st !== 'sw') return;     const H = EV.par, m0 = me(), dk = dir8(H.x - m0.x, H.z - m0.z); if (dist(H.x, H.z) < (EV.sty.r || 14)) { styMeet(); return; }
-    goalSet('🏠 ' + (e ? 'Walk your friend home to ' + EV.sty.home.name + ' (' + DIRN[dk][1] + ')' : '새 친구랑 같이 ' + EV.sty.home.name + '까지 걸어가요 (' + DIRN[dk][0] + '쪽)')); }
+  function stySec() { const e = en(); EV.t = Math.min(EV.t, 200); if (EV.st !== 'sw') return;     const H = EV.par, m0 = me(), dk = dir8(H.x - m0.x, H.z - m0.z), hh = EV.sty.home, d9 = dist(H.x, H.z), dm = Math.max(5, Math.round(d9 / 5) * 5); if (d9 < (EV.sty.r || 14) || (hh && hh.hit && hh.hit(m0.x, m0.z))) { styMeet(); return; }
+    goalSet('🏠 ' + (e ? 'Walk your friend home to ' + EV.sty.home.name + ' (' + DIRN[dk][1] + ' · ' + dm + ' m)' : '새 친구랑 같이 ' + EV.sty.home.name + '까지 걸어가요 (' + DIRN[dk][0] + '쪽 · ' + dm + 'm)')); }
   function styMeet() { const e = en(), nQ = Object.keys(EV.asked).length, nM = EV.miss; EV.st = 'done'; STY.st = 'done'; GOAL = null; tone(784, 0, 0.18, 'triangle', 0.1); tone(988, 0.18, 0.18, 'triangle', 0.1); tone(1175, 0.36, 0.3, 'triangle', 0.1);
     if (A.friend && EV.par) A.friend.home(EV.par.x, EV.par.z, !!(EV.sty.home && EV.sty.home.door));
     A.skUp('explore', 3, 'emerg:lost'); A.learn('safe:112'); if (copNear(EV.par.x, EV.par.z, 18)) { toast('👮 ' + (e ? 'The officer walked with you to your friend’s door.' : '경찰관이 친구 집 문 앞까지 같이 왔어요.'), 3.2); }     EV.par = null;

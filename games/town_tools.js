@@ -30,7 +30,8 @@ const LOOKF = {
 const NOTHING = [['⛏ 흙만 나왔어요 — 다른 곳도 파 봐요', '⛏ Just soil — try digging somewhere else'], ['⛏ 흙만 나왔어요 — 겉흙이 검은 건 썩은 잎이 섞여서예요', '⛏ Just soil — topsoil is dark because rotten leaves are mixed in']];
 const RANGE = { can: [0.9, 3.6], shovel: [0.9, 2.4], rod: [2.4, 9], lens: [0.6, 2.4], broom: [0.8, 2.4], scope: [0.9, 2], rod2: [2.4, 14] };
 const TANK = 100, USE = 12, RATE = 34, GV = 9.8, PMAX = 140, MMAX = 10, HMAX = 8, CELL = 24;
-const HIDE = { bike: ['🚲 자전거에서 내려서 써요 (B)', '🚲 Get off the bike to use it (B)'], in: ['🏠 밖에서 써요', '🏠 Use it outside'], boat: ['⛵ 배에서 내려서 써요', '⛵ Get off the boat first'], swim: ['🌊 물 밖에서 써요', '🌊 Get out of the water first'] };
+const HIDE = { bike: ['🚲 자전거에서 내려서 써요 (B)', '🚲 Get off the bike to use it (B)'], in: ['🏠 밖에서 써요', '🏠 Use it outside'], boat: ['⛵ 배에서 내려서 써요', '⛵ Get off the boat first'], swim: ['🌊 물 밖에서 써요', '🌊 Get out of the water first'], umb: ['☂ 우산을 접고 써요 (U)', '☂ Close the umbrella to use it (U)'] };
+const TAPMIN = 1.0, MAG = 3.6;
 
 export function createTools(A) {
   const { map, T3 } = A, en = () => A.lang() === 'en', L = a => a[en() ? 1 : 0], esc = t => A.esc(t);
@@ -39,6 +40,7 @@ export function createTools(A) {
   let built = false, dead = false, shownK = null, pressing = false, burstT = 0, aimQ = 0, secQ = 0, holdK = 0, aimHold = 0, shQ = 0, shV = 0, shW = 0, sprayT = 0, emptyT = 0, hissT = 0, wetQ = 0, tipQ = 0;
   const T = { x: 0, y: 0, z: 0, ok: false, lock: '', k: '' }, OVR = { on: false, x: 0, z: 0 }, ACC = { bed: [], fire: 0, fi: -1, fl: 0, flk: '', pot: 0, potk: '' };
   let FS = null, FILL = null, OVL = null, WORM = null, PICK = 0, dirty = true, center = null, lastMode = '', lastDay = -1, tchBtn = null, BAR = null, CSS = null, FAUCH = [], FAUOFF = null, RIVH = null, STANDH = [], seaTold = -1;
+  let pressT = 0, CANS9 = 0, emptyG = -1e9;
   const PEND = [], PILES = [], PCACHE = new Map(), FGRID = new Map();
 
   const S = () => { const s = A.GAME.S; let t = s.tools; if (!t || typeof t !== 'object' || Array.isArray(t)) t = s.tools = {}; if (!t.have || typeof t.have !== 'object') t.have = {}; t.have.can = A.canAway && A.canAway() ? 0 : 1; t.have.shovel = 1;
@@ -84,11 +86,14 @@ export function createTools(A) {
     if (k === 'shovel') { const t = A.trs(), c = t && t.near && t.near(x, z); if (c) return [c.x, c.y, c.z, 'trs']; return null; }
     if (k === 'broom') { let b = null, bd = gear('broom2') ? 2.2 : 1.4; for (const p of PILES) { const d = Math.hypot(p.x - x, p.z - z); if (d < bd) { bd = d; b = p; } } return b ? [b.x, b.y, b.z, 'pile', b.k] : null; }
     if (k === 'lens') { const L9 = lensAt(x, z, me); return L9 ? [L9.x, L9.y, L9.z, L9.kind, L9.key] : null; }
-    if (k === 'can') { const y = surfY(x, z, me.y); if (bedAt(x, z) >= 0) return [x, y, z, 'bed']; const ch = A.chem(); if (ch && ch.fireAt && ch.fireAt(x, z, 1.0) >= 0) return [x, y, z, 'fire']; if (flowerAt(x, z, 0.8)) return [x, y, z, 'flower']; if (potAt(x, z)) return [x, y, z, 'pot']; }
+    if (k === 'can') { const y = surfY(x, z, me.y); if (bedAt(x, z) >= 0) return [x, y, z, 'bed']; const ch = A.chem(); if (ch && ch.fireAt && ch.fireAt(x, z, 1.0) >= 0) return [x, y, z, 'fire'];
+      const fd = flowerAt(me.x, me.z, MAG, 1); if (fd) return [fd.x, surfY(fd.x, fd.z, me.y), fd.z, 'flower'];
+      if (flowerAt(x, z, 0.8)) return [x, y, z, 'flower']; if (potAt(x, z)) return [x, y, z, 'pot'];
+      const fn = flowerAt(x, z, 1.6); if (fn) return [fn.x, surfY(fn.x, fn.z, me.y), fn.z, 'flower']; }
     return null; }
   function bedAt(x, z) { const B = A.farm.beds() || []; for (let i = 0; i < B.length; i++) { const b = B[i]; if (x > b[0] - 0.3 && x < b[1] + 0.3 && Math.abs(z - b[2]) < 0.85) return i; } return -1; }
   function flowerGrid() { if (FGRID.size) return; for (const f of A.flowers() || []) { const k = Math.floor(f.x / 8) + ':' + Math.floor(f.z / 8); let a = FGRID.get(k); if (!a) FGRID.set(k, a = []); a.push(f); } FGRID.set('_', []); }
-  function flowerAt(x, z, r) { flowerGrid(); let b = null, bd = r; const gx = Math.floor(x / 8), gz = Math.floor(z / 8); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) { const a = FGRID.get((gx + i) + ':' + (gz + j)); if (a) for (const f of a) { const d = Math.hypot(f.x - x, f.z - z); if (d < bd) { bd = d; b = f; } } } return b; }
+  function flowerAt(x, z, r, dry) { flowerGrid(); let b = null, bd = r; const gx = Math.floor(x / 8), gz = Math.floor(z / 8); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) { const a = FGRID.get((gx + i) + ':' + (gz + j)); if (a) for (const f of a) { if (dry && !f.dry) continue; const d = Math.hypot(f.x - x, f.z - z); if (d < bd) { bd = d; b = f; } } } return b; }
   let POTS = null; function potAt(x, z) { if (!POTS) POTS = (map.interact.list({ kind: 'pot' }) || []).map(h => (h.at ? [h.at[0], h.at[1], h.at[2]] : [h.x, h.y, h.z])); for (const p of POTS) if (Math.hypot(p[0] - x, p[2] - z) < 1.0) return p; return null; }
   function lensAt(x, z, me) { let b = null, bd = 1.7; { const xp = A.xp && A.xp(), f = xp && xp.near(x, z, 'lens'); if (f) return { x: f.x, y: f.y, z: f.z, kind: 'fos', key: f.id }; }
     for (const s of A.bugs() || []) { if (!s.b || !s.spr || !s.spr.visible) continue; const p = s.spr.position, d = Math.min(Math.hypot(p.x - x, p.z - z), Math.hypot(p.x - me.x, p.z - me.z) < 2.6 ? Math.hypot(p.x - x, p.z - z) * 0.6 : 9); if (d < bd) { bd = d; b = { x: p.x, y: p.y, z: p.z, kind: 'bug', s, key: 'bug' }; } }
@@ -107,9 +112,9 @@ export function createTools(A) {
 
   function hold(k) { const t = S(); if (k === 'can' && !t.have.can) { toast(en() ? '🔧 The watering can is being fixed — it comes to our door tomorrow morning' : '🔧 물뿌리개를 맡겼어요. 내일 아침 우리 집 앞에 와요', 2.8); return false; } if (k && !t.have[k]) { toast('🔒 ' + L(TOOL[k].t) + (en() ? ' — not yet. ' : ' — 아직 없어요. ') + L(TOOL[k].get), 2.8); return false; }
     const nk = k && t.cur !== k ? k : null; if (nk === t.cur) return true; stopPour(); if (FS) fishStop(); t.cur = nk; mark(); showSync(); aimCalc(true); barSync(); tchSync(); A.keysLine(); PICK = 0;
-    if (nk) { tone(880, 0, 0.06, 'triangle', 0.05); tone(1320, 0.06, 0.08, 'triangle', 0.04); if (!t.n['h:' + nk]) { t.n['h:' + nk] = 1; toast(TOOL[nk].ic + ' ' + L(TOOL[nk].how) + (A.tch() ? (en() ? ' (🧰 Use)' : ' (🧰 쓰기)') : (en() ? ' (click or F)' : ' (클릭 또는 F)')), 4); } }
+    if (nk) { tone(880, 0, 0.06, 'triangle', 0.05); tone(1320, 0.06, 0.08, 'triangle', 0.04); const why9 = hiddenWhy(); if (why9 && HIDE[why9]) toast(L(HIDE[why9]), 2.4);     else if (!t.n['h:' + nk]) { t.n['h:' + nk] = 1; toast(TOOL[nk].ic + ' ' + L(TOOL[nk].how) + (A.tch() ? (en() ? ' (🧰 Use)' : ' (🧰 쓰기)') : (en() ? ' (click or F)' : ' (클릭 또는 F)')), 4); } }
     else tone(520, 0, 0.06, 'triangle', 0.04); return true; }
-  function barSync() { if (!BAR) return; const t = S(), k = cur(), wk = A.want && !hiddenWhy() ? A.want() : null, on = !!(A.on() && (shownK || PICK > 0 || (wk && TOOL[wk]))); BAR.classList.toggle('on', on); if (!on) return;
+  function barSync() { if (!BAR) return; const t = S(), k = cur(), wk = A.want && !hiddenWhy() ? A.want() : null, on = !!(A.on() && (shownK || PICK > 0 || (wk && TOOL[wk]))); BAR.classList.toggle('on', on); document.body.classList.toggle('h-tbar', on); if (!on) return;
     for (const b of BAR.children) { const k9 = b.dataset.t; b.classList.toggle('cur', k9 === k); b.classList.toggle('want', k9 === wk && k9 !== k); b.classList.toggle('no', !t.have[k9]); b.title = L(TOOL[k9].t) + (t.have[k9] ? '' : ' — ' + L(TOOL[k9].get)); }
     tankSync(); }
   function barBuild() { if (!BAR) return; BAR.innerHTML = ord().map((k, i) => '<button data-t="' + k + '"><i>' + TOOL[k].ic + '</i><b>' + (i + 1) + '</b>' + (k === 'can' ? '<em><s></s></em>' : '') + '</button>').join(''); tankW = -1; barSync(); }
@@ -119,6 +124,7 @@ export function createTools(A) {
       + '.twn-tools.on{display:flex}.twn-tools button{position:relative;width:44px;height:44px;padding:0;border:2px solid #2b2420;border-bottom-width:4px;border-radius:9px;background:#fff;cursor:pointer;font:24px/1 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif,SMEmoji;color:#2b2420}'
       + '.twn-tools button i{font-style:normal}.twn-tools button b{position:absolute;left:3px;top:1px;font:900 11px system-ui,sans-serif;color:#6a5a4a}.twn-tools button.cur{background:#ffe48a;border-color:#c8443a}.twn-tools button.want{animation:twnWant 1s steps(1) infinite}@keyframes twnWant{50%{background:#ffe48a;border-color:#c8443a}}@media (prefers-reduced-motion:reduce){.twn-tools button.want{animation:none;background:#ffe48a}}.twn-tools button.no{opacity:.35}'
       + '.twn-tools button em{position:absolute;left:5px;right:5px;bottom:3px;height:5px;border-radius:3px;background:#d9cbb5;overflow:hidden}.twn-tools button em s{display:block;height:100%;width:100%;background:#3a8fe0;text-decoration:none}body.touch .twn-tools button b{display:none}body.h-keys .twn-tools{bottom:58px}body.touch .twn-tools{bottom:12px}'
+      + 'body.h-town.h-tbar.h-keys:not(.touch) #hint{bottom:124px!important}body.h-town.h-tbar.h-keys:not(.touch):not(.dlg-on) .twn-xp{bottom:176px}body.h-town.h-tbar.h-keys:not(.touch) .twn-tip{bottom:182px}'
       + '.twn-tuse{position:fixed;right:calc(196px + env(safe-area-inset-right));bottom:calc(100px + env(safe-area-inset-bottom));z-index:22;display:none;align-items:center;justify-content:center;min-width:92px;height:52px;padding:0 14px;border-radius:26px;background:#fff8ea;color:#2b2420;border:3px solid #2b2420;box-shadow:0 4px 0 #2b2420;font:900 17px system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif,SMEmoji;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}.twn-tuse.dn{transform:translateY(3px);box-shadow:0 1px 0 #2b2420}';
     document.head.appendChild(CSS);
     BAR = document.createElement('div'); BAR.className = 'twn-tools ttl-keep'; barBuild();
@@ -128,9 +134,10 @@ export function createTools(A) {
     tchBtn.addEventListener('pointerdown', dn); tchBtn.addEventListener('pointerup', up); tchBtn.addEventListener('pointercancel', up); tchBtn.addEventListener('lostpointercapture', up); document.body.appendChild(tchBtn); }
 
   function press(on, src) {
-    if (!on) { if (pressing && (!src || pressing === src || src === 'all')) { pressing = false; } return false; }
+    if (!on) { if (pressing && (!src || pressing === src || src === 'all')) { const held = (performance.now() - pressT) / 1000;
+        if (src && src !== 'all' && pressing !== 'b' && cur() === 'can' && S().tank > 0 && held < TAPMIN) { pressing = 'b'; burstT = TAPMIN - held; } else pressing = false; } return false; }
     if (!cur() || !A.on()) return false; const why = hiddenWhy(); if (why) { if (HIDE[why]) toast(L(HIDE[why]), 2); return true; } if (A.busy()) return false;
-    if (cur() === 'can') { if (FILL) return true; if (!pressing) { ACM.clear(); POURB.clear(); pourN = 0; sideQ = 0; } pressing = src || 'k'; return true; }
+    if (cur() === 'can') { if (FILL) return true; if (!pressing) { ACM.clear(); POURB.clear(); pourN = 0; sideQ = 0; } pressing = src || 'k'; pressT = performance.now(); return true; }
     useOnce(); return true; }
   function stopPour() { pressing = false; burstT = 0; map.player.holdUse(false); }
   function useOnce() { const k = cur(), act = map.player.acting; if (!k) return; if (k === 'rod' && FS) { fishPress(); return; } if (act && /^(dig|cast|peer|sweep|reach)$/.test(act)) return;
@@ -154,7 +161,9 @@ export function createTools(A) {
     let v = den > 1e-3 ? Math.sqrt(GV * dh * dh / den) : 2; v = Math.max(1.2, Math.min(7.5, v)); const ux = dh > 0.05 ? dx / dh : 0, uz = dh > 0.05 ? dz / dh : 0, tl = Math.max(0.12, Math.min(1.6, dh > 0.05 ? dh / (v * ca) : 0.4));
     EA[j] += rate * dt; while (EA[j] >= 1) { EA[j] -= 1; const jt = 0.18; spawn(1, nx, ny, nz, ux * v * ca + (Math.random() - 0.5) * jt, v * Math.sin(a) + (Math.random() - 0.5) * jt, uz * v * ca + (Math.random() - 0.5) * jt, tl * (0.94 + Math.random() * 0.12), 0.034); } }
   function pourTick(dt) { const t = S(), me = map.player.pos();
-    if (t.tank <= 0) { map.player.holdUse(false); if ((emptyT -= dt) <= 0) { emptyT = 2.5; tone(220, 0, 0.14, 'triangle', 0.07, 180); toast(en() ? '💧 The can is empty — fill it at a tap or a riverbank (E)' : '💧 물이 다 떨어졌어요 — 수돗가나 강가에서 E로 채워요', 2.6); } return; }
+    if (t.tank <= 0) { map.player.holdUse(false); if ((emptyT -= dt) <= 0) { emptyT = 2.5; tone(220, 0, 0.14, 'triangle', 0.07, 180); const w9 = fillNear(me);
+        if (w9 && w9.d > 6 && A.guide && performance.now() - emptyG > 20000) { emptyG = performance.now(); A.guide([w9.x, w9.z], L(w9.nm)); }
+        toast(w9 ? (en() ? '💧 The can is empty — fill it at ' + w9.nm[1] + ' (E)' : '💧 물이 다 떨어졌어요 — ' + w9.nm[0] + '에서 E로 채워요') : (en() ? '💧 The can is empty — fill it at a tap or a riverbank (E)' : '💧 물이 다 떨어졌어요 — 수돗가나 강가에서 E로 채워요'), 3.2); } return; }
     map.player.holdUse(true); const tip = map.player.toolTip(); let nx, ny, nz; if (tip && tip.ok) { nx = tip.x; ny = tip.y; nz = tip.z; } else { const h = Math.atan2(T.x - me.x, T.z - me.z); nx = me.x + Math.sin(h) * 0.45; ny = me.y + 0.62; nz = me.z + Math.cos(h) * 0.45; }
     if ((sideQ -= dt) <= 0) { sideQ = 0.15; sideCalc(me); }
     t.tank = Math.max(0, t.tank - USE * dt); const w3 = SIDE[0].on; stream(0, nx, ny, nz, T.x, T.y, T.z, w3 ? RATE * 0.5 : RATE, dt); if (w3) for (let k = 0; k < 2; k++) { const s = SIDE[k]; if (s.on) stream(k + 1, nx, ny, nz, s.x, s.y, s.z, RATE * 0.25, dt); }
@@ -192,9 +201,18 @@ export function createTools(A) {
   function faucets() { for (const h of FAUCH) h.remove(); FAUCH = []; const L9 = [], SEEN = new Set();
     for (const kd of ['wash', 'garden']) for (const h of map.interact.list({ kind: kd }) || []) { if (h.pump || String(h.id || '').startsWith('game:')) continue; L9.push(h); }
     for (const h of L9) { const k = Math.round(h.x) + ':' + Math.round(h.z); if (SEEN.has(k)) continue; SEEN.add(k); const H9 = map.interact.add({ kind: 'game', x: h.x, z: h.z, y: h.y, r: Math.max(1.0, h.r || 1.2), label: en() ? '💧 Fill the watering can' : '💧 물뿌리개에 물 채우기', use: () => fill([h.x, h.y, h.z]) }); H9.hot.off = true; H9.src = h; FAUCH.push(H9); A.enth.push(H9); }
-    for (const [x, z] of A.springs() || []) { const y = A.gy(x, z); const H9 = map.interact.add({ kind: 'game', x, z, y, r: 1.8, label: en() ? '💧 Fill at the spring' : '💧 약수터에서 물 채우기', use: () => fill([x, y, z]) }); H9.hot.off = true; FAUCH.push(H9); A.enth.push(H9); }
+    for (const [x, z] of A.springs() || []) { const y = A.gy(x, z); const H9 = map.interact.add({ kind: 'game', x, z, y, r: 1.8, label: en() ? '💧 Fill at the spring' : '💧 약수터에서 물 채우기', use: () => fill([x, y, z]) }); H9.hot.off = true; H9.nk = 'spring'; FAUCH.push(H9); A.enth.push(H9); }
+    CANS9 = 0;
     RIVH = map.interact.add({ kind: 'game', x: 0, z: 0, y: -99, r: 1.2, label: en() ? '💧 Fill from the water' : '💧 강물 채우기', use: () => { const me = map.player.pos(); fill([RIVH.hot.wx, me.y, RIVH.hot.wz]); } }); RIVH.hot.off = true; A.enth.push(RIVH); }
-  function fillSync() { const can = shownK === 'can' && S().tank < tankMax() - 1, src = FAUCH.filter(h => h.src);
+
+  const NM9 = { tap: ['학교 수돗가', 'the school tap'], spring: ['약수터', 'the spring'], barrel: ['빗물 저금통', 'the rain barrel'], pond: ['연못', 'the pond'], shore: ['가까운 물가', 'the waterside nearby'] };
+  function cansAdd() { const L9 = A.fills ? A.fills() : null; if (!L9 || !L9.length) return; CANS9 = 1;
+    for (const c of L9) { const y = A.gy(c.x, c.z), bar = c.k === 'barrel', H9 = map.interact.add({ kind: 'game', x: c.x, z: c.z, y, r: c.r || 1.8, label: bar ? (en() ? '💧 Fill at the rain barrel' : '💧 빗물 저금통에서 물 채우기') : (en() ? '💧 Fill at the pond' : '💧 연못에서 물 채우기'), use: () => fill([c.x, y, c.z]) }); H9.hot.off = true; H9.nk = bar ? 'barrel' : 'pond'; FAUCH.push(H9); A.enth.push(H9); } }
+  function fillNear(me) { let b = null, bd = 1e18; for (const h of FAUCH) { const d = (h.hot.x - me.x) ** 2 + (h.hot.z - me.z) ** 2; if (d < bd) { bd = d; b = h; } }
+    let out = b ? { x: b.hot.x, z: b.hot.z, nm: NM9[b.nk || 'tap'], d: Math.sqrt(bd) } : null; const lim = Math.min(40, out ? out.d : 40);
+    for (let r = 4; r <= lim; r += 4) for (let a = 0; a < 16; a++) { const cx = Math.cos(a * 0.3927), cz = Math.sin(a * 0.3927), w = water(me.x + cx * r, me.z + cz * r); if (w && !w.sea) return { x: me.x + cx * (r - 2.2), z: me.z + cz * (r - 2.2), nm: NM9.shore, d: r - 2.2 }; }
+    return out; }
+  function fillSync() { if (!CANS9) cansAdd(); const can = shownK === 'can' && S().tank < tankMax() - 1, src = FAUCH.filter(h => h.src);
     for (const h of FAUCH) if (h.hot.off === can) h.hot.off = !can;
     if (can && !FAUOFF && src.length) { const set = new Set(src.map(h => h.src)); FAUOFF = map.interact.enable(h => set.has(h), false); } else if (!can && FAUOFF) { FAUOFF.remove(); FAUOFF = null; }
     if (!RIVH) return; const me = map.player.pos(); let fw = null, sea = false; if (can) for (let r = 1.2; r <= 2.8 && !fw; r += 0.8) for (let a = 0; a < 8; a++) { const x = me.x + Math.cos(a * 0.785) * r, z = me.z + Math.sin(a * 0.785) * r, w = water(x, z); if (!w) continue; if (w.sea) { sea = true; continue; } fw = [x, z]; break; }
@@ -202,7 +220,7 @@ export function createTools(A) {
     if (sea && !fw && S().tank < 50 && seaTold !== day()) { seaTold = day(); toast(en() ? '🌊 Sea water is salty, so we do not give it to plants — fill up at a tap or riverbank' : '🌊 바닷물은 짜서 식물에 주지 않아요 — 수돗가나 강가에서 채워요', 3.6); } }
   function fill(at) { if (FILL || !A.on()) return; if (cur() !== 'can') { hold('can'); } stopPour(); FILL = { t: 0, g: 0 }; map.player.act('reach', { at: [at[0], at[1] + 0.5, at[2]], msg: null }); }
   function fillTick(dt) { const t = S(); FILL.t += dt; t.tank = Math.min(tankMax(), t.tank + 85 * dt * tankMax() / TANK); tankSync(); if ((FILL.g -= dt) <= 0) { FILL.g = 0.2; tone(260 + Math.random() * 220, 0, 0.09, 'sine', 0.05, 520); }
-    if (FILL.t > 1.25 || t.tank >= tankMax()) { FILL = null; t.tank = tankMax(); mark(); tankSync(); tone(784, 0, 0.1, 'triangle', 0.05); toast(en() ? '💧 The can is full!' : '💧 물을 가득 채웠어요!', 1.8); A.rec('fill'); } }
+    if (FILL.t > 1.25 || t.tank >= tankMax()) { FILL = null; t.tank = tankMax(); mark(); tankSync(); tone(784, 0, 0.1, 'triangle', 0.05); toast(en() ? '💧 The can is full!' : '💧 물을 가득 채웠어요!', 1.8); A.rec('fill'); if (emptyG > 0 && A.guideOff) A.guideOff(); emptyG = -1e9; } }
 
   function useShovel() { const x = T.x, z = T.z, y = T.y, en9 = en(), t = S();
     if (T.lock === 'fos') { const id = T.k; map.player.act('dig', { at: [x, y, z], msg: null, midAt: 1.55, color: 0x8a7458, color2: 0xa8957a, onMid: () => { const xp = A.xp(); if (xp && xp.use('shovel', id)) A.rec('dig-fos'); } }); return; }
@@ -360,7 +378,7 @@ export function createTools(A) {
   function init() { if (window.SM_PROMO) return; FGRID.clear(); POTS = null; PCACHE.clear(); center = null; if (built) { faucets(); stands(); pilesSync(true); } if (window.SM_TOWN) window.SM_TOWN.tools = API; }
   function dispose() { dead = true; removeEventListener('keyup', onKU); removeEventListener('mousedown', onMD); removeEventListener('mouseup', onMU); removeEventListener('sm-click', onClk); removeEventListener('blur', onBlur);
     if (FS) fishStop(); stopPour(); map.player.aim(null); if (shV) map.player.shoulder(0); map.player.hold(null); if (FAUOFF) { FAUOFF.remove(); FAUOFF = null; } for (const h of FAUCH.concat(STANDH)) h.remove(); FAUCH = []; STANDH = []; if (RIVH) { RIVH.remove(); RIVH = null; }
-    for (const o of [RING, DROP, MOUND, BITS, HOLE, WET, WORMM]) if (o) map.remove(o); for (const m of MATS) m.dispose(); for (const g of GEOS) g.dispose(); if (BAR) BAR.remove(); if (tchBtn) tchBtn.remove(); if (CSS) CSS.remove(); if (OVL) OVL.remove(); BAR = tchBtn = CSS = OVL = null; }
+    for (const o of [RING, DROP, MOUND, BITS, HOLE, WET, WORMM]) if (o) map.remove(o); for (const m of MATS) m.dispose(); for (const g of GEOS) g.dispose(); if (BAR) BAR.remove(); if (tchBtn) tchBtn.remove(); if (CSS) CSS.remove(); if (OVL) OVL.remove(); BAR = tchBtn = CSS = OVL = null; document.body.classList.remove('h-tbar'); }
 
   const API = {
     info: () => { const t = S(); return { have: Object.keys(t.have).filter(k => t.have[k]), cur: t.cur, shown: shownK, engine: map.player.holding, tank: +t.tank.toFixed(1), pressing: !!pressing, aim: { x: +T.x.toFixed(2), y: +T.y.toFixed(2), z: +T.z.toFixed(2), ok: T.ok, lock: T.lock, k: T.k }, ring: !!(RING && RING.visible),
@@ -373,5 +391,7 @@ export function createTools(A) {
     order: () => ord().slice(), place: (k, j) => place(k, j), pick: () => pick(), mesh: () => ({ ring: RING, mound: MOUND && MOUND.count, bits: BITS && BITS.count, hole: HOLE && HOLE.count, wet: WET && WET.count }) };
   function pick() { if (!A.on()) return; ui(); PICK = 8; barSync(); if (!A.tch()) toast(en() ? '🧰 Press 1–6 to hold a tool (click a slot too)' : '🧰 숫자 1~6으로 도구를 들어요 (칸을 눌러도 돼요)', 2.6); }
   function keys9() { const e = en(), K = [['1~6', e ? 'tools' : '도구']];     if (shownK) K.push([e ? 'Click·F' : '클릭·F', e ? 'use' : '쓰기']); return K; }
-  return { init, tick, dispose, key, got, hold, pick, place, order: () => ord().slice(), keys: keys9, get cur() { return shownK; }, get have() { return { ...S().have }; }, api: API };
+
+  function hidSay() { if (dead || !cur() || !A.on()) return false; const why = hiddenWhy(); if (!why || !HIDE[why]) return false; toast(L(HIDE[why]), 2.4); return true; }
+  return { init, tick, dispose, key, got, hold, pick, place, hidSay, order: () => ord().slice(), keys: keys9, get cur() { return shownK; }, get have() { return { ...S().have }; }, api: API };
 }

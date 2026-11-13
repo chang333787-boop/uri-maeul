@@ -26,7 +26,7 @@ const OBS = {
 const dir8 = (dx, dz) => { const a = Math.atan2(dx, -dz); return ((Math.round(a / (Math.PI / 4)) % 8) + 8) % 8; };
 
 export function createKidLook(A) {
-  let ECO9 = null; const KL = [], HOT = [], STM = [];
+  let ECO9 = null; const KL = [], HOT = [], STM = [], CANS = [];
   let MATS = null;
   const en = () => A.en(), tx = p => p[en() ? 1 : 0];
   const S = () => { const G = A.GAME.S; return G.kl && typeof G.kl === 'object' ? G.kl : (G.kl = {}); };
@@ -73,6 +73,7 @@ export function createKidLook(A) {
       K.B(6.4, -3.6, 0, 2.6, 2.2, 2.0, 0xd8d2c4); { const [x, z] = K.Q(6.4, -3.6); A.gable(x, K.g(6.4, -3.6) + 2.2, z, 2.6, 2.0, 0.6, K.ry, 0x6b7480, { eave: 0.22 }); } K.D(6.4, -2.58, 0, 0.9, 1.8, 0.05, 0x6b4a32); K.col(6.4, -3.6, 1.3, 1.0, 2.6);
       K.C(6.2, -1.6, 0, 0.62, 1.35, 0x3d74c9, 12, { top: 0x2f5fa8 }); K.D(6.2, -1.6, 1.35, 0.5, 0.05, 0.5, 0x2b4f8a); K.rod([7.3, -2.5, 2.35], [6.4, -1.6, 1.55], 0.045, 0x8a8f95); K.rod([6.4, -1.6, 1.55], [6.4, -1.6, 1.38], 0.045, 0x8a8f95); K.D(5.55, -1.6, 0.25, 0.14, 0.1, 0.1, 0x9aa0a6); K.col(6.2, -1.6, 0.62, 0.62, 1.4);
       pond(K, -4.4, 3.1, 2.1);
+      { const [bx, bz] = K.Q(5.45, -1.6), [px, pz] = K.Q(-4.4, 3.1); CANS.push({ k: 'barrel', x: bx, z: bz, r: 2.0 }, { k: 'pond', x: px, z: pz, r: 3.6 }); }
       K.pad(4.6, 3.2, 4.6, 2.2, 0.06, 0xc8c3b8); [0x2f6fd0, 0xc99a10, 0x6f777d, 0x2f9a55].forEach((c9, i) => bin(K, 3.0 + i * 1.05, 3.0, c9)); for (const u of [2.3, 6.9]) K.D(u, 2.3, 0, 0.1, 1.9, 0.1, 0x8a8f95); K.B(4.6, 2.85, 1.9, 5.0, 0.1, 1.5, 0x6b7480, { top: 0x7a838c }); K.col(4.6, 3.0, 2.3, 0.4, 1.0);
       K.sign(1.0, 4.6, '분리수거장', { w: 1.5, h: 0.5, y: 0.95, bg: 0x2f8a5a, bgc: '#2f8a5a', fg: '#ffffff' }); bike(K, -0.2, 3.4, 0xd9473b); bike(K, 0.9, 3.4, 0x3d74c9);
       for (let i = 0; i < 12; i++) K.F(-7.6 + (i % 6) * 0.5, -5.3 + ((i / 6) | 0) * 0.5, i); K.T(-7.4, -0.8, 1.15); K.T(8.0, 2.6, 1.0);
@@ -251,7 +252,7 @@ export function createKidLook(A) {
       if (!best) continue; const K = kitK(best), r9 = best.r; A.occ(best.x - r9, best.z - r9, best.x + r9, best.z + r9); A.clear(best.x, best.z, r9 + 0.3); f(K, R9); out.push({ k: nm, x: best.x, z: best.z, r: r9, d: +Math.hypot(best.x - g.sx, best.z - g.sz).toFixed(1) }); }
     return out; }
 
-  async function build(list, yb) { KL.length = 0; HOT.length = 0; STM.length = 0; if (!A.on()) return;
+  async function build(list, yb) { KL.length = 0; HOT.length = 0; STM.length = 0; CANS.length = 0; if (!A.on()) return;
     const G = A.groups();
     for (const it of list || []) { if (yb) await yb(); const k = it.k, def = KITS[k], b = BUILD[k]; if (!def || !b) continue; const g = G.find(q => q.cells.includes(it.cell)); if (!g || KL.some(q => q.g === g.id)) continue;
       const tg = it.mid && A.cellXZ(it.cell) ? [A.cellXZ(it.cell), [g.sx, g.sz]] : [[g.sx, g.sz], [g.cx, g.cz]], hill = k === 'tree' || k === 'wood' || k === 'hole'; let sp = null;
@@ -373,5 +374,5 @@ export function createKidLook(A) {
       for (const p of E.posts) out.push({ x: p.x, z: p.z, label: tx(p.lab), use: () => postUse(E, p), g: E.g, look: p.look || null }); } return out; }
   function dayTick() { refresh(); }
   function info() { return { solar: A.solarN || 0, eco: ECO9, hoods: KL.map(E => ({ g: E.g, t: E.t, k: E.k, cell: E.cell, x: +E.x.toFixed(1), z: +E.z.toFixed(1), ry: +E.ry.toFixed(3), hd: E.hero ? +E.hero.d.toFixed(1) : null, fill: E.fill || null, d: +E.d.toFixed(1), n: E.list.length, list: E.list, use: KITS[E.k].ic + ' ' + tx(KITS[E.k].nm) + ' — ' + tx(T2('기록판', 'board')), posts: E.posts.map(p => tx(p.lab)), done: KS(E.k).done || 0, st: [E.st, E.st2, ...(E.hs || [])].filter(Boolean).map(m => m.visible) })) }; }
-  return { build, hots, info, refresh: dayTick, ecoKit: k => !!KITS[k] };
+  return { build, hots, info, fills: () => CANS, refresh: dayTick, ecoKit: k => !!KITS[k] };
 }

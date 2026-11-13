@@ -253,7 +253,7 @@ export function createRoad(A) {
     const g = goalNow(me); if (g !== goalT) goalT = g; sideSync(me); }
 
   let sideT = null;
-  function sideNow(me) { if (RACE || ACT) return null; const e = en(); if (REQ) return '🙋 ' + (e ? 'The ' + who(REQ.w) + ' worker is waving — go and press E' : who(REQ.w) + ' 일꾼이 손을 들었어요 — 가서 E');
+  function sideNow(me) { if (RACE || ACT) return null; const e = en(); if (REQ) return '🙋 ' + (e ? 'The ' + who(REQ.w) + ' worker is waving — go and press E' : who(REQ.w) + ' 일꾼이 손을 들었어요 — ' + DIRN[dir8(bearing(REQ.w.x - me.x, REQ.w.z - me.z))][0] + '쪽 ' + Math.max(5, Math.round(Math.hypot(REQ.w.x - me.x, REQ.w.z - me.z) / 5) * 5) + 'm · 가서 E');
     if (PAPER && PAPER.fly <= 0 && Math.hypot(me.x - PAPER.x, me.z - PAPER.z) < 50) return '🗺 ' + (e ? 'A paper blew in — pick it up (E)' : '날아온 종이 — 주워 봐요 (E)');
     if (goalT && goalT.startsWith('🚲')) return '🚲 ' + (e ? 'Ring course — ride through the green ring to start' : '고리 코스 — 초록 고리를 자전거로 지나면 시작'); return null; }
   function sideSync(me) { if (!A.chip) return; const t = sideNow(me); if (t === sideT) return; sideT = t; A.chip('twn-rd', t); }
@@ -261,7 +261,7 @@ export function createRoad(A) {
     const m9 = A.GAME.S.min, dm = lastMin >= 0 && m9 > lastMin && m9 - lastMin < 6 ? m9 - lastMin : 0; lastMin = m9;
     if (RACE) { raceSec(me); return; }
     if (ACT) { if (A.away() || A.night()) actEnd(false, 'away'); return; }
-    if (REQ) { REQ.t++; const w = REQ.w, d = Math.hypot(me.x - w.x, me.z - w.z); if (A.away() || A.night() || REQ.t > 50 || d > 120) { reqEnd(d > 120 || REQ.t > 50); movMin = 30; return; } if (!A.busy() && (REQ.bq += 1) >= 6 && d < 60) { REQ.bq = 0; A.bubble({ x: w.x, y: w.g, z: w.z, sc: 1 }, en() ? 'Excuse me! Can you help?' : '저기요! 잠깐 도와줄래요?'); } return; }
+    if (REQ) { REQ.t++; const w = REQ.w, d = Math.hypot(me.x - w.x, me.z - w.z); if (A.away() || A.night() || REQ.t > 50 || d > 120) { reqEnd(d > 120 || REQ.t > 50); movMin = 30; return; } if (!A.busy() && (REQ.bq += 1) >= 3 && d < 60) { REQ.bq = 0;     A.bubble({ x: w.x, y: w.g, z: w.z, sc: 1 }, en() ? 'Excuse me! Can you help?' : '저기요! 잠깐 도와줄래요?'); } return; }
     if (PAPER) { PAPER.life++; if (PAPER.life > 120 || Math.hypot(me.x - PAPER.x, me.z - PAPER.z) > 100 || A.away()) paperGone(); return; }
     if (A.busy() || A.away() || A.inSchool(me.x, me.z) || (A.emCall && A.emCall()) || (A.hold && A.hold())) return;
     const moving = mv > 1.2 && mv < 40; if (!moving) return; movMin += dm; movP += dm;
