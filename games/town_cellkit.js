@@ -446,7 +446,7 @@ export function createCellKit(A) {
     let fl = false; const busy = A.busy(), W = I9 => I9.id === 'wind' && I9.d < 90 && c9 && c9.kitEmit;
     for (const I of INST.values()) { I.d = Math.hypot(I.ex - me.x, I.ez - me.z);
       if (!I.dr && c9) { if (I.ns && I.sl < 0) I.sl = alloc(I.ns); if (I.sl !== -2) { drawI(I); fl = true; } else hotOff(I); I.dr = true; }
-      if (I.h && TX[I.id] && TX[I.id].hint && I.d < 9 && !busy) { const c = ST(); if (c.hint[I.id] !== day) { c.hint[I.id] = day; A.say(tx(TX[I.id].hint), 3); } }
+      if (I.h && TX[I.id] && TX[I.id].hint && I.d < 9 && !busy && !(A.quiet && A.quiet())) {     const c = ST(); if (c.hint[I.id] !== day) { c.hint[I.id] = day; A.say(tx(TX[I.id].hint), 3); } }
       if (W(I) && (steamQ = (steamQ + 1) % 2) === 0) { const ch = A.chem && A.chem(), Wd = ch && ch.wind ? ch.wind(day) : { x: 0.7, z: 0.7 }, s = I.sp; c9.kitEmit(0, s.sx + (Math.random() - 0.5) * 1.5, s.sy, s.sz + (Math.random() - 0.5) * 1.5, Wd.x * 1.3, 0.7, Wd.z * 1.3, 4, 1.3, 0.6); } }
     if (fl) c9.kitFlush(); shadowSec(); if (QUE.length) fillSome(1.5);
     const ms = performance.now() - t0; secMs = ms; if (ms > secMax) secMax = ms; }
@@ -460,7 +460,7 @@ export function createCellKit(A) {
         case 'ant': if (I.d < 20) { antAt(I); fl = true; } break;
         case 'moth': mothAt(I); fl = true; break;
         case 'ice': if (I.st === 'run' || I.st === 'melted') { iceAt(I); fl = true; if (I.st === 'run' && I.t >= 24) { I.st = 'melted'; ST().ic[I.n] = S().day; A.GAME.mark(); if (I.d < 40) toast(tx(TX.ice.done), 5.5); reward('ice'); } } break;
-        case 'cross': if (I.d < 10) crossTick(I, el); break;
+        case 'cross': if (I.d < 10) crossTick(I, el); else if (I.ox != null) { I.ox = null; I.mv = 0; } break;
         case 'cat': if (I.peek > 0) I.peek = Math.max(0, I.peek - el); catAt(I); fl = true; break;
         case 'cricket': singTick(I, el); break;
         case 'frog': singTick(I, el); singAt(I); fl = true; break;
@@ -470,11 +470,15 @@ export function createCellKit(A) {
       } }
     if (fl) c9.kitFlush(); }
 
-  function crossTick(I, el) { const sp = I.sp, s9 = sp.s9, me = map.player.pos(), st = A.sigSt(s9, 1), near = Math.hypot(me.x - sp.x, me.z - sp.z) < 2.6, day = S().day, c = ST();
-    const dx = me.x - s9.x, dz = me.z - s9.z, t0 = s9.t[0], ga = Math.abs(dx * -t0[1] + dz * t0[0]), gb = Math.abs(dx * t0[0] + dz * t0[1]), road = (ga < s9.hw[0] - 1.2 && gb < 30) || (gb < s9.hw[1] - 1.2 && ga < 30);
+  function crossTick(I, el) { const sp = I.sp, s9 = sp.s9, me = map.player.pos(), near = Math.hypot(me.x - sp.x, me.z - sp.z) < 2.6, day = S().day, c = ST();
+    const dx = me.x - s9.x, dz = me.z - s9.z, t0 = s9.t[0], t1 = s9.t[1], ga = Math.abs(dx * -t0[1] + dz * t0[0]), gb = Math.abs(dx * t0[0] + dz * t0[1]), onA = ga < s9.hw[0] - 1.2 && gb < 30, onB = gb < s9.hw[1] - 1.2 && ga < 30, road = onA || onB;
+
+    if (I.ox == null) { I.ox = me.x; I.oz = me.z; } const mx = me.x - I.ox, mz = me.z - I.oz; let ax = I.ax ?? (onB && !onA ? 0 : 1);
+    if (mx * mx + mz * mz > 0.36) { ax = Math.abs(mx * t0[0] + mz * t0[1]) >= Math.abs(mx * t1[0] + mz * t1[1]) ? 0 : 1; I.ox = me.x; I.oz = me.z; I.mv = 1; }
+    const st = A.sigSt(s9, ax); if (ax !== I.ax) { if (I.ax != null) I.wait = 0; I.ax = ax; I.prev = st; }
     if (near && st === 2 && !road) I.wait += el; else if (st !== 0 && !near) I.wait = 0;
     if (st === 0 && I.prev !== 0 && I.wait > 1.5) { I.wait = 0; if (map.tone) for (let k = 0; k < 3; k++) { map.tone(1047, k * 0.42, 0.12, 'sine', 0.06); map.tone(1319, k * 0.42 + 0.14, 0.12, 'sine', 0.06); } toast(tx(TX.cross.ok), 3.6); if (c.n.crossD !== day) { c.n.crossD = day; reward('cross', 'explore'); } }
-    if (st === 2 && road && Math.hypot(me.x - sp.x, me.z - sp.z) < 9 && c.n.redD !== day) { c.n.redD = day; A.GAME.mark(); toast(tx(TX.cross.red), 2.6); }
+    if (st === 2 && road && I.mv && Math.hypot(me.x - sp.x, me.z - sp.z) < 9 && c.n.redD !== day) {     c.n.redD = day; A.GAME.mark(); toast(tx(TX.cross.red), 2.6); }
     I.prev = st; }
 
   function clear() { clearInst(); on = false; }

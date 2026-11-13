@@ -29,10 +29,10 @@ export function createRF(A) {
     document.body.appendChild(el); A.map.player.freeze(true); if (document.exitPointerLock) document.exitPointerLock();
     const c = { el, k, mg: null }; cur = c;
     c.mg = A.createMini(D.kind, { root: el.querySelector('.pb'), k, en: e, zw: A.zw(D.sk), sea: A.sea(), grade: true, sfx: q => A.sfx(q), tone: (...a) => A.tone(...a), onEnd: ok => { if (cur === c) end(ok); } });
-    c.kd = ev => { if (cur !== c) return; if (ev.code === 'Escape') { ev.preventDefault(); ev.stopImmediatePropagation(); end(-1); return; } if (ev.code === 'Tab') return;
+    c.kd = ev => { if (cur !== c) return; if (ev.code === 'Escape') { ev.preventDefault(); ev.stopImmediatePropagation(); end(c.mg && c.mg.done ? c.mg.ok : -1); return; }     if (ev.code === 'Tab') return;
       if (ev.code === 'KeyE' || ev.code === 'Space' || ev.code === 'Enter') { if (!ev.repeat) c.mg.down(); } else c.mg.key(ev.code, ev.repeat); ev.preventDefault(); ev.stopImmediatePropagation(); };
     c.ku = ev => { if (cur === c && (ev.code === 'KeyE' || ev.code === 'Space')) { c.mg.up(); ev.stopImmediatePropagation(); } };
-    addEventListener('keydown', c.kd, true); addEventListener('keyup', c.ku, true); el.querySelector('.x').onclick = () => end(-1); }
+    addEventListener('keydown', c.kd, true); addEventListener('keyup', c.ku, true); el.querySelector('.x').onclick = () => end(c.mg && c.mg.done ? c.mg.ok : -1); }
   function end(ok) { const c = cur; if (!c) return; cur = null; removeEventListener('keydown', c.kd, true); removeEventListener('keyup', c.ku, true); if (c.mg) c.mg.dispose(); setTimeout(() => c.el.remove(), 250); A.map.player.freeze(!!(A.busy && A.busy()));
     if (ok < 0) return; const D = RF_GAMES[c.k]; if (A.rec) A.rec('play', { k: c.k, g: ok >= 3 ? 2 : ok >= 1 ? 1 : 0 });     A.skUp(D.sk, ok >= 2 ? 3 : 1, 'rf:' + c.k); if (ok >= 1 && A.stamp(D.stamp)) A.toast('📒 ' + (en() ? 'New stamp in your codex: ' : '도감에 새 도장: ') + D.stamp + ' ' + L(D.t), 3); }
   return { init, tick(dt) { if (cur && cur.mg) cur.mg.tick(dt); }, dispose() { clear(); }, get on() { return !!cur; }, spots: () => ({ ...spots, bendA }), play, end };

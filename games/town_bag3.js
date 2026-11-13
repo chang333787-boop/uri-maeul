@@ -1,5 +1,5 @@
 import { ITEMS, itemName } from './town_game.js?v=60';
-import { TOOL, TOOL_ORDER } from './town_tools.js?v=22';
+import { TOOL, TOOL_ORDER } from './town_tools.js?v=23';
 export const BAG3_V = 1;
 const T2 = (ko, en) => [ko, en];
 export const TABS = [['item', '🎒', T2('물건', 'Items')], ['tool', '🧰', T2('도구·장비', 'Tools')], ['wear', '👕', T2('옷·꾸미기', 'Clothes')], ['col', '🏅', T2('모은 것', 'Collection')]];
@@ -153,6 +153,7 @@ export function createBag3(A) {
   function html(c) { addCss();
     CTX = c || {}; S(); if (!CTX.re) { SHOW.clear(); UI.pick = null; UI.snip = false; UI.sel = CTX.sel || null; } else if (CTX.sel) UI.sel = CTX.sel;
     UI.tab = CTX.tab || (CTX.re ? UI.tab : PREF.tab) || 'item'; if (!TABS.some(t => t[0] === UI.tab)) UI.tab = 'item';
+    if (!CTX.tab && !CTX.re) { let t9 = null, n9 = -1, here = false; const o9 = S().o, sn = S().seen; for (const e of bagKeys()) { if (sn[e]) continue; const k = tabOfId(e); if (k === UI.tab) { here = true; break; } const q = (o9[e] || [])[3] || 0; if (q > n9) { n9 = q; t9 = k; } } if (!here && t9) UI.tab = t9; }
     if (UI.sel && !(A.bag()[UI.sel] > 0) && !(R() && R().info(UI.sel))) UI.sel = null;
     PARTS = null; IDLE++; const e9 = en();
     const ids = ownedIds(), nw = {}; for (const id of ids) if (!S().seen[id]) nw[tabOfId(id)] = 1;

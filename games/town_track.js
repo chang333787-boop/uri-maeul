@@ -62,7 +62,7 @@ export function createTrack(A) {
   const labOf = c => c.icon + ' ' + c.name;
   const cellT = c => { const n = A.cell(c.at[0], c.at[1]); return /^([가-힣]\d+|\d+[가-힣])$/.test(n) ? n + L(' 칸', '') : n; };
   const fmtC = (c, d) => (A.fmt ? A.fmt(c, d) : fmtM(d));
-  function note(k, by) { const c = LC.find(q => q.k === k) || cands().find(q => q.k === k); if (!c) return; const t = '🧭 ' + (en() ? 'Now guiding you to ' + labOf(c) : '이제 ' + labOf(c) + ro(c.name) + ' 안내해요'); DBG.notes.push(t); if (DBG.notes.length > 10) DBG.notes.shift(); A.say(t, 2.8, by === 'kid' ? 0 : 3); }
+  function note(k, by) { const c = LC.find(q => q.k === k) || cands().find(q => q.k === k); if (!c) return; const nm9 = String(c.name).replace(/\s*\([A-Za-z0-9~ ]+\)\s*$/, '')  , t = '🧭 ' + (en() ? 'Now guiding you to ' + labOf(c) : '이제 ' + c.icon + ' ' + nm9 + ro(nm9) + ' 안내해요'); DBG.notes.push(t); if (DBG.notes.length > 10) DBG.notes.shift(); A.say(t, 2.8, by === 'kid' ? 0 : 3); }
   function next(why) { const was = S().k, L9 = LC.filter(c => c.k !== was); const n = L9.find(c => c.src === 'story') || near(L9.filter(c => c.at && !c.self)) || L9[0] || null;
     DBG.ends++; log('end', (was || '-') + ' ' + (why || '')); set(n ? n.k : null, 'auto', { why: why || 'end', quiet: !n }); }
   function pick(k) { if (!k || dead) return false; LC = cands(); if (!LC.some(c => c.k === k)) return false; if (S().k === k) return true; set(k, 'kid', { why: 'pick' }); return true; }
