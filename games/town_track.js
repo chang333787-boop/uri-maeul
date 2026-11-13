@@ -89,7 +89,8 @@ export function createTrack(A) {
   function row() { if (dead) return; const k = S().k, c = k ? LC.find(q => q.k === k) : null;
     if (!rowWant()) { if (el && el.classList.contains('on')) { el.classList.remove('on'); rowSig = ''; A.stack(); } return; }
     ensure(); const d = c && c.at && !c.self ? A.dist(c) : -1;
-    const tx = c ? labOf(c) + (c.at && !c.self ? (d >= 0 ? ' · ' + dirW(c) : ' · ' + cellT(c)) : c.self ? L(' · 스스로 찾는 중', ' · finding it yourself') : '') : L('없음', 'nothing');
+    const m9 = d >= 0 ? A.me() : null, here = !!m9 && Math.hypot(c.at[0] - m9.x, c.at[1] - m9.z) < 8;
+    const tx = c ? labOf(c) + (c.at && !c.self ? (d >= 0 ? ' · ' + (here ? L('다 왔어요', 'you’re here') : dirW(c)) : ' · ' + cellT(c)) : c.self ? L(' · 스스로 찾는 중', ' · finding it yourself') : '') : L('없음', 'nothing');
     const sig = tx + '|' + (en() ? 1 : 0); if (sig !== rowSig) { rowSig = sig; el.querySelector('.t').innerHTML = '<b>🧭 ' + L('따라가는 중', 'Following') + '</b> ' + esc(tx); el.querySelector('button').textContent = L('바꾸기', 'Change'); }
     if (!el.classList.contains('on')) { el.classList.add('on'); S().seen = 1; A.stack(); }
     if (LC.length >= 2) A.tipWant(); }

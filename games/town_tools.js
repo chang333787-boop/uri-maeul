@@ -83,7 +83,7 @@ export function createTools(A) {
 
   function snap(k, x, z, me) {
     if (k === 'shovel' || k === 'broom') { const xp = A.xp && A.xp(), f = xp && xp.near(x, z, k); if (f) return [f.x, f.y, f.z, 'fos', f.id]; const wv = A.wxev && A.wxev(), g = wv && wv.near(x, z, k); if (g) return [g.x, g.y, g.z, 'wxe', g.id]; }
-    if (k === 'shovel') { const t = A.trs(), c = t && t.near && t.near(x, z); if (c) return [c.x, c.y, c.z, 'trs']; return null; }
+    if (k === 'shovel') { const t = A.trs(), c = t && t.near && t.near(x, z, me); if (c) return [c.x, c.y, c.z, 'trs']; return null; }
     if (k === 'broom') { let b = null, bd = gear('broom2') ? 2.2 : 1.4; for (const p of PILES) { const d = Math.hypot(p.x - x, p.z - z); if (d < bd) { bd = d; b = p; } } return b ? [b.x, b.y, b.z, 'pile', b.k] : null; }
     if (k === 'lens') { const L9 = lensAt(x, z, me); return L9 ? [L9.x, L9.y, L9.z, L9.kind, L9.key] : null; }
     if (k === 'can') { const y = surfY(x, z, me.y); if (bedAt(x, z) >= 0) return [x, y, z, 'bed']; const ch = A.chem(); if (ch && ch.fireAt && ch.fireAt(x, z, 1.0) >= 0) return [x, y, z, 'fire'];
@@ -225,7 +225,8 @@ export function createTools(A) {
   function useShovel() { const x = T.x, z = T.z, y = T.y, en9 = en(), t = S();
     if (T.lock === 'fos') { const id = T.k; map.player.act('dig', { at: [x, y, z], msg: null, midAt: 1.55, color: 0x8a7458, color2: 0xa8957a, onMid: () => { const xp = A.xp(); if (xp && xp.use('shovel', id)) A.rec('dig-fos'); } }); return; }
     if (T.lock === 'wxe') { const id = T.k; map.player.act('dig', { at: [x, y, z], msg: null, midAt: 1.55, color: 0xf4f8fb, color2: 0xe2ebf2, onMid: () => { const wv = A.wxev && A.wxev(); if (wv && wv.use('shovel', id)) A.rec('snow-clear'); } }); return; }
-    if (T.lock === 'trs') { map.player.act('dig', { at: [x, y, z], msg: null, midAt: 1.55, onMid: () => { const tr = A.trs(); if (tr && tr.shovel && tr.shovel()) { A.rec('dig-trs'); } } }); return; }
+    if (T.lock === 'trs') { const m9 = map.player.pos(), L9 = Math.hypot(m9.x - x, m9.z - z); map.player.act('dig', { at: [x, y, z], msg: null, midAt: 1.55, reach: L9 > 2.5 ? L9 - 1.5 : undefined  , onMid: () => { const tr = A.trs(); if (tr && tr.shovel && tr.shovel()) { A.rec('dig-trs'); } } }); return; }
+    { const tr = A.trs(), d9 = tr && tr.away ? tr.away(map.player.pos()) : -1; if (d9 >= 0 && d9 < 9) { toast(en9 ? '⛏ Go right next to the dirt pile, then dig' : '⛏ 흙더미 바로 곁에 가서 파요', 2.4); return; } }
     if (A.inSchool(x, z)) { toast(en9 ? '🏫 We do not dig at school — dig in the town soil' : '🏫 학교 땅은 파지 않아요 — 마을 흙에서 파요', 2.4); return; }
     if (water(x, z)) { toast(en9 ? '💧 You cannot dig in water' : '💧 물에서는 팔 수 없어요', 2); return; }
     const snow = A.snowy(); if (!snow && !A.okGround(x, z)) { toast(en9 ? '⛏ Not here — dig on soil or grass' : '⛏ 여기는 팔 수 없어요 — 흙이나 풀밭에서 파요', 2.2); return; }
