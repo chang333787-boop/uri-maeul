@@ -1,4 +1,4 @@
-import { ITEMS } from './town_game.js?v=60';
+import { ITEMS } from './town_game.js?v=62';
 import { JOBS, PG, jobSvg } from './town_places.js?v=7';
 export const TABLE_V = 1;
 const T2 = (ko, en) => [ko, en];

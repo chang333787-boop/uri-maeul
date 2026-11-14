@@ -1,6 +1,6 @@
 import { GIFT_OF } from './town_news.js?v=14';
 import { inSeason, seaKey } from './town_bundle.js?v=3';
-import { ITEMS, itemName, won } from './town_game.js?v=60';
+import { ITEMS, itemName, won } from './town_game.js?v=62';
 import { DECO } from './town_cozy.js?v=3';
 export const BAG2_V = 1;
 const T2 = (ko, en) => [ko, en];

@@ -30,6 +30,7 @@ export const comboKind = (i) => (i === 0 || i === 2 || i === 7 ? 'five' : i === 
 export function createNet(o) {
   const { THREE, scene, room, kind = 'kid', scale = 1 } = o, CLS = o.cls || null;
   const base = DB + '/metaverse/rooms/' + encodeURIComponent(room);
+  const born = Date.now(); let offOk = false, selfFx = null;
   let id = null;
   try { id = sessionStorage.getItem('mp.id'); } catch (e) {   }
   if (!id) { id = Math.random().toString(36).slice(2, 10); try { sessionStorage.setItem('mp.id', id); } catch (e) {   } }
@@ -132,8 +133,8 @@ export function createNet(o) {
     const O = { pid, a: '', w: 's', cell: '', v: '', lbl: '', rx: 0, ry: 0, rz: 0, rh: 0, vx: 0, vz: 0, rt: 0, vis: false, mrx: 0, mrz: 0, mry: 0, mdy: 0, k: k9, away: false, mo: null, mesh, tag: tg, n: n9, c: c9, x: 0, y: 0, z: 0, h: 0, tx: 0, ty: 0, tz: 0, th: 0, t: 0, seen: performance.now(), fxQ: 0, mQ: 0, em: null, B: new Float64Array(24), Bn: 0, Bh: 0, wsAt: 0, ws: false, fb: false, has: false, wsSeen: 0, lts: 0, iv: 100, dl: 100 };
     mesh.visible = tg.visible = false; scene.add(mesh, tg); others.set(pid, O); onChange(); return O; }
   function relook(O, k9, c9) { if (k9 === O.k && c9 === O.c) return; O.k = k9; O.c = c9; const g = avatarGeo(k9, c9); O.mesh.geometry.dispose(); O.mesh.geometry = g; }
-  function upsert(pid, d) {
-    if (pid === id) { if (d && typeof d.t === 'number') offset = d.t - Date.now(); return; }
+  function upsert(pid, d, full) {
+    if (pid === id) { if (d && typeof d.t === 'number') { offset = d.t - Date.now(); offOk = true; } if (d && (full || 'fx' in d)) selfFx = d.fx && typeof d.fx === 'object' && 'q' in d.fx ? d.fx : null; return; }
     if (!d) { const O9 = others.get(pid); if (O9 && O9.ws) { if (O9.t && Date.now() + offset - O9.t > 20000) O9.wsSeen = -1e9; O9.fb = false; } else drop(pid); return; }
     let O = others.get(pid);
     if (!O) {
@@ -150,6 +151,7 @@ export function createNet(o) {
     relook(O, typeof d.k === 'string' ? d.k : O.k, PAL.includes(d.c) ? d.c : O.c);
     if (typeof d.t === 'number') O.t = d.t;
     if (d.n && d.n !== O.n) { O.n = d.n; scene.remove(O.tag); O.tag.material.map.dispose(); O.tag = tag(O.n); scene.add(O.tag); onChange(); }
+    if (full || 'fx' in d) { const f9 = d.fx; if (!f9 || (typeof f9 === 'object' && 'q' in f9)) O.fxD = f9 || null; }
     if (d.fx && d.fx.q !== O.fxQ) { O.fxQ = d.fx.q; if (o.onFx && O.seen) o.onFx(O, d.fx); }
     if (d.m && d.m.q !== O.mQ) { O.mQ = d.m.q; emoIn(O, d.m.i); }
     O.seen = performance.now();
@@ -192,9 +194,9 @@ export function createNet(o) {
   function players(type, path, data) {
     if (!path.length) {
       if (type === 'put') { for (const pid of [...others.keys()]) if (!data || !data[pid]) { const O9 = others.get(pid); if (O9.ws) O9.fb = false; else drop(pid); } }
-      if (data) for (const pid in data) upsert(pid, data[pid]);
+      if (data) for (const pid in data) upsert(pid, data[pid], true);
     } else if (path.length === 1) {
-      if (type === 'put' || data === null) { if (data === null) upsert(path[0], null); else { const O = others.get(path[0]); upsert(path[0], data); if (O && type === 'put') O.seen = performance.now(); } }
+      if (type === 'put' || data === null) { if (data === null) upsert(path[0], null); else { const O = others.get(path[0]); upsert(path[0], data, type === 'put'); if (O && type === 'put') O.seen = performance.now(); } }
       else upsert(path[0], data);
     } else upsert(path[0], { [path[1]]: data });
   }
@@ -306,6 +308,9 @@ export function createNet(o) {
     muted: (pid) => MUTE.has(pid),
     peers() { const now = Date.now() + offset, pn = performance.now(), a = [], mw = wKey(myW() ? myW().w : 's'); if (!hidden) for (const O of others.values()) if (live(O, now, pn) && !O.away && O.has && wKey(O.w) === mw) a.push({ id: O.pid, mu: MUTE.has(O.pid), x: O.x, y: O.y, z: O.z, act: O.a, label: O.n || '친구', color: '#' + O.c.toString(16).padStart(6, '0'), r: 4, floor: O.y > 2.5 ? 2 : 1 }); return a; },
     ctl(path, data) { return req('/ctl/' + path, 'PUT', data); },
+
+    get srvNow() { return Date.now() + offset; }, get srvOk() { return offOk; }, get bornAt() { return born + offset; }, get myFx() { return selfFx; },
+    fxPeers(fn) { const now = Date.now() + offset, pn = performance.now(); for (const O of others.values()) if (O.fb && O.fxD && live(O, now, pn)) fn(O.pid, O.fxD, O.w !== 's' && O.w !== 'i:?'); },
     get ctlData() { return CTL; },
     roster() { const now = Date.now() + offset, a = []; for (const [id, O] of others) if (O.fb && !(O.t && now - O.t > 20000)) a.push({ id, label: O.n || '친구', act: O.w === 's' ? O.a : O.lbl, color: O.c, k: O.k, mu: MUTE.has(id), w: O.w, v: O.v, cell: O.cell }); return a; },
 

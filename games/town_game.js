@@ -138,8 +138,13 @@ export function createGame(id, opt) {
     const SUB0 = {}; for (const k of Object.keys(S)) { const o = S[k]; if (o && typeof o === 'object' && !Array.isArray(o) && o.v != null && k !== 'vold') SUB0[k] = o; }
   if (!(S.min >= 0 && S.min < DAY_END)) S.min = 7 * 60;
 
-  let dirty = false, lite = false, idleQ = false, ownT = 0, since = 0, acc = 0, ph = phaseOf(S.min), on = null; const LITE_S = 30; const T0 = () => ({ earned: 0, got: {}, cells: 0, tasks: 0, cooked: 0, shared: 0, dex: 0, gift: 0, farmW: 0, sold: 0, rainW: 0 });     if (!S.today || typeof S.today !== 'object') S.today = T0(); else for (const [k, v] of Object.entries(T0())) if (typeof S.today[k] !== typeof v) S.today[k] = v;
+  let dirty = false, lite = false, idleQ = false, ownT = 0, since = 0, acc = 0, wallT = 0, ph = phaseOf(S.min), on = null; const LITE_S = 30; const T0 = () => ({ earned: 0, got: {}, cells: 0, tasks: 0, cooked: 0, shared: 0, dex: 0, gift: 0, farmW: 0, sold: 0, rainW: 0 });     if (!S.today || typeof S.today !== 'object') S.today = T0(); else for (const [k, v] of Object.entries(T0())) if (typeof S.today[k] !== typeof v) S.today[k] = v;
   const emit = (t) => { if (on) on(t); };
+
+  function hostStep(dt) { const H = G.host, tg = Math.min(DAY_END - 0.02, H.p ? H.m : H.m + (performance.now() - H.at) / 1000 / SPM), cur = S.min + acc / SPM, d = tg - cur;
+    const nx = Math.abs(d) < 1 ? tg : cur + d * Math.min(1, dt * 2.3), m0 = S.min; S.min = Math.max(0, Math.floor(nx)); acc = (Math.max(0, nx) - S.min) * SPM; if (S.min === m0) return;
+    if (((S.min / 10) | 0) !== ((m0 / 10) | 0)) { lite = true; emit('clock'); }
+    const p = phaseOf(S.min); if (p !== ph) { ph = p; emit('phase'); } }
   let ro = !!(opt && opt.ro), roSay = ro, failSaid = false, bakAt = 0;
     const onHide = e => { if (ro) return; G.flush(true); if (e && e.type === 'pagehide') LS.set(KEY + ':own', JSON.stringify({ id: null, rel: TAB_ID, at: Date.now() })); }, onVis = () => { if (typeof document !== 'undefined' && document.visibilityState === 'hidden') onHide(); };
     const onStore = e => { if (!e || ro) return;
@@ -175,7 +180,9 @@ export function createGame(id, opt) {
     tick(dt, paused) {
       since += dt; if (!idleQ && ((dirty && since >= 2) || (lite && since >= LITE_S))) { idleQ = true; idleRun(flushIdle); }
       if (lite && !ro && (ownT += dt) >= 5) { ownT = 0; LS.set(KEY + ':own', '{"id":"' + TAB_ID + '","at":' + Date.now() + '}'); }
-      if (!S.clock || paused) return;
+      if (G.host) { G.flow = true; hostStep(dt); return; }
+      if (G.cont) { const n9 = performance.now(); dt = wallT ? Math.min(2, (n9 - wallT) / 1000) : dt; wallT = n9; } else wallT = 0;
+      G.flow = !!S.clock && !(paused && !G.cont); if (!G.flow) return;
       acc += dt; if (acc < SPM) return;
       while (acc >= SPM) { acc -= SPM; S.min++; }
       if (S.min % 10 === 0) { lite = true; emit('clock'); }
@@ -187,8 +194,12 @@ export function createGame(id, opt) {
     syncPhase(k) { if (!PHASE_AT[k] || phaseOf(S.min) === k) return false; S.min = PHASE_AT[k]; ph = k; acc = 0; dirty = true; emit('clock'); return true; },
 
     waitMin(m) { if (!(m > S.min && m < DAY_END)) return false; S.min = m; acc = 0; const p = phaseOf(S.min); dirty = true; emit('clock'); if (p !== ph) { ph = p; emit('phase'); } return true; },
-    clockText(en) { const h = (S.min / 60) | 0, m = ((S.min % 60) / 10 | 0) * 10;     return (en ? 'Day ' + S.day + ' ' : S.day + '일째 ') + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; },
-    setClock(onoff) { S.clock = !!onoff; dirty = true; emit('clock'); },
+    clockText(en) { const h = (S.min / 60) | 0, m = ((S.min % 60) / 10 | 0) * 10;     return (en ? 'Day ' + S.day + ' ' : S.day + '일째 ') + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + (G.tag ? G.tag(en) : ''); },
+    setClock(onoff) { if (G.guard && G.guard('clock')) return; S.clock = !!onoff; dirty = true; emit('clock'); },
+
+    host: null, cont: false, guard: null, tag: null, flow: true,
+    minF() { return S.min + acc / SPM; },
+    hostAim() { const H = G.host; return H ? (H.p ? H.m : H.m + (performance.now() - H.at) / 1000 / SPM) : null; },
 
     sleep() { G.lastDay = { day: S.day, ...S.today }; S.yday = G.lastDay; S.today = T0(); S.day++; S.min = DAY_START; acc = 0; ph = phaseOf(S.min); S.picked = {}; S.uses = {}; S.tasks = null; dirty = true; try { emit('clock'); emit('phase'); emit('day'); } finally { G.flush(); } },
     seasonAt(d) { const c = S.cal; if (!c.on) return c.s || 'now'; const n = Math.floor((d - c.d0) / CAL_LEN); return n <= 0 ? 'now' : CAL_SEQ[(n - 1) % CAL_SEQ.length]; },
