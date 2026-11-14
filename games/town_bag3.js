@@ -1,4 +1,4 @@
-import { ITEMS, itemName } from './town_game.js?v=62';
+import { ITEMS, itemName } from './town_game.js?v=63';
 import { TOOL, TOOL_ORDER } from './town_tools.js?v=27';
 export const BAG3_V = 1;
 const T2 = (ko, en) => [ko, en];

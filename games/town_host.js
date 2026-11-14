@@ -1,4 +1,4 @@
-import { SPM } from './town_game.js?v=62';
+import { SPM } from './town_game.js?v=63';
 const WXN = ['clear', 'rain', 'snow'], SEAN = ['now', 'spring', 'summer', 'autumn', 'winter'];
 const FRESH = 30000, EVERY = 10, NIGHT_MAX = 40000, HAND_MAX = 6;
 export function createHost({ GAME, say, en, act }) {

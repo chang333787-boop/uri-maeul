@@ -99,7 +99,7 @@ export function createReward(A) {
   const { map, T3, GAME } = A, en = () => A.lang() === 'en', L = a => (Array.isArray(a) ? a[en() ? 1 : 0] : a || ''), esc = t => A.esc(t);
   const S = () => { const s = GAME.S; let r = s.rwd; if (!r || typeof r !== 'object' || r.v !== 1) r = s.rwd = { v: 1, got: {}, pick: {}, hat: '', scarf: '', bag: '', nick: '', st: null, nk: null }; if (!r.got || typeof r.got !== 'object') r.got = {}; if (!r.pick || typeof r.pick !== 'object') r.pick = {}; return r; };
   const mark = () => GAME.mark(), day = () => GAME.S.day | 0, SK = () => A.skills();
-  let dead = false, OWN = null, q4 = 0, q1 = 0, MUDN = '', MUDT = -1, RIG = null, HAT = null, SCF = null, LAMP = null, BAGI = null, MAT = null, SC = { on: false, q: 0, el: null, first: false };
+  let dead = false, OWN = null, LATE = '', q4 = 0, q1 = 0, MUDN = '', MUDT = -1, RIG = null, HAT = null, SCF = null, LAMP = null, BAGI = null, MAT = null, SC = { on: false, q: 0, el: null, first: false };
   const GEOS = [], MATS = [];
 
   const itemOf = (k, L9) => { const r = RWT[k] && RWT[k][L9]; if (!r) return null; if (r.pick) { const p = S().pick[k + ':' + L9]; return p == null ? null : r.pick[p | 0]; } return r; };
@@ -115,11 +115,11 @@ export function createReward(A) {
       case 'hat': case 'scarf': case 'bag': case 'bike': case 'flag': break;
       case 'nick': if (!r.nick) r.nick = it.id.slice(2); break;
       case 'recipe': { const U = GAME.S.unlock || (GAME.S.unlock = {}); U['r:' + it.e] = 1; break; }
-      case 'deco': A.add(it.e, 1, 'mv:rwd'); break;
+      case 'deco': if (!(A.add(it.e, 1, 'rwd:' + it.id, true) > 0)) LATE = it.id; break;
       case 'gear': if (it.id === 'scope') A.toolOwn('scope'); if (it.id === 'rod2') A.toolOwn('rod'); if (it.id === 'broom2') A.toolOwn('broom'); if (it.id === 'tank') A.toolTank(); if (it.id === 'lamp') lampSync(); if (it.id === 'boots' && MUDN) A.walkRe(); break;
       default: break; }
     void k; void e; }
-  function take(k, l9, pick) { const r = S(), key = k + ':' + l9; if (r.got[key]) return null; const R9 = RWT[k][l9]; if (R9.pick) r.pick[key] = pick ? 1 : 0; r.got[key] = day() || 1; OWN = null; const it = itemOf(k, l9); if (it) apply(it, k); if (l9 === RW_MAX) { const o = otherOf(k); if (o) apply(o, k); } mark(); if (A.sfx) A.sfx('done'); chip(); return it; }
+  function take(k, l9, pick) { const r = S(), key = k + ':' + l9; LATE = ''; if (r.got[key]) return null; const R9 = RWT[k][l9]; if (R9.pick) r.pick[key] = pick ? 1 : 0; r.got[key] = day() || 1; OWN = null; const it = itemOf(k, l9); if (it) apply(it, k); if (l9 === RW_MAX) { const o = otherOf(k); if (o) apply(o, k); } mark(); if (A.sfx) A.sfx('done'); chip(); return it; }
 
   const WEARK = ['hat', 'scarf', 'bag', 'bike', 'flag'], WPF = { hat: 'h:', scarf: 's:', bag: 'g:', bike: 'b:', flag: 'f:' };
   const curOf = kd => { const r = S(); return kd === 'bike' ? A.bikeGet('c') : kd === 'flag' ? A.bikeGet('f') : r[kd] || ''; };
@@ -185,13 +185,14 @@ export function createReward(A) {
       : '<div class="row"><button data-a="y">' + goName(l9 === RW_MAX && otherOf(k) ? otherOf(k) : R9) + '</button><button class="sub" data-a="x">' + (e ? 'Just take it' : '받기만 하기') + '</button></div>';
     const P9 = A.openP(h, false, 'lvr');
     P9.onclick = ev => { const b = ev.target.closest('button'); if (!b || !b.dataset.a) return; const a = b.dataset.a, it = take(k, l9, R9.pick ? a === 'x' : false); A.closeP(); chip();
-      if (!it) return; const o = l9 === RW_MAX ? otherOf(k) : null; if (R9.pick) { A.say(it.ic + ' ' + (e ? L(it.t) + ' — got it' : L(it.t) + ' — 받았어요') + (WEARK.includes(it.kind) || it.kind === 'gear' ? inBag(it.kind) : ''), 2.8); return; }
+      if (!it) return; if (LATE && LATE === it.id) { A.say(autoLine(it, false), 3.4); return; } const o = l9 === RW_MAX ? otherOf(k) : null; if (R9.pick) { A.say(it.ic + ' ' + (e ? L(it.t) + ' — got it' : L(it.t) + ' — 받았어요') + (WEARK.includes(it.kind) || it.kind === 'gear' ? inBag(it.kind) : ''), 2.8); return; }
       if (W) { if (a === 'y') { putOn(W.kind, W.id.slice(2)); A.say(W.ic + ' ' + (e ? L(W.t) + ' — on now. Change it in the 👕 Clothes tab of your bag' : L(W.t) + ' — 지금 써요. 가방 👕 옷·꾸미기 탭에서 바꿀 수 있어요'), 2.8); } else A.say(W.ic + ' ' + (e ? L(W.t) + ' — in the 👕 Clothes tab of your bag' : L(W.t) + ' — 가방 👕 옷·꾸미기 탭에 넣었어요'), 2.6); return; }
       if (a === 'y') go(o || it); else A.say(it.ic + ' ' + (e ? L(it.t) + ' — got it' : L(it.t) + ' — 받았어요') + (['gear', 'nick', 'badge'].includes(it.kind) ? inBag(it.kind) : ''), 2.6); }; }
 
   const VERB = { hat: ['썼어요', 'on now'], scarf: ['둘렀어요', 'on now'], bag: ['바꿔 멨어요', 'on now'], bike: ['칠했어요', 'painted on'], flag: ['자전거에 달았어요', 'on your bike'] }, FOOT = { hike: 1, boots: 1 };
   const jo9 = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 ? a : b; };
   function autoLine(it, on) { const e = en(), t = L(it.t), tb = it.kind === 'deco' ? ['물건', 'Items'] : it.kind === 'place' ? null : TABN[tabOf(it.kind)].map(x => x.replace(/^\S+\s/, '')), tail = tb ? ' (' + (e ? 'bag · ' + tb[1] : '가방 · ' + tb[0]) + ')' : '';
+    if (LATE && it.id === LATE) return it.ic + ' ' + t + (e ? ' — you gathered plenty today. Come back tomorrow for it' : ' — 오늘은 충분히 모았어요. 내일 다시 들어오면 받아요');
     if (e) return it.ic + ' ' + t + ' — ' + (on && VERB[it.kind] ? VERB[it.kind][1] : 'got it') + tail;
     if (it.kind === 'nick' || it.kind === 'place') return it.ic + ' ' + t + tail;
     const v = on && VERB[it.kind] ? VERB[it.kind][0] : FOOT[it.id] ? '신었어요' : it.kind === 'recipe' ? '배웠어요' : '받았어요'; return it.ic + ' ' + t + jo9(t, '을', '를') + ' ' + v + tail; }

@@ -17,14 +17,14 @@ import { createYards, YARD_SIZE, YARD_CS, YARD_NORTH, extentOf, DEFAULT_YARD } f
 import { createIndoor, ROOM_ITEMS, kidItem } from './town_indoor.js?v=26';
 import { placeParked, TRUCK } from './town_fire.js?v=1';
 import { createJobs, JOBK } from './town_jobs.js?v=34';
-import { createBake } from './town_bake.js?v=6'; import { createTable, GAMES as TBG, LV_NAME as TBLV } from './town_table.js?v=24';
-import { createGame, ITEMS, itemName, DISHES, shopOf, won, RECIPES, CAL_LEN, SHOPS, RW_GEN, readSave, claimSave, slotKey, delSave, restoreSave, oldSave, saveSize, rdNow } from './town_game.js?v=62';
+import { createBake } from './town_bake.js?v=6'; import { createTable, GAMES as TBG, LV_NAME as TBLV } from './town_table.js?v=25';
+import { createGame, ITEMS, itemName, DISHES, shopOf, won, RECIPES, CAL_LEN, SHOPS, RW_GEN, readSave, claimSave, slotKey, delSave, restoreSave, oldSave, saveSize, rdNow } from './town_game.js?v=63';
 import { createStory, CHAPTERS, VEG, parkSim, parkSlot } from './town_story.js?v=54';
 import { attachLook, lookHTML, bindLook, setLook as setMyLook, getLook, lookColors } from '../js/look.js?v=1'; import { buildKid } from '../js/kid.js?v=5';
 import { startKeyText, stopKeyText } from '../js/keytext.js?v=1';
 import { createTips } from './town_tips.js?v=13';
 import { createTrack } from './town_track.js?v=9';
-import { createHost } from './town_host.js?v=3';
+import { createHost } from './town_host.js?v=4';
 import { createLineQ, readSec, infoOf } from './town_read.js?v=4';
 import { createGo } from './town_go.js?v=5';
 import { createMap2, LAY as MLAY, rankPlaces, tierMax, createPlacer, placeLabels, drawArrow, meBoxes, createHeading, MAP2_CSS, ME_RED } from './town_map2.js?v=3';
@@ -35,11 +35,11 @@ import { photoHtml, hasPhoto } from './town_photos.js?v=5';
 import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=9';
 import { makeWorkerMesh } from './town_worker.js?v=9'; import { createRhy } from './town_rhy.js?v=1';
 import { createSim, makeFrontView, makeFlags, makeUmbrellas, wetChain } from './town_sim.js?v=2';
-import { createShow, showFor } from './town_show.js?v=3'; import { createShowFind, SF_HRS } from './town_showfind.js?v=5'; import { createOutcrop } from './town_outcrop.js?v=6';
+import { createShow, showFor } from './town_show.js?v=3'; import { createShowFind, SF_HRS } from './town_showfind.js?v=5'; import { createOutcrop } from './town_outcrop.js?v=7';
 import { propGeos, createBirds } from './town_lifem.js?v=2';
 import { SKILLS, SK_ORDER, levelOf, gain, perk, titleOf, PERKS, cardsOf, MAXL } from './town_skill.js?v=8';
 import { createMini, mgKind, gradeOf, taskOf, kitAfter, kitUpText, kitGuests, kitGuestName } from './town_minigame.js?v=22'; import { ladLv, ladAfter, ladText, ladHead, recLines, ladRows } from './town_lad.js?v=8';
-import { createRank, bikeLook, bikeDeco, RCOL } from './town_rank.js?v=9'; import { createReward } from './town_reward.js?v=7';
+import { createRank, bikeLook, bikeDeco, RCOL } from './town_rank.js?v=9'; import { createReward } from './town_reward.js?v=8';
 import { createSea4 } from './town_sea4.js?v=5';
 import { createBeach } from './town_beach.js?v=3';
 import { createRF, RF_GAMES } from './town_rf.js?v=6';
@@ -47,7 +47,7 @@ import { createQuiz } from './town_quiz.js?v=17';
 import { createRec } from './town_rec.js?v=36'; import { teacherPin } from '../js/lobby.js?v=21';
 
 import { createBoatX } from './town_boat.js?v=9'; import { createPollen } from './town_pollen.js?v=1';
-import { createRes, wildOf } from './town_res.js?v=4'; import { createShore, SHORE as SHOREL, tideLvl, isLow, lowAt, lowsOf, hm as hm9 } from './town_shore.js?v=9'; import { createXp } from './town_xp.js?v=12';     import { newsMake, GIFT_OF, NB_RANK } from './town_news.js?v=14';
+import { createRes, wildOf } from './town_res.js?v=4'; import { createShore, SHORE as SHOREL, tideLvl, isLow, lowAt, lowsOf, hm as hm9 } from './town_shore.js?v=9'; import { createXp } from './town_xp.js?v=13';     import { newsMake, GIFT_OF, NB_RANK } from './town_news.js?v=14';
 import { createTreasure } from './town_treasure.js?v=20';
 import { planBusLines, makeBusLines, busPlan, busLeg } from './town_bus.js?v=1';
 import { createEmerg, EMSTY } from './town_emerg.js?v=27'; import { createWhy } from './town_why.js?v=10';     import { createFix } from './town_fix.js?v=2'; import { createCase } from './town_case.js?v=11';     import { createBldg, bldgKind, BD_SHOWS } from './town_bldg.js?v=19'; import { createDay } from './town_day.js?v=16'; import { createTyphoon } from './town_typhoon.js?v=14'; import { createWxEv } from './town_wxev.js?v=1';                         import { createRoad } from './town_road.js?v=13'; import { createAsk, wayLine } from './town_ask.js?v=5'; import { createStam } from './town_stam.js?v=5';
@@ -56,8 +56,8 @@ import { createEnter, entOf } from './town_enter.js?v=11';
 import { createJanggu } from './town_janggu.js?v=4';
 import { createTower } from './town_tower.js?v=2';
 import { createNight } from './town_night.js?v=8';
-import { createChem } from './town_chem.js?v=16'; import { createCellKit } from './town_cellkit.js?v=13';     import { createTools, FRESH as FRESHF, TOOL } from './town_tools.js?v=27'; import { createSpend } from './town_spend.js?v=6'; import { createCozy } from './town_cozy.js?v=3'; import { createBag } from './town_bag.js?v=18'; import { createBag3, bagTabName } from './town_bag3.js?v=25';         import { createRoutine } from './town_routine.js?v=4';
-import { createWild, WILD as WILDL } from './town_wild.js?v=17'; import { createPath, stepsOf, PATHS, P_ORDER, nWord } from './town_path.js?v=31'; import { createBundle2 } from './town_bundle2.js?v=1'; import { createRegen } from './town_regen.js?v=8';         import { createOrient } from './town_orient.js?v=16';         import { createPress } from './town_photo.js?v=14'; import { createNb, DEED_TEV, fillT as nbFillT } from './town_nb.js?v=2';
+import { createChem } from './town_chem.js?v=16'; import { createCellKit } from './town_cellkit.js?v=13';     import { createTools, FRESH as FRESHF, TOOL } from './town_tools.js?v=27'; import { createSpend } from './town_spend.js?v=6'; import { createCozy } from './town_cozy.js?v=3'; import { createBag } from './town_bag.js?v=19'; import { createBag3, bagTabName } from './town_bag3.js?v=26';         import { createRoutine } from './town_routine.js?v=4';
+import { createWild, WILD as WILDL } from './town_wild.js?v=17'; import { createPath, stepsOf, PATHS, P_ORDER, nWord } from './town_path.js?v=32'; import { createBundle2 } from './town_bundle2.js?v=1'; import { createRegen } from './town_regen.js?v=9';         import { createOrient } from './town_orient.js?v=16';         import { createPress } from './town_photo.js?v=14'; import { createNb, DEED_TEV, fillT as nbFillT } from './town_nb.js?v=2';
 import { createAfter } from './town_after.js?v=7';
 import { createFeast } from './town_feast.js?v=13'; import { createSeason } from './town_season.js?v=11';
 import { simFill, supOf, demOf, mkK, lumpsOf, whyOf } from './town_market.js?v=1';
@@ -5158,7 +5158,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
       bikeGet: a => (((GAME.S.rank || {}).bike || {})[a] || ''), bikeSet: (a, k) => { const R = GAME.S.rank || (GAME.S.rank = { cur: null, done: {}, title: '', bike: { c: '', f: '' } }); if (!R.bike) R.bike = { c: '', f: '' }; R.bike[a] = k; GAME.mark(); BIKE.deco(bikeLook(GAME.S)); },
       rcol: k => (RCOL[k] ? RCOL[k][0] : null), lookCap: () => lookColors(getLook()), lookRepaint: () => setMyLook(getLook(), { noSave: true }),
       toolOwn: k => !!(TOOLS && TOOLS.api.own(k)), toolTank: () => { if (TOOLS) TOOLS.api.fill(); }, toolHold: k => { if (TOOLS && TOOLS.api.info().cur !== k) TOOLS.hold(k); }, toolCur: () => (TOOLS ? TOOLS.cur : null),
-      openBag: t9 => openBag(t9), add: (e9, n, s9) => { GAME.add(e9, n, s9); bagShow(); if (GAME.lastN > 0) bagPop(e9, GAME.lastN); }, moneyPop: n => moneyPop(n), won: v => won(v), gy: (x, z) => map.q.groundAt(x, z, ty(x, z) + 3),
+      openBag: t9 => openBag(t9), add: (e9, n, s9, o9) => { GAME.add(e9, n, s9, o9); bagShow(); if (GAME.lastN > 0) bagPop(e9, GAME.lastN); return GAME.lastN | 0; }, moneyPop: n => moneyPop(n), won: v => won(v), gy: (x, z) => map.q.groundAt(x, z, ty(x, z) + 3),
       spot: k => rwSpot(k), route: p => showRoute(p, 'reward'), places: () => PLACES, seen: (x, z) => !!(GAME.S.cells || {})[cellOf(x, z)], soft: (x, z) => rwSoft(x, z), walkRe: () => { if (!bike && !PLAY && !HERD.on) map.player.speed(walkSp()); },
       allSeeds: () => [...new Set(['spring', 'summer', 'autumn'].flatMap(q => seedsOf(q)))],
       mkKey: w => (w.mk || '') + '@' + Math.round(w.x) + ',' + Math.round(w.z), mkName: w => mkTitle(w, LANG === 'en'),
@@ -7166,7 +7166,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
     else if (HOME) taskShow();
     else { taskShow(); map.hud.banner((en ? '☀️ Good morning! Day ' : '☀️ 좋은 아침! ') + GAME.S.day + (en ? '' : '일째예요') + (jangDay() && st0n() ? (en ? ' — 🎪 market day! Sell for more (×1.2)' : ' — 🎪 오늘은 장날! 장터 값이 더 좋아요(×1.2)') : (en ? ' — mushrooms grew back' : ' — 버섯이 다시 자랐어요')), 3.4); } } });
 
-  let OWEQ = 0; function owePay() { if (dead || !(GAME.owed() > 0)) return; if (panel || PLAY || DLG || TITLE9 || SLEEP9) { if (++OWEQ < 30) setTimeout(owePay, 6000); return; } OWEQ = 0; const v = GAME.payOwe(); if (v > 0) { moneyPop(v); bagShow(); say(LANG === 'en' ? '💰 ' + won(v) + ' you could not get last time came in' : '💰 지난번에 다 못 받은 ' + won(v) + '이 들어왔어요', 3.4, 1); } }
+  let OWEQ = 0; function owePay() { if (dead || !(GAME.owed() > 0)) return; if (panel || PLAY || DLG || TITLE9 || SLEEP9) { if (++OWEQ < 30) setTimeout(owePay, 6000); return; } OWEQ = 0; const v = GAME.payOwe(), pb = GAME.paidB || []; if (v > 0) { moneyPop(v); bagShow(); say(LANG === 'en' ? '💰 ' + won(v) + ' you could not get last time came in' : '💰 지난번에 다 못 받은 ' + won(v) + '이 들어왔어요', 3.4, 1); } if (pb.length) { bagShow(); for (const [e9, n9] of pb) bagPop(e9, n9); const t9 = pb.map(([e9, n9]) => e9 + ' ' + itemName(e9, LANG === 'en') + (n9 > 1 ? ' ×' + n9 : '')).join(', '); say(LANG === 'en' ? '🎒 What you could not get last time is in your bag now — ' + t9 : '🎒 지난번에 다 못 받은 물건이 가방에 들어왔어요 — ' + t9, 3.4, 1); } }
   setTimeout(owePay, 9000);
 
   const CANK = { '🍓': ['strawberry'], '🍯': ['beehive'], '🥔': ['potato'], '🥬': ['cabbage'], '🧂': ['saltpan'], '🍐': ['pear'], '🍚': ['paddy'], '🌿': ['seaweed'], '🐚': ['clam', 'oyster'], '🐟': ['fisher'], '🥛': ['pasture'], '🍄': ['shiitake'] };
