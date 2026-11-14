@@ -206,7 +206,7 @@ export function createHerd(o) {
     HP.cw.forEach((an, i) => { const q = cowSpot(HP, i); walkTo(HP, an, q[0], q[1], Math.PI / 2, 1.3); }); HP.G.dusk = cond === 'dusk'; gateTo(HP, true); HP.shutAfter = false;
     const D = HP.Dg, dog = lv >= 2 && !st; if (dog) { dogMesh(HP); D.heel = 0; D.tq = 1.5; D.dash = 0; D.runT = 0; D.ta = D.a; D.tb = D.b; }
     const me = map.player.pos(); W2L(HP, me.x, me.z, L9);
-    H = { HP, w, lv, cond, st, pr, dog, t: 0, done: false, end: 0, settle: 0, k: -1, gk: -1, left: false, sp: 0, run: false, runN: 0, runC: 0, runHit: false, whN: 0, whT: -9, kc: -1, msg: 0, mRun: -9, mOutT: -99, mOutK: 0, mOff: 0, offT: 0, onT: 0, vq: 0, p0: map.player.pitch, pT: Math.max(PMIN, Math.min(PMAX, map.player.pitch)), P: { a: L9[0], b: L9[1], run: false, dog: dog ? 1 : 0, da: D.a, db: D.b, heel: 0, h: 0 } };
+    H = { HP, w, lv, cond, st, pr, dog, t: 0, lt: 0, done: false, end: 0, settle: 0, k: -1, gk: -1, left: false, sp: 0, run: false, runN: 0, runC: 0, runHit: false, whN: 0, whT: -9, kc: -1, msg: 0, mRun: -9, mOutT: -99, mOutK: 0, mOff: 0, offT: 0, onT: 0, vq: 0, p0: map.player.pitch, pT: Math.max(PMIN, Math.min(PMAX, map.player.pitch)), P: { a: L9[0], b: L9[1], run: false, dog: dog ? 1 : 0, da: D.a, db: D.b, heel: 0, h: 0 } };
     map.player.freeze(false); o.bubble(w, (cond ? tx(cond, en) : '') + tx(TXT.ask[Math.min(3, lv - 1)], en, { n })); if (sv.n === 0) setTimeout(() => { if (H && !H.done && H.t < 12) o.toast(tx('tip0', o.en()), 4); }, 2600);
     markSet(HP, true); if (dog && o.touch()) whBtn(true); goalSay(); if (o.saw) o.saw(); if (o.hot) o.hot(); o.sfx('go');
     H.h0 = map.player.get().h; H.dh = 0; H.tq = 0;
@@ -261,9 +261,10 @@ export function createHerd(o) {
     for (let i = 0; i < F.n; i++) { const an = HP.sh[i]; an.a = F.A[i]; an.b = F.B[i]; an.h = F.HD[i]; mode(an, Math.hypot(F.VA[i], F.VB[i]) > 0.25 ? 1 : 0); put(HP, an, dt); }
     if ((H.vq -= dt) <= 0) { H.vq = 0.25; seeTick(HP); }
     if (HP.mk && HP.mkY) { const dy = HP.mkDy = 0.18 * Math.sin(H.t * 3.2), PA = HP.PM.geometry.attributes.position.array; for (let v = TM.na; v < TM.nm; v++) PA[v * 3 + 1] = HP.gy + TM.P[v * 3 + 1] + dy; HP.PM.geometry.attributes.position.needsUpdate = true; }
-    goalSay(); if (!H.st && H.t > 50 && !H.left) { H.left = true; o.toast('⏳ ' + tx('left', o.en()), 2.4); }
+    goalSay(); if (!H.st && H.lt > 50 && !H.left) { H.left = true; o.toast('⏳ ' + tx('left', o.en()), 2.4); }
     let all = true; for (let i = 0; i < F.n; i++) if (!inPen(G, F.A[i], F.B[i], 0.3)) { all = false; break; }
-    if (all && !inPen(G, P.a, P.b, -0.3)) finish(true); else if (!H.st && H.t >= 60) finish(false); }
+    const meIn = inPen(G, P.a, P.b, -0.3); if (!(all && meIn)) H.lt += dt;
+    if (all && !meIn) finish(true); else if (!H.st && H.lt >= 60) finish(false); }
   function dogIdle(HP, dt) { const D = HP.Dg, da = D.ta - D.a, db = D.tb - D.b, d = Math.hypot(da, db); if (d > 0.2) { const v = Math.min(3, d * 2); D.a += da / d * v * dt; D.b += db / d * v * dt; D.h = Math.atan2(da, db); D.v = v; HP.dogM.mode(0, 1); dogPut(HP, dt); } else if (D.v) { D.v = 0; HP.dogM.mode(0, 2); dogPut(HP, dt); if (HP.ring) { HP.ring = null; HP.dirty = true; } } }
 
   function sec() { const sv = SV(), S = o.S(), wet = o.wx() === 'rain' || o.wx() === 'snow'; for (const HP of PS) { if (!HP.sh.length || !HP.PM) continue; for (const an of HP.an) if (an.need && !an.walk) colOn(HP, an); if (sv.rib && sv.rib !== S.day) { sv.rib = 0; HP.dirty = true; o.mark(); } if (sv.pen && S.day > sv.pen && HP.amb !== 'pen') { sv.pen = 0; o.mark(); } if (H && H.HP === HP) continue;
@@ -274,7 +275,7 @@ export function createHerd(o) {
 
   function info() { const HP = H ? H.HP : PS.find(q => q.sh.length && q.PM); if (!HP) return null; const F = HP.F, G = HP.G, me = map.player.pos(), on = !!H && !H.done; W2L(HP, me.x, me.z, L9); const sh = [];
     for (let i = 0; i < HP.sh.length; i++) { const an = HP.sh[i], a = i < F.n && on ? F.A[i] : an.a, b = i < F.n && on ? F.B[i] : an.b, x = LX(HP, a, b), z = LZ(HP, a, b); sh.push({ a: +a.toFixed(2), b: +b.toFixed(2), x: +x.toFixed(2), z: +z.toFixed(2), in: inPen(G, a, b, 0.3), road: !!(o.onRoad && o.onRoad(x, z)), kd: i < F.n ? F.KD[i] : 0, walk: an.walk, col: !!an.h9 }); }
-    return { on, why: LW, done: !!(H && H.done), lv: H ? H.lv : SV().lv, cond: H ? H.cond : '', st: H ? H.st : false, pr: H ? H.pr : false, t: H ? +H.t.toFixed(1) : 0, sv: { ...SV() }, amb: HP.amb, phi: +HP.phi.toFixed(2), gate: !!HP.gH, me: [+L9[0].toFixed(2), +L9[1].toFixed(2)], sp: H ? +H.sp.toFixed(2) : 0, runN: H ? H.runN : 0, how: !!(HOWP && HOWP.isConnected), mk: !!HP.mk, msg: H ? H.msg | 0 : 0, mkw: [+LX(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2), +(HP.gy + 2.6).toFixed(2), +LZ(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2)],
+    return { on, why: LW, done: !!(H && H.done), lv: H ? H.lv : SV().lv, cond: H ? H.cond : '', st: H ? H.st : false, pr: H ? H.pr : false, t: H ? +H.t.toFixed(1) : 0, lt: H ? +H.lt.toFixed(1) : 0, sv: { ...SV() }, amb: HP.amb, phi: +HP.phi.toFixed(2), gate: !!HP.gH, me: [+L9[0].toFixed(2), +L9[1].toFixed(2)], sp: H ? +H.sp.toFixed(2) : 0, runN: H ? H.runN : 0, how: !!(HOWP && HOWP.isConnected), mk: !!HP.mk, msg: H ? H.msg | 0 : 0, mkw: [+LX(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2), +(HP.gy + 2.6).toFixed(2), +LZ(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2)],
       dog: HP.dogM ? { a: +HP.Dg.a.toFixed(2), b: +HP.Dg.b.toFixed(2), heel: HP.Dg.heel, dash: HP.Dg.dash } : null, G: { W: G.W, D: G.D, pa0: G.pa0, pa1: G.pa1, pb1: G.pb1, ga0: G.ga0, ga1: G.ga1 }, c: HP.c, s: HP.s, x: HP.x, z: HP.z, ry: HP.ry, wk: [+LX(HP, HP.wk[0], HP.wk[1]).toFixed(2), +LZ(HP, HP.wk[0], HP.wk[1]).toFixed(2)], cows: HP.cw.map(an => [+an.a.toFixed(1), +an.b.toFixed(1), an.walk]), sh }; }
 
   function anNear(x, z, r) { if (H) return null; let best = null, bd = r; for (const HP of PS) for (const an of HP.an) { if (an.walk || !an.mh) continue; const ax = LX(HP, an.a, an.b), az = LZ(HP, an.a, an.b), d = Math.hypot(ax - x, az - z); if (d < bd) { bd = d; best = { HP, an, x: ax, z: az, y: an.y, k: an.k, d }; } } return best; }

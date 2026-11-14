@@ -31,7 +31,7 @@ import { createFriends } from './town_friends.js?v=5'; import { createClassMP } 
 import { SET, CB, setHTML, bindSet, speak, hush, setSet } from '../js/settings.js?v=8'; import { takePhoto, fillAlbum, listPhotos, PHOTO_MAX, photoCss } from '../js/photo.js?v=7';
 import { BUGS, bugAt, drawBug } from './town_bugs.js?v=2';
 import { photoHtml, hasPhoto } from './town_photos.js?v=5';
-import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=6';
+import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=7';
 import { makeWorkerMesh } from './town_worker.js?v=9'; import { createRhy } from './town_rhy.js?v=1';
 import { createSim, makeFrontView, makeFlags, makeUmbrellas, wetChain } from './town_sim.js?v=2';
 import { createShow, showFor } from './town_show.js?v=3'; import { createShowFind, SF_HRS } from './town_showfind.js?v=5'; import { createOutcrop } from './town_outcrop.js?v=6';
