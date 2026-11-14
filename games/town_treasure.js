@@ -223,7 +223,7 @@ export function createTreasure(A) {
   const chestsDone = () => { const s = S(); return cands().every(c => s.got[c.id] || (c.k === 'view' && LVMAX < 3)); }, allDone = () => chestsDone() && !(A.rg && A.rg() && cands().length);
   function tick(dt) { if (!HB) return; if (dig) { digFrame(dt); return; } if (shT > 0 && (shT -= dt) <= 0) { if (A.map.player.shoulder) A.map.player.shoulder(0); if (!A.busy()) A.map.player.freeze(false); } if (rwd && (rwT -= dt) <= 0) { if (!A.busy()) { const c9 = rwd; rwd = null; reward(c9); } else rwT = 0.5; } if (rwOpen && !rwOpen.P.isConnected) { const c9 = rwOpen.c; rwOpen = null; stAfter(c9); } if (chestT > 0 && !rwOpen && !(rwd && rwd.st) && (chestT -= dt) <= 0 && CHEST) { CHEST.remove(); CHEST = null; }
     if ((q += dt) < 0.25) return; const step = q; q = 0; const s = S(), c = s.cur;
-    { const lb = boardLabel(); if (HB.hot.label !== lb) HB.hot.label = lb; }
+    { const lb = boardLabel(); if (HB.hot.label !== lb) HB.hot.label = lb; HB.hot.lock = /^🔒/.test(lb); }
     if (!c || A.inb()) { if (MD && MD.visible) MD.visible = false; if (HD && !HD.hot.off) HD.hot.off = true; if ((qs += step) > 1) { qs = 0; card(); } return; }
     const me = A.map.player.pos(), d = Math.hypot(me.x - c.x, me.z - c.z), busy = A.busy();
     if (!busy) { c.el += step; if ((tq += step) > 5) { tq = 0; mark(); } }
@@ -240,7 +240,7 @@ export function createTreasure(A) {
   return { init, tick, dispose, dex, titleNow, take, openMap, hint, give, cur: () => S().cur, get on() { return !!HB; }, free: () => { const s = S(); return !!HB && A.ready() && !s.cur && s.last !== day() && !allDone(); },     dir8: () => { const c = S().cur; return !!(c && c.lv === 2); },     get digging() { return !!dig; },
     info: () => { const s = S(); return { src: SRC && { x: +SRC.x.toFixed(1), z: +SRC.z.toFixed(1), name: SRC.name }, cur: s.cur && JSON.parse(JSON.stringify(s.cur)), got: { ...s.got }, n: s.n.slice(), last: s.last, title: s.title.slice(), lv: lvNow(), card: !!(CARD && CARD.style.display !== 'none'), mound: !!(MD && MD.visible), dig: HD && !HD.hot.off ? HD.hot.label : null, board: HB && HB.hot.label, chest: !!CHEST }; },
     near: (x, z, me) => { const c = S().cur; if (!c || !HD || dig) return null; if (!(me && inReach(c, me)) && (HD.hot.off || Math.hypot(x - c.x, z - c.z) >= 2.6)) return null; NR.x = c.x; NR.z = c.z; NR.y = MD ? MD.userData.y : A.gy(c.x, c.z); return NR; },
-    away: me => { const c = S().cur; return c && !c.lost && MD && MD.visible && !dig && !A.inb() ? Math.hypot(me.x - c.x, me.z - c.z) : -1; },
+    away: me => { const c = S().cur; return c && !c.lost && MD && MD.visible && !dig && !A.inb() ? Math.hypot(me.x - c.x, me.z - c.z) : -1; }, hunt: () => { const c = S().cur; return !!(c && !c.lost && !A.inb()); },
     shovel: () => { const c = S().cur; if (!c || !HD || dig || A.busy()) return false; if (HD.hot.off && !inReach(c, A.map.player.pos(), 0.6)) return false; reveal(c); return true; },
     mesh: () => MD, dbg: () => DBG.slice(), spots: () => cands().map(c => ({ id: c.id, k: c.k, x: c.x, z: c.z, walk: c.walk, lm: c.lm, hill: !!c.hill })), plan: () => plan() };
 }
