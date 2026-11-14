@@ -18,6 +18,7 @@ export function walls(G, S, i, r) { const W2 = G.W / 2 - 0.15 - r, D2 = G.D / 2 
   const z0 = -G.D / 2; seg(S, i, G.pa0, G.pb1, G.ga0, G.pb1, r); seg(S, i, G.ga1, G.pb1, G.pa1, G.pb1, r); seg(S, i, G.pa1, z0, G.pa1, G.pb1, r); seg(S, i, G.pa0, z0, G.pa0, G.pb1, r); { const L = G.ga1 - G.ga0, ph = G.phi || 0; seg(S, i, G.ga0, G.pb1, G.ga0 + Math.cos(ph) * L, G.pb1 + Math.sin(ph) * L, r); }
   const br = G.barn, ha = br[2] + r, hb = br[3] + r, da = S.A[i] - br[0], db = S.B[i] - br[1]; if (Math.abs(da) < ha && Math.abs(db) < hb) { if (ha - Math.abs(da) < hb - Math.abs(db)) S.A[i] = br[0] + Math.sign(da || 1) * ha; else S.B[i] = br[1] + Math.sign(db || 1) * hb; }
   for (let k = 0; k < G.nh; k++) { const qa = S.A[i] - G.hay[k * 2], qb = S.B[i] - G.hay[k * 2 + 1], d = Math.hypot(qa, qb), R = 0.7 + r; if (d < R && d > 1e-4) { S.A[i] = G.hay[k * 2] + qa / d * R; S.B[i] = G.hay[k * 2 + 1] + qb / d * R; } }
+  for (let k = 0; k < G.nh; k++) for (let m = k + 1; m < G.nh; m++) { const ea = G.hay[m * 2] - G.hay[k * 2], eb = G.hay[m * 2 + 1] - G.hay[k * 2 + 1]; if (ea * ea + eb * eb < 12.96) seg(S, i, G.hay[k * 2], G.hay[k * 2 + 1], G.hay[m * 2], G.hay[m * 2 + 1], 0.7 + r); }
   for (let k = 0; k < G.nc; k++) { const qa = S.A[i] - G.cow[k * 2], qb = S.B[i] - G.cow[k * 2 + 1], d = Math.hypot(qa, qb), R = 0.9 + r; if (d < R && d > 1e-4) { S.A[i] = G.cow[k * 2] + qa / d * R; S.B[i] = G.cow[k * 2 + 1] + qb / d * R; } } }
 
 const T9 = new Float32Array(2);

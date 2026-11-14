@@ -31,7 +31,7 @@ import { createFriends } from './town_friends.js?v=5'; import { createClassMP } 
 import { SET, CB, setHTML, bindSet, speak, hush, setSet } from '../js/settings.js?v=8'; import { takePhoto, fillAlbum, listPhotos, PHOTO_MAX, photoCss } from '../js/photo.js?v=7';
 import { BUGS, bugAt, drawBug } from './town_bugs.js?v=2';
 import { photoHtml, hasPhoto } from './town_photos.js?v=5';
-import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=7';
+import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=9';
 import { makeWorkerMesh } from './town_worker.js?v=9'; import { createRhy } from './town_rhy.js?v=1';
 import { createSim, makeFrontView, makeFlags, makeUmbrellas, wetChain } from './town_sim.js?v=2';
 import { createShow, showFor } from './town_show.js?v=3'; import { createShowFind, SF_HRS } from './town_showfind.js?v=5'; import { createOutcrop } from './town_outcrop.js?v=6';
@@ -67,7 +67,7 @@ import { createSubway } from './town_subway.js?v=8';
 import { createLook, SKYF as SKYF9 } from './town_look.js?v=9';
 import { REGN, REG_KEYS, regName, createRegion, kidHoods } from './town_region.js?v=1';
 import { createKidLook } from './town_kidlook.js?v=8';
-import { createPbox } from './town_pbox.js?v=12';
+import { createPbox } from './town_pbox.js?v=14';
 import { classCode, cloudCall, cloudPull, cloudSync } from './town_cloud.js?v=10';
 import { dexBook, dexLine, dexStamp, DEX_HINT } from './town_dex.js?v=26'; import { bundleBook, bundlePut, inSeason, ALL_STAMP } from './town_bundle.js?v=3'; import { STARS as SKYSTARS, SKY_OF, drawSky } from './town_sky.js?v=1'; import { CROPS, seedsOf, plotState, farmGrow, plantSpots, FARM_MAX } from './town_farm.js?v=3'; import { FISH } from './town_fish.js?v=2';
 const KALIAS = { market: 'shop', museum: 'public', aquarium: 'public', hut: 'shop', pension: 'house', aquadom: 'public', kidscafe: 'shop', clinic: 'hospital', terminal: 'public', mart: 'shop', store: 'shop' };
@@ -124,8 +124,8 @@ export default async function start(map, params) {
 
   const HUDB0 = map.hud.banner, HUDT0 = map.hud.toast, hudVis9 = id => { const e = document.getElementById(id); return !!(e && e.style.display !== 'none' && e.textContent); };
   const PBX = createPbox({ en: () => { try { return LANG === 'en'; } catch (e) { return false; } } }); PBX.watch();
-  const BANQ = createLineQ({ show: (t, s) => HUDB0(t, s), vis: () => hudVis9('hudBan'), hold: () => { try { return !!panel || PBX.busy(); } catch (e) { return false; } }, protect: (t, dur, info) => (info ? readSec(t) : Math.min(1.2, dur)) });
-  const TOSQ = createLineQ({ cut: true, show: (t, s) => HUDT0(t, s), vis: () => hudVis9('toast'), protect: t => readSec(t) });
+  const BANQ = createLineQ({ show: (t, s) => { HUDB0(t, s); PBX.banFit(); }, vis: () => hudVis9('hudBan'), hold: () => { try { return !!panel || PBX.busy(); } catch (e) { return false; } }, protect: (t, dur, info) => (info ? readSec(t) : Math.min(1.2, dur)) });
+  const TOSQ = createLineQ({ cut: true, show: (t, s) => { HUDT0(t, s); PBX.banFit(); }, vis: () => hudVis9('toast'), protect: t => readSec(t) });
   map.hud.banner = (t, s, info) => { if (dead) return HUDB0(t, s); BANQ.put(t, s, info); return { remove() {} }; };
   map.hud.toast = (t, s) => { if (dead) return HUDT0(t, s); TOSQ.put(t, s); };
   const readDrop = () => { BANQ.clear(); TOSQ.clear(); if (SAYN.h) { clearTimeout(SAYN.h); SAYN.h = 0; } SAYN.q = ''; SAYN.last = performance.now() + 2500; const e = document.getElementById('toast'); if (e) e.style.display = 'none'; };
