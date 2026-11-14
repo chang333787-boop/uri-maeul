@@ -1,6 +1,6 @@
 import { PG, PG_ORDER, JOBS, placeInfo, jobSvg, jobRow, photoKey, photoHtml, PHOTO_CSS, LIB_CATS, LIB_BOOKS, LIB_ASKS } from './town_places.js?v=7';
 import { getLook, setLook } from '../js/look.js?v=1';
-import { makeFireTruck, FIRE_STATIONS, parked } from './town_fire.js?v=1'; import { SIT, HTYPE, typeOf, CAUSE, CAUSE_ORDER, METHOD, METHOD_OK, METHOD_WHY, METHOD_NO, TARGET, STOP_ITEM, STOP_Q, QPOOL, FLV, TASK, firePlan, rnd } from './town_fire5.js?v=4'; import { ladOf, ladAfter, recLines } from './town_lad.js?v=6';
+import { makeFireTruck, FIRE_STATIONS, parked } from './town_fire.js?v=1'; import { SIT, HTYPE, typeOf, CAUSE, CAUSE_ORDER, METHOD, METHOD_OK, METHOD_WHY, METHOD_NO, TARGET, STOP_ITEM, STOP_Q, QPOOL, FLV, TASK, firePlan, rnd } from './town_fire5.js?v=4'; import { ladOf, ladAfter, recLines } from './town_lad.js?v=7';
 export const JOBS_V = 1;
 const T2 = (ko, en) => [ko, en];
 
