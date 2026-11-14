@@ -28,7 +28,7 @@ const fit20 = (s) => { let o9 = ''; for (const ch of String(s)) { if (o9.length 
 export const comboKind = (i) => (i === 0 || i === 2 || i === 7 ? 'five' : i === 5 || i === 9 ? 'dance' : 'heart');
 
 export function createNet(o) {
-  const { THREE, scene, room, kind = 'kid', scale = 1 } = o;
+  const { THREE, scene, room, kind = 'kid', scale = 1 } = o, CLS = o.cls || null;
   const base = DB + '/metaverse/rooms/' + encodeURIComponent(room);
   let id = null;
   try { id = sessionStorage.getItem('mp.id'); } catch (e) {   }
@@ -42,7 +42,7 @@ export function createNet(o) {
   const others = new Map();
   const mat = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
   const _m = new THREE.Matrix4(), _c = new THREE.Color();
-  let ws = null, wsOk = false, wsBack = 1, wsOff = null, wsSendT = 0, wsGone = false, wsN = 0;
+  let ws = null, wsOk = false, wsBack = 1, wsOff = null, wsSendT = 0, wsGone = false, wsN = 0, tkSent = '';
   const wsIn = new Set(), wl = { x: 1e9, y: 0, z: 0, h: 0 }; let fbAt = -1e9, mT = 0, mDirty = false, mSent = '', pingT = 1, pingN = 0, pingAt = 0, pingMiss = 0, rtt = null, rxAt = 0;
   let es = null, dead = false, hidden = false, mQ = 0, CTL = {}, selfE = null, act = '', CHAT = {}, chatSeen = new Set(), chatT0 = Date.now(), selfB = null, offset = 0, sendT = 0, beatT = 0, cleanT = 8, fxQ = 0, denyT = -1e9, away = false, actSent = '', wq = -1, ext = false, last = { x: 1e9, y: 0, z: 0, h: 0 }, onChange = o.onChange || (() => {});
 
@@ -129,7 +129,7 @@ export function createNet(o) {
     else if (Math.abs(O.rh) > 50) O.away = true; else { O.away = false; O.th = O.rh; } }
 
   function mk(pid, k9, c9, n9) { const mesh = avatar(k9, c9), tg = tag(n9);
-    const O = { pid, a: '', w: 's', cell: '', v: '', lbl: '', rx: 0, ry: 0, rz: 0, rh: 0, vx: 0, vz: 0, rt: 0, vis: false, mrx: 0, mrz: 0, mry: 0, mdy: 0, k: k9, away: false, mo: null, mesh, tag: tg, n: n9, c: c9, x: 0, y: 0, z: 0, h: 0, tx: 0, ty: 0, tz: 0, th: 0, t: 0, seen: performance.now(), fxQ: 0, mQ: 0, em: null, B: new Float64Array(24), Bn: 0, Bh: 0, wsAt: 0, ws: false, fb: false, has: false, wsSeen: 0, lts: 0, iv: 100, dl: 150 };
+    const O = { pid, a: '', w: 's', cell: '', v: '', lbl: '', rx: 0, ry: 0, rz: 0, rh: 0, vx: 0, vz: 0, rt: 0, vis: false, mrx: 0, mrz: 0, mry: 0, mdy: 0, k: k9, away: false, mo: null, mesh, tag: tg, n: n9, c: c9, x: 0, y: 0, z: 0, h: 0, tx: 0, ty: 0, tz: 0, th: 0, t: 0, seen: performance.now(), fxQ: 0, mQ: 0, em: null, B: new Float64Array(24), Bn: 0, Bh: 0, wsAt: 0, ws: false, fb: false, has: false, wsSeen: 0, lts: 0, iv: 100, dl: 100 };
     mesh.visible = tg.visible = false; scene.add(mesh, tg); others.set(pid, O); onChange(); return O; }
   function relook(O, k9, c9) { if (k9 === O.k && c9 === O.c) return; O.k = k9; O.c = c9; const g = avatarGeo(k9, c9); O.mesh.geometry.dispose(); O.mesh.geometry = g; }
   function upsert(pid, d) {
@@ -151,9 +151,10 @@ export function createNet(o) {
     if (typeof d.t === 'number') O.t = d.t;
     if (d.n && d.n !== O.n) { O.n = d.n; scene.remove(O.tag); O.tag.material.map.dispose(); O.tag = tag(O.n); scene.add(O.tag); onChange(); }
     if (d.fx && d.fx.q !== O.fxQ) { O.fxQ = d.fx.q; if (o.onFx && O.seen) o.onFx(O, d.fx); }
-    if (d.m && d.m.q !== O.mQ) { O.mQ = d.m.q; if (!MUTE.has(pid)) { const i9 = Math.max(0, Math.min(EMOTES.length - 1, d.m.i | 0)); O.em = emoteSprite(O.em, i9); O.mo = { i: i9, t: 0, dur: MO_DUR[i9] || 1.6 }; O.mi = i9; O.mt = performance.now(); if (myE && myE.i === i9 && O.mt - myE.t < 3000) combo(O, i9); } }
+    if (d.m && d.m.q !== O.mQ) { O.mQ = d.m.q; emoIn(O, d.m.i); }
     O.seen = performance.now();
   }
+  function emoIn(O, i) { if (MUTE.has(O.pid)) return; const i9 = Math.max(0, Math.min(EMOTES.length - 1, i | 0)); O.em = emoteSprite(O.em, i9); O.mo = { i: i9, t: 0, dur: MO_DUR[i9] || 1.6 }; O.mi = i9; O.mt = performance.now(); if (myE && myE.i === i9 && O.mt - myE.t < 3000) combo(O, i9); }
   function onEvt(type, e) {
     let msg; try { msg = JSON.parse(e.data); } catch (er) { return; }
     fbAt = performance.now();
@@ -197,7 +198,7 @@ export function createNet(o) {
       else upsert(path[0], data);
     } else upsert(path[0], { [path[1]]: data });
   }
-  function req(path, method, data) { return fetch(base + path + '.json', { method, body: data == null ? undefined : JSON.stringify(data), keepalive: true }).then((r) => { if (r.status === 401 && o.onDenied && !dead && Date.now() - denyT > 20000) { denyT = Date.now(); o.onDenied(); } }).catch(() => {}); }
+  function req(path, method, data) { if (CLS) return Promise.resolve(); return fetch(base + path + '.json', { method, body: data == null ? undefined : JSON.stringify(data), keepalive: true }).then((r) => { if (r.status === 401 && o.onDenied && !dead && Date.now() - denyT > 20000) { denyT = Date.now(); o.onDenied(); } }).catch(() => {}); }
   const inRule = (P) => P.x > -499 && P.x < 499 && P.z > -499 && P.z < 499 && P.y > -99 && P.y < 199;
   const cl = (v, a) => +Math.max(-a, Math.min(a, v || 0)).toFixed(2);
   const myK = () => (kind === 'kid' ? lookCode() || 'kid' : kind);
@@ -219,12 +220,13 @@ export function createNet(o) {
 
   const wsTag = () => { const W9 = myW(); if (!W9) return ''; const w9 = String(W9.w), v9 = /^[bokz]$/.test(W9.v || '') ? '.' + W9.v : ''; if (w9[0] === 't') return 't:' + (CELL_RX.test(w9.slice(2)) ? w9.slice(2) : '') + v9; return /^i:\d{1,3}$/.test(w9) ? w9 + v9 : null; };
   const wsIvl = () => { const n9 = wsIn.size + 1; return n9 <= 8 || hidden || (window.SM_MP && window.SM_MP.roomRun && window.SM_MP.roomRun()) ? 0.1 : n9 <= 16 ? 1 / 6 : 0.25; };
-  const live = (O, now, pn) => ((O.ws && (!O.fb || pn - fbAt > 15000)) ? pn - O.wsSeen < 300000 : !(O.t && now - O.t > 20000));
-  function wsMem(pid, k9, c9, a9) { if (typeof pid !== 'string' || pid === id) return; wsIn.add(pid); let O = others.get(pid);
+  const live = (O, now, pn) => ((O.ws && (CLS || !O.fb || pn - fbAt > 15000)) ? CLS || pn - O.wsSeen < 300000 : !(O.t && now - O.t > 20000));
+  function wsMem(pid, k9, c9, a9, u9) { if (typeof pid !== 'string' || pid === id) return; wsIn.add(pid); let O = others.get(pid);
     if (!O) { if (typeof a9 !== 'string' || others.size >= 40) return;
       O = mk(pid, typeof k9 === 'string' ? k9 : 'kid', PAL[Number.isInteger(c9) && c9 >= 0 && c9 < PAL.length ? c9 : [...pid].reduce((q, ch) => q + ch.charCodeAt(0), 0) % PAL.length], ''); }
     O.ws = true; O.wsSeen = performance.now();
     if (typeof k9 === 'string') relook(O, k9, O.c);
+    if (CLS && Number.isInteger(u9) && u9 >= 1 && u9 <= 40) { const n9 = CLS.lab(u9); if (n9 !== O.n) { O.n = n9; scene.remove(O.tag); O.tag.material.map.dispose(); O.tag.material.dispose(); O.tag = tag(n9); scene.add(O.tag); onChange(); } }
     if (typeof a9 === 'string') { const q9 = parseAct(a9 + ' '); if (q9.w !== O.w || q9.v !== O.v || (q9.cell && q9.cell !== O.cell)) { if (wKey(q9.w) !== wKey(O.w)) { O.Bn = 0; O.lts = 0; } O.w = q9.w; O.v = q9.v; if (q9.cell || !O.fb) O.cell = q9.cell; retarget(O, false); } }
     else if (!O.fb) O.w = 'i:?';
   }
@@ -233,19 +235,20 @@ export function createNet(o) {
     if (!O.has) { O.has = true; O.x = O.tx; O.y = O.ty; O.z = O.tz; if (!O.away) O.h = O.th; }
     const g9 = ts - O.lts; if (g9 > 0 && g9 <= 600) O.iv += (g9 - O.iv) * (g9 > O.iv ? 0.5 : 0.25); O.lts = ts;
     const k = O.Bh * 4; O.B[k] = ts; O.B[k + 1] = O.tx; O.B[k + 2] = O.ty; O.B[k + 3] = O.tz; O.Bh = (O.Bh + 1) % 6; if (O.Bn < 6) O.Bn++; O.wsAt = O.wsSeen = performance.now(); O.t = Date.now() + offset; }
-  function wsOpen() { if (!CF_WS || dead || wsGone || ws) return; let s9; try { s9 = ws = new WebSocket(CF_WS + '/room/' + wsRoomOf(room)); } catch (e) { ws = null; return; }
-    s9.onopen = () => { if (ws !== s9) return; const a9 = wsTag(), k9 = myK(); try { s9.send(JSON.stringify(a9 == null ? { t: 'j', id, n: '', k: k9, c: PAL.indexOf(color) } : { t: 'j', id, n: '', k: k9, c: PAL.indexOf(color), a: a9 })); } catch (e) { return; }
+  function wsOpen() { if (!CF_WS || dead || wsGone || ws) return; let s9; try { s9 = ws = new WebSocket(CF_WS + '/room/' + (CLS ? CLS.r : wsRoomOf(room))); } catch (e) { ws = null; return; }
+    s9.onopen = () => { if (ws !== s9) return; const a9 = wsTag(), k9 = myK(), j9 = a9 == null ? { t: 'j', id, n: '', k: k9, c: PAL.indexOf(color) } : { t: 'j', id, n: '', k: k9, c: PAL.indexOf(color), a: a9 }; if (CLS) j9.tk = tkSent = CLS.tk(); try { s9.send(JSON.stringify(j9)); } catch (e) { return; }
       wsOk = true; wsBack = 1; wl.x = 1e9; wsSendT = 0; mSent = k9 + '|' + a9; mDirty = false; mT = 0; pingT = 1; pingN = 0; pingAt = 0; pingMiss = 0; rxAt = performance.now(); };
     s9.onmessage = (ev) => { if (ws !== s9) return; let d; try { d = JSON.parse(ev.data); } catch (e) { return; } rxAt = performance.now(); pingMiss = 0;
       if (d.t === 's' || d.t === 'w') { const est = d.ts - Date.now(); wsOff = wsOff == null ? est : wsOff + (est - wsOff) * 0.05;
-        if (d.t === 'w' && Array.isArray(d.L)) { for (const pid of [...wsIn]) { const O = others.get(pid); if (O) O.ws = false; } wsIn.clear(); for (const m of d.L) if (Array.isArray(m)) wsMem(m[0], m[2], m[3], m[4]); for (const [pid, O] of [...others]) if (!O.ws && !O.fb) drop(pid); }
+        if (d.t === 'w' && Array.isArray(d.L)) { for (const pid of [...wsIn]) { const O = others.get(pid); if (O) O.ws = false; } wsIn.clear(); for (const m of d.L) if (Array.isArray(m)) wsMem(m[0], m[2], m[3], m[4], m[5]); for (const [pid, O] of [...others]) if (!O.ws && !O.fb) drop(pid); }
         if (Array.isArray(d.P)) for (const q of d.P) if (Array.isArray(q)) wsPos(q, d.ts); }
-      else if (d.t === 'j') wsMem(d.id, d.k, d.c, d.a);
+      else if (d.t === 'j') wsMem(d.id, d.k, d.c, d.a, d.u);
+      else if (d.t === 'e') { if (CLS && Number.isInteger(d.m)) { const O = others.get(d.f); if (O && O.ws) emoIn(O, d.m); } }
       else if (d.t === 'm') { if (wsIn.has(d.id)) wsMem(d.id, d.k, d.c, d.a); }
       else if (d.t === 'l') { if (wsIn.delete(d.id)) { const O = others.get(d.id); if (O) { O.ws = false; if (!O.fb) drop(d.id); } } }
       else if (d.t === 'pong') { if (pingAt) { rtt = Math.round(performance.now() - pingAt); pingAt = 0; } }
       else if (d.t === 'full') { wsGone = true; wsOk = false; fullNote(); } };
-    s9.onclose = (ev) => { if (ws !== s9) return; ws = null; wsOk = false; wsLost(); const c9 = ev && ev.code; if (c9 === 4002 || c9 === 4003) { wsGone = true; fullNote(); } else if (c9 === 4000) wsGone = true;
+    s9.onclose = (ev) => { if (ws !== s9) return; ws = null; wsOk = false; wsLost(); const c9 = ev && ev.code; if (c9 === 4002 || c9 === 4003) { wsGone = true; fullNote(); } else if (c9 === 4000) wsGone = true; else if (CLS && c9 === 4004) { if (CLS.tk() === tkSent) wsGone = true; } else if (CLS && c9 === 4005) { wsGone = true; if (CLS.note) CLS.note('dev'); }
       if (!dead && !wsGone) setTimeout(wsOpen, Math.min(30, (wsBack *= 2)) * 1000); };
     s9.onerror = () => {   }; }
   const onLook = () => { if (joined && !dead && kind === 'kid') { req('/players/' + id, 'PATCH', { k: myK() }); mDirty = true; } };
@@ -254,7 +257,7 @@ export function createNet(o) {
   addEventListener('pagehide', leave);
   let joined = false;
   return {
-    get cf() { let wo = 0; for (const O of others.values()) if (O.ws && !O.fb) wo++; return { on: !!CF_WS, ok: wsOk, gone: wsGone, sent: wsN, off: wsOff == null ? null : Math.round(wsOff), room: CF_WS ? wsRoomOf(room) : '', n: wsIn.size + 1, hz: Math.round(1 / wsIvl()), rtt, wsOnly: wo, fbDead: performance.now() - fbAt > 15000 }; },
+    get cf() { let wo = 0; for (const O of others.values()) if (O.ws && !O.fb) wo++; return { on: !!CF_WS, ok: wsOk, gone: wsGone, sent: wsN, off: wsOff == null ? null : Math.round(wsOff), room: CF_WS ? (CLS ? CLS.r : wsRoomOf(room)) : '', cls: !!CLS, n: wsIn.size + 1, hz: Math.round(1 / wsIvl()), rtt, wsOnly: wo, fbDead: performance.now() - fbAt > 15000 }; },
     cfPeers() { const a = []; for (const O of others.values()) a.push({ id: O.pid, ws: O.ws, fb: O.fb, has: O.has, vis: O.vis, n: O.n, k: O.k, c: O.c, w: O.w, v: O.v, iv: Math.round(O.iv), dl: Math.round(O.dl), tag: O.tag.visible, x: +O.x.toFixed(2), z: +O.z.toFixed(2) }); return a; },
     get id() { return id; }, get name() { return name; }, get color() { return color; }, get away() { return away; }, get kindCode() { return myK(); },
     get count() { let n = 1; const now = Date.now() + offset, pn = performance.now(); for (const O of others.values()) if (O.ws ? live(O, now, pn) : now - O.t < 20000) n++; return n; },
@@ -263,7 +266,7 @@ export function createNet(o) {
     fx(f) { fxQ++; if (joined) req('/players/' + id + '/fx', 'PUT', { q: fxQ, ...f }); },
     tick(dt, P) {
       if (dead || !P) return;
-      if (!joined) { joined = true; join(P); wsOpen(); }
+      if (!joined) { joined = true; if (!CLS) join(P); wsOpen(); }
       sendT -= dt; beatT -= dt;
       const moved = Math.abs(P.x - last.x) + Math.abs(P.z - last.z) + Math.abs(P.y - last.y) > 0.05 || Math.abs(P.h - last.h) > 0.08;
       { const W9 = myW(), q9 = W9 ? W9.q : -1; if (q9 !== wq) { wq = q9; actPut(); sendT = 0; mDirty = true; wl.x = 1e9; } }
@@ -280,7 +283,7 @@ export function createNet(o) {
       for (const O of others.values()) {
         O.vis = live(O, now, pn) && !hidden && !O.away && O.has && wKey(O.w) === mw; O.mesh.visible = O.vis && !ext; O.tag.visible = O.mesh.visible && !!O.n;
         if (!O.vis) { if (O.em) O.em.s.visible = false; if (O.sb) O.sb.s.visible = false; } else { emoteTick(O.em, dt, O.x, O.y, O.z); bubbleTick(O.sb, dt, O.x, O.y, O.z); }
-        if (O.Bn >= 2 && pn - O.wsAt < 1000 && wsOff != null) { const dl9 = O.iv < 85 ? 100 : O.iv < 150 ? 150 : O.iv < 225 ? 250 : 375, dd9 = dl9 - O.dl; O.dl += dd9 > 0 ? Math.min(dd9, dt * 400) : Math.max(dd9, dt * -100);
+        if (O.Bn >= 2 && pn - O.wsAt < 1000 && wsOff != null) { const dl9 = O.iv < 140 ? 100 : O.iv < 225 ? 250 : 375, dd9 = dl9 - O.dl; O.dl += dd9 > 0 ? Math.min(dd9, dt * 400) : Math.max(dd9, dt * -100);
           const rt = Date.now() + wsOff - O.dl, B = O.B, n = O.Bn, h0 = (O.Bh - n + 6) % 6; let a = -1;
           for (let i = 0; i < n - 1; i++) { const k = ((h0 + i) % 6) * 4, k2 = ((h0 + i + 1) % 6) * 4; if (B[k] <= rt && rt <= B[k2]) { a = k; const u = (rt - B[k]) / Math.max(1, B[k2] - B[k]); O.x = B[k + 1] + (B[k2 + 1] - B[k + 1]) * u; O.y = B[k + 2] + (B[k2 + 2] - B[k + 2]) * u; O.z = B[k + 3] + (B[k2 + 3] - B[k + 3]) * u; break; } }
           if (a < 0) { const kL = ((O.Bh + 5) % 6) * 4, kF = h0 * 4; if (rt < B[kF]) { O.x = B[kF + 1]; O.y = B[kF + 2]; O.z = B[kF + 3]; } else { O.x += (B[kL + 1] - O.x) * k; O.y += (B[kL + 2] - O.y) * k; O.z += (B[kL + 3] - O.z) * k; } } }
@@ -297,7 +300,7 @@ export function createNet(o) {
     clearChat() { return req('/chat', 'DELETE'); },
     get chat() { return Object.values(CHAT).filter((m) => m && typeof m.tx === 'string' && !MUTE.has(m.by)).sort((a, b) => (a.t || 0) - (b.t || 0)); },
     setAct(v) { act = String(v || '').slice(0, 20); actPut(); },
-    emote(i) { i = Math.max(0, Math.min(EMOTES.length - 1, i | 0)); myE = { i, t: performance.now() }; if (!joined) return; mQ++; req('/players/' + id + '/m', 'PUT', { q: mQ, i }); selfE = emoteSprite(selfE, i);
+    emote(i) { i = Math.max(0, Math.min(EMOTES.length - 1, i | 0)); myE = { i, t: performance.now() }; if (!joined) return; mQ++; if (CLS && wsOk) { wsN++; try { ws.send('{"t":"e","m":' + i + '}'); } catch (e) {   } } req('/players/' + id + '/m', 'PUT', { q: mQ, i }); selfE = emoteSprite(selfE, i);
       for (const O of others.values()) if (O.mi === i && myE.t - (O.mt || -1e9) < 3000) combo(O, i); },
     mute(pid, on) { const O = others.get(pid); if (on) { MUTE.add(pid); if (O) { if (O.em) O.em.t = 0; if (O.sb) O.sb.t = 0; O.mo = null; O.mesh.rotation.x = O.mesh.rotation.z = 0; } } else MUTE.delete(pid); try { sessionStorage.setItem('mp.mute', JSON.stringify([...MUTE])); } catch (e) {   } onChange(); },
     muted: (pid) => MUTE.has(pid),

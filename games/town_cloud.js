@@ -2,13 +2,15 @@ const CF_HTTP = (() => { try { const q = new URLSearchParams(location.search).ge
 const CLS_K = 'sm-town-cls';
 export function classCode() { try { const q = new URLSearchParams(location.search).get('cls'); if (q != null) { const c = /^[A-Za-z0-9]{4,8}$/.test(q) ? q.toLowerCase() : ''; if (c) localStorage.setItem(CLS_K, c); else localStorage.removeItem(CLS_K); return CF_HTTP ? c : ''; } return CF_HTTP ? (localStorage.getItem(CLS_K) || '') : ''; } catch (e) { return ''; } }
 
+let MPT = null; export const mpTicket = () => MPT;
+
 export async function cloudCall(kind, code, num, body, ms = 5000, ka) {
   if (!CF_HTTP || !code) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0, raw = typeof body === 'string';
-  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + '/' + num, { method: 'POST', headers: { 'content-type': 'application/json' }, body: raw ? body : JSON.stringify(body), signal: ac ? ac.signal : undefined, keepalive: kind === 'save' && !!(ka != null ? ka : !raw && body.k9) }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
+  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + '/' + num, { method: 'POST', headers: { 'content-type': 'application/json' }, body: raw ? body : JSON.stringify(body), signal: ac ? ac.signal : undefined, keepalive: kind === 'save' && !!(ka != null ? ka : !raw && body.k9) }); let j = null; try { j = await r.json(); } catch (e) {   } if (r.status === 200 && j && j.ok && 'mp' in j) MPT = j.mp && typeof j.mp.r === 'string' && typeof j.mp.tk === 'string' ? { r: j.mp.r, tk: j.mp.tk, u: j.mp.u | 0 } : null; return { st: r.status, j }; }
   catch (e) { return { st: 0, j: null }; } finally { if (t) clearTimeout(t); } }
 
 export async function cloudTeach(kind, code, body, ms = 8000, num = 0) {
-  const pc = kind === 'pinclear'; if (!CF_HTTP || !code || !/^(class|tclaim|pinclear)$/.test(kind) || (pc && !(num >= 1 && num <= 40))) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0;
+  const pc = kind === 'pinclear'; if (!CF_HTTP || !code || !/^(class|tclaim|pinclear|tset)$/.test(kind) || (pc && !(num >= 1 && num <= 40))) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0;
   try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + (pc ? '/' + (num | 0) : ''), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
   catch (e) { return { st: 0, j: null }; } finally { if (t) clearTimeout(t); } }
 export const cloudOn = () => !!CF_HTTP;
