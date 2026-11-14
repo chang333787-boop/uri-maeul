@@ -32,17 +32,22 @@ export function ladText(kind, k, lv, en) { lv = Math.max(1, Math.min(kMax(kind),
 export function ladHead(S, key, kind, k, lv, en, own) { const t = ladText(kind, k, lv, en), M = S && S.lad && typeof S.lad === 'object' ? S.lad.mg : null, L = M && typeof M === 'object' ? M[key] : null, b = L && L.best, N = RECN[key];
   if (!b) return !own && (lv | 0) <= 1 ? t + (en ? '. Do very well and step 2 opens' : '. 아주 잘 해내면 도전 2칸이 열려요') : t;
   if (!(b.n > 0) || !N) return t;
-  return t + (en ? '. My best: ' : '. 내 최고 ') + ((b.lv | 0) === (lv | 0) ? (en ? b.n + ' ' + N[1].toLowerCase() : b.n + N[3]) : recSay(key, b, en)); }
+  return t + (en ? '. My best: ' : '. 내 최고 ') + ((b.lv | 0) === (lv | 0) ? (en ? b.n + ' ' + enN(N, b.n) : b.n + N[3]) : recSay(key, b, en)); }
 
-const RECN = { strawberry: ['딸기 따기', 'Strawberries', '딸기', '개'], shiitake: ['표고 따기', 'Shiitake', '표고', '송이'], cabbage: ['배추 거두기', 'Cabbages sorted right', '맞게 담은 배추', '포기'], potato: ['감자 캐기', 'Potatoes', '감자', '개'], clam: ['조개 캐기', 'Clams', '조개', '개'],
-  beehive: ['꿀 뜨기', 'Honey cells', '꿀 칸', '칸'], pear: ['배 봉지 씌우기', 'Pears bagged', '봉지 씌운 배', '개'], lumber: ['어린 나무 심기', 'Trees planted well', '잘 심은 나무', '그루'], plant: ['모내기', 'Seedlings in straight rows', '곧은 줄에 심은 모', '포기'], tuho: ['투호', 'Arrows in the pot', '항아리에 넣은 화살', '개'], cut: ['벼 베기', 'Squares cut', '벤 칸', '칸'],
-  seaweed: ['김 펴기', 'Even laver sheets', '고르게 편 김', '장'], oyster: ['굴 크기 재기', 'Oysters sorted right', '바르게 나눈 굴', '개'], pasture: ['먹이 나눠 주기', 'Right feeds', '알맞게 준 먹이', '번'], fisher: ['부두 낚시', 'Fish', '물고기', '마리'], saltpan: ['소금 모으기', 'Salt piles', '모은 소금', '무더기'], cook: ['바쁜 부엌', 'Dishes just right', '알맞게 만든 요리', '그릇'], fire: ['소방 출동', 'Fire calls', '꺼 낸 불꽃', '개'] };
+const RECN = { strawberry: ['딸기 따기', 'Strawberries', '딸기', '개', 'strawberry'], shiitake: ['표고 따기', 'Shiitake', '표고', '송이', 'shiitake'], cabbage: ['배추 거두기', 'Cabbages', '맞게 담은 배추', '포기', 'cabbage'], potato: ['감자 캐기', 'Potatoes', '감자', '개', 'potato'], clam: ['조개 캐기', 'Clams', '조개', '개', 'clam'],
+  beehive: ['꿀 뜨기', 'Honey cells', '꿀 칸', '칸', 'honey cell'], pear: ['배 봉지 씌우기', 'Pears bagged', '봉지 씌운 배', '개', 'pear bagged'], lumber: ['어린 나무 심기', 'Trees planted well', '잘 심은 나무', '그루', 'tree planted well'], plant: ['모내기', 'Seedlings in straight rows', '곧은 줄에 심은 모', '포기', 'seedling in a straight row'], tuho: ['투호', 'Arrows in the pot', '항아리에 넣은 화살', '개', 'arrow in the pot'], cut: ['벼 베기', 'Squares cut', '벤 칸', '칸', 'square cut'],
+  seaweed: ['김 펴기', 'Even laver sheets', '고르게 편 김', '장', 'even laver sheet'], oyster: ['굴 크기 재기', 'Oysters sorted right', '바르게 나눈 굴', '개', 'oyster sorted right'], pasture: ['먹이 나눠 주기', 'Right feeds', '알맞게 준 먹이', '번', 'right feed'], fisher: ['부두 낚시', 'Fish', '물고기', '마리', 'fish'], saltpan: ['소금 모으기', 'Salt piles', '모은 소금', '무더기', 'salt pile'], cook: ['바쁜 부엌', 'Dishes just right', '알맞게 만든 요리', '그릇', 'dish just right'], fire: ['소방 출동', 'Fire calls', '꺼 낸 불꽃', '개', 'fire call'] };
+const enN = (N, n) => (n === 1 && N[4] ? N[4] : N[1].toLowerCase());
+
+const WHY = { strawberry: [n => '초록 딸기를 ' + n + '번 눌러서', n => (n === 1 ? '1 green tap' : n + ' green taps'), '초록 딸기를 한 번도 안 누르고', 'no green taps', '초록 딸기를 덜 눌렀어요', 'fewer green taps'], shiitake: [n => '작은 봉오리를 ' + n + '번 눌러서', n => (n === 1 ? '1 tiny-button tap' : n + ' tiny-button taps'), '작은 봉오리를 한 번도 안 누르고', 'no tiny-button taps', '작은 봉오리를 덜 눌렀어요', 'fewer tiny-button taps'],
+  cabbage: [n => '장터 바구니로 ' + n + '포기가 가서', n => n + ' in the market basket', '장터 바구니로 한 포기도 안 보내고', 'none in the market basket', '장터 바구니로 덜 갔어요', 'fewer in the market basket', '배추'] };
+const NONLY = { potato: 1, clam: 1 };
 export const ladName = (key, en) => { const R = RECN[key]; return R ? R[en ? 1 : 0] : key; };
 const GW = [['아쉬움', 'close'], ['잘함', 'well done'], ['아주 잘함', 'excellent']];
 const g3 = s => (s >= 3 ? 2 : s >= 1 ? 1 : 0);
 
 export function recSay(key, r, en) { if (!r) return ''; const R = RECN[key], head = r.lv >= 5 && key !== 'fire' ? (en ? 'master step' : '명인 칸') : en ? 'step ' + r.lv : '도전 ' + r.lv + '칸';
-  if (r.n > 0 && R) return en ? head + ', ' + r.n + ' ' + R[1].toLowerCase() : head + ', ' + R[2] + ' ' + r.n + R[3]; return head + ', ' + GW[g3(r.g)][en ? 1 : 0]; }
+  if (r.n > 0 && R) return en ? head + ', ' + r.n + ' ' + enN(R, r.n) : head + ', ' + R[2] + ' ' + r.n + R[3]; return head + ', ' + GW[g3(r.g)][en ? 1 : 0]; }
 const rkey = r => (r ? (r.lv | 0) * 1000 + Math.min(3, r.g | 0) * 100 + Math.min(99, r.n | 0) : -1);
 export function ladRoot(S) { let L0 = S.lad; if (!L0 || typeof L0 !== 'object' || Array.isArray(L0)) L0 = S.lad = {}; let M = L0.mg; if (!M || typeof M !== 'object' || Array.isArray(M)) M = L0.mg = {}; return M; }
 export function ladOf(S, key) { const M = ladRoot(S); let L = M[key]; if (!L || typeof L !== 'object') L = M[key] = { lv: 1, z: 0, n: 0, best: null, last: null }; if (!(L.lv >= 1)) L.lv = 1; else if (L.lv > MAXL(key, S)) L.lv = Math.min(L.lv, 4); return L; }
@@ -55,11 +60,19 @@ export function ladAfter(S, key, o) { const L = ladOf(S, key), lv = Math.max(1, 
   if (o.own) L.lv = lv; else if (lv === L.lv) { if (g >= 2) { L.z = 0; if (L.lv < MAXL(key, S) && (L.lv < 4 || g >= 3 || key === 'fire')) { L.lv++; next = L.lv; } }     else if (g === 0) { L.z = (L.z | 0) + 1; if (L.z >= 2 && L.lv > 1) { L.lv--; L.z = 0; next = L.lv; down = true; } } else L.z = 0; }
   return { neu, first, best: L.best, last: cur, prev, next, down, lv: L.lv, end: L.lv >= MAXL(key, S) }; }
 
-export function recLines(key, kind, k, R, en, nx) { const b = recSay(key, R.best, en), a = [], B = R.best, C = R.last, P = R.prev, N = RECN[key];
+export function recLines(key, kind, k, R, en, nx, y) { const b = recSay(key, R.best, en), a = [], B = R.best, C = R.last, P = R.prev, N = RECN[key];
   if (B) { let t = '';
-    if (nx != null && N && C && C.n > 0) { const u = en ? '' : N[3], one = n => (en ? n + ' ' + N[1].toLowerCase() : N[2] + ' ' + n + N[3]);
-      if (R.neu) { if (P && P.lv === C.lv && P.n > 0 && C.n > P.n) t = en ? '🏅 New personal best! ' + one(C.n) + '. ' + (C.n - P.n) + ' more than my old best' : '🏅 새 내 최고! ' + one(C.n) + '. 지난 최고보다 ' + (C.n - P.n) + u + ' 많아요'; }
-      else if (!R.first && B.lv === C.lv && B.g === C.g && B.n > 0) { if (C.n < B.n) t = en ? '🏅 This time: ' + one(C.n) + '. ' + (B.n - C.n) + ' more to reach my best' : '🏅 이번 ' + one(C.n) + '. 내 최고까지 ' + (B.n - C.n) + u + ' 남았어요'; else if (C.n === B.n) t = en ? '🏅 Same as my best: ' + one(C.n) : '🏅 내 최고와 같아요. ' + one(C.n); } }
+    if (nx != null && N && C && C.n > 0) { const u = en ? '' : N[3], one = n => (en ? n + ' ' + enN(N, n) : N[2] + ' ' + n + N[3]), W = WHY[key], yy = y == null ? -1 : y | 0, sh = n => (en ? one(n) : ((W && W[6]) || N[2]) + ' ' + n + N[3]);
+      if (R.neu) { if (P && P.lv === C.lv && P.n > 0) {
+        if (C.n > P.n) t = en ? '🏅 New personal best! ' + one(C.n) + '. ' + (C.n - P.n) + ' more than my old best' : '🏅 새 내 최고! ' + one(C.n) + '. 지난 최고보다 ' + (C.n - P.n) + u + ' 많아요';
+        else if (W && yy === 0) t = en ? '🏅 New best! ' + one(C.n) + ', ' + W[3] : '🏅 새 내 최고! ' + W[2] + ' ' + sh(C.n);
+        else if (W && yy > 0) t = en ? '🏅 New best! ' + one(C.n) + ', ' + W[5] : '🏅 새 내 최고! ' + sh(C.n) + '. 수는 ' + (C.n < P.n ? '적어도 ' : '같아도 ') + W[4];
+        else t = en ? '🏅 New best! ' + one(C.n) + ', done better' : '🏅 새 내 최고! ' + one(C.n) + '. 수는 ' + (C.n < P.n ? '적어도' : '같아도') + ' 더 잘했어요'; } }
+      else if (!R.first && B.lv === C.lv && B.n > 0) {
+        if (C.n < B.n) { if (B.g === C.g || NONLY[key]) t = en ? '🏅 This time: ' + one(C.n) + '. ' + (B.n - C.n) + ' more to reach my best' : '🏅 이번 ' + one(C.n) + '. 내 최고까지 ' + (B.n - C.n) + u + ' 남았어요'; }
+        else if (C.n === B.n && (B.g === C.g || NONLY[key])) t = en ? '🏅 Same as my best: ' + one(C.n) : '🏅 내 최고와 같아요. ' + one(C.n);
+        else if (C.g < B.g) { if (W && yy > 0) t = en ? '🏅 ' + W[1](yy) + ', so my best (' + B.n + ') stays' : '🏅 ' + W[0](yy) + ' 내 최고(' + B.n + u + ')는 그대로예요';
+          else t = en ? '🏅 This time: ' + one(C.n) + '. My best (' + B.n + ') was done better' : '🏅 이번 ' + one(C.n) + '. 수는 ' + (C.n > B.n ? '많아도' : '같아도') + ' 내 최고(' + B.n + u + ') 때 더 잘했어요'; } } }
     a.push(t || (R.neu ? (en ? '🏅 New personal best! ' : '🏅 새 내 최고! ') + b : R.first ? (en ? '🏅 First record: ' : '🏅 첫 기록: ') + b : (en ? '🏅 My best: ' : '🏅 내 최고: ') + b + (en ? '. This time: ' : '. 이번: ') + recSay(key, C, en))); }
   if (R.next && R.down) a.push(en ? 'Next time one step easier (step ' + R.next + ')' : '다음 판은 한 칸 쉽게 해요(도전 ' + R.next + '칸)');
   else if (R.next) a.push((en ? 'Next time: ' : '다음 판은 ') + ladText(kind, k, R.next, en));

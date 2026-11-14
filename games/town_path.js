@@ -1,6 +1,6 @@
 import { FINDS } from './town_xp.js?v=12';
 import { WILD, drawWild } from './town_wild.js?v=17';
-import { ladRows, ladM5 } from './town_lad.js?v=7';
+import { ladRows, ladM5 } from './town_lad.js?v=8';
 import { getLook, setLook, PALS } from '../js/look.js?v=1';
 import { chalSteps } from './town_orient.js?v=14';
 export const PATH_V = 1;
