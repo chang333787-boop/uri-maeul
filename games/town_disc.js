@@ -162,12 +162,17 @@ export function createDisc(A) {
 body.small .twn-pc{top:auto;bottom:150px;width:min(250px,64vw);padding:6px 8px 8px;font-size:13px}body.small .twn-pc canvas{display:none}`;
   function goRow(id, at, nm) { const r = DISC_BY[id], s = spots()[id]; const p = { icon: r ? r.ic : '🧭', name: (s && s.nm) || nm || L(r && r.t) || '', en: (s && s.en) || nm || '', door: (s && s.at) || at, isle: !!(s && s.isle), arrive: '🎉 ' + (en() ? 'You’re here — ' : '다 왔어요 — ') + L(r ? r.t : null) }; if (!p.door) return null; return A.route(p); }
   function pcOff() { if (PC) { PC.remove(); PC = null; } }
+
+  function pcPlace() { if (!PC || document.body.classList.contains('small')) return; const W9 = window.innerWidth, H9 = window.innerHeight, cv = PC.querySelector('canvas'); let b9 = 0;
+    for (const c of document.querySelectorAll('.gchip')) { const r9 = c.getBoundingClientRect(); if (!r9.width || r9.right < W9 - 320 || r9.top > H9 * 0.62) continue; if (r9.bottom > b9) b9 = r9.bottom; }
+    const top = Math.max(Math.round(b9) + 8, Math.min(330, H9 - 300)); if (cv) cv.style.display = ''; PC.style.top = top + 'px'; if (cv && top + PC.offsetHeight > H9 - 12) cv.style.display = 'none'; }
   function postcard(force) { const d9 = D(), d = day(); if (!force && d9.pc === d) return false; const P9 = pick(); const id = P9.n4 && !P9.again ? P9.n4 : null; if (!id || tried(id)) { d9.pc = d; mark(); return false; } const r = DISC_BY[id], s = spots()[id]; if (!r || !s || !r.card) { d9.pc = d; mark(); return false; }
     if (!css && !document.getElementById('disc-css')) { css = document.createElement('style'); css.id = 'disc-css'; css.textContent = CSS; document.head.appendChild(css); }
     pcOff(); d9.pc = d; d9.pcId = id; mark(); const e = en(), me = A.me(), el = document.createElement('div'); el.className = 'twn-pc ttl-keep'; el.dataset.id = id;
     el.innerHTML = '<div class="pc-h"><span>📮 ' + (e ? 'A postcard came' : '엽서가 왔어요') + '</span><button class="pc-x" data-a="x" aria-label="' + (e ? 'Close' : '닫기') + '">✕</button></div><canvas width="264" height="120"></canvas><b>' + A.esc(e ? s.en : s.nm) + '</b><div>' + A.esc(L(r.card).replace(/^[^—]*—\s*/, '')) + '</div><button class="pc-go" data-a="go">🧭 ' + (e ? 'Show the way' : '길 안내') + '</button>';
     document.body.appendChild(el); PC = el; PCT = performance.now();
-    try { { const gx = Math.max(s.at[0], me.x) + Math.max(70, Math.abs(s.at[0] - me.x) * 0.8), gz = Math.min(s.at[1], me.z) - Math.max(50, Math.abs(s.at[1] - me.z) * 0.9); A.mapSnip(el.querySelector('canvas'), [{ x: s.at[0], z: s.at[1], label: e ? s.en : s.nm }, { x: me.x, z: me.z, label: e ? 'Me' : '나', main: true }, { x: gx, z: gz, ghost: true }]); }     } catch (e9) {   }
+    try { { const gx = Math.max(s.at[0], me.x) + Math.max(70, Math.abs(s.at[0] - me.x) * 0.8), gz = Math.min(s.at[1], me.z) - Math.max(50, Math.abs(s.at[1] - me.z) * 0.9); const lo9 = me.z > s.at[1]; A.mapSnip(el.querySelector('canvas'), [{ x: s.at[0], z: s.at[1], label: e ? s.en : s.nm, below: !lo9 }, { x: me.x, z: me.z, label: e ? 'Me' : '나', main: true, below: lo9 }, { x: gx, z: gz, ghost: true }]); }         } catch (e9) {   }
+    pcPlace();
     el.addEventListener('click', ev => { ev.stopPropagation(); const b = ev.target.closest && ev.target.closest('[data-a]'); if (b && b.dataset.a === 'x') { pcOff(); return; } pcOff(); const R9 = goRow(id); if (R9 && R9.ok === false) return; });
     heard(id, r.rum || r.card, s.at); return true; }
 
@@ -183,7 +188,7 @@ body.small .twn-pc{top:auto;bottom:150px;width:min(250px,64vw);padding:6px 8px 8
       if (t.id === 'new' && P9.n4 && vOf(DISC_BY[P9.n4], s9) > P9.b4) A.tev(t.ev);
       else if (t.id === 'only' && P9.o5) { const o = P9.o5; let ok = false; if (o.row) ok = vOf(DISC_BY[o.row], s9) > o.b; else { const O9 = ONLY.find(q => q.id === o.id); if (O9 && O9.v) { try { ok = (+O9.v(s9) || 0) > o.b; } catch (e) { ok = false; } } else if (o.at && me) ok = Math.hypot(o.at[0] - me.x, o.at[1] - me.z) < 10; } if (ok) A.tev(t.ev); } } }
     { const N = s9.news; if (N && N.d === d && Array.isArray(N.rum)) for (const q of N.rum) if (q && /^disc:/.test(q.k) && q.said === d && !q.dh) { q.dh = 1; const id = q.k.slice(5), r = DISC_BY[id]; heard(id, r && r.rum ? r.rum : [q.t, q.t], q.at); } }
-    if (PC && performance.now() - PCT > 22000) pcOff();
+    if (PC && performance.now() - PCT > 22000) pcOff(); if (PC) pcPlace();
     if (PC && A.busy()) { const fresh = performance.now() - PCT < 9000; pcOff(); if (fresh) { if (pcRe.d !== d) pcRe = { d, n: 0 }; if (pcRe.n < 2) { pcRe.n++; d9.pc = 0; mark(); woke = performance.now(); } } }
     const now = performance.now();
     if (woke && d9.pc !== d && d >= 2 && !PC && !A.busy() && !(A.soon && A.soon()) && now - woke > 6000 && !document.querySelector('.twn-dlg')) { woke = 0; if (A.quiet && A.quiet()) { d9.pc = d; mark(); } else postcard(false); }

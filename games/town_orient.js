@@ -1,4 +1,4 @@
-import { mapInk } from './town_treasure.js?v=17';
+import { mapInk } from './town_treasure.js?v=18';
 export const OR_V = 1;
 const T2 = (ko, en) => [ko, en];
 export const COURSES = [
