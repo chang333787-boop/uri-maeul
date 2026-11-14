@@ -7,9 +7,9 @@ export async function cloudCall(kind, code, num, body, ms = 5000, ka) {
   try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + '/' + num, { method: 'POST', headers: { 'content-type': 'application/json' }, body: raw ? body : JSON.stringify(body), signal: ac ? ac.signal : undefined, keepalive: kind === 'save' && !!(ka != null ? ka : !raw && body.k9) }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
   catch (e) { return { st: 0, j: null }; } finally { if (t) clearTimeout(t); } }
 
-export async function cloudTeach(kind, code, body, ms = 8000) {
-  if (!CF_HTTP || !code || !/^(class|tclaim)$/.test(kind)) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0;
-  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
+export async function cloudTeach(kind, code, body, ms = 8000, num = 0) {
+  const pc = kind === 'pinclear'; if (!CF_HTTP || !code || !/^(class|tclaim|pinclear)$/.test(kind) || (pc && !(num >= 1 && num <= 40))) return { st: 0, j: null }; const ac = typeof AbortController !== 'undefined' ? new AbortController() : null, t = ac ? setTimeout(() => ac.abort(), ms) : 0;
+  try { const r = await fetch(CF_HTTP + '/' + kind + '/' + code + (pc ? '/' + (num | 0) : ''), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal: ac ? ac.signal : undefined }); let j = null; try { j = await r.json(); } catch (e) {   } return { st: r.status, j }; }
   catch (e) { return { st: 0, j: null }; } finally { if (t) clearTimeout(t); } }
 export const cloudOn = () => !!CF_HTTP;
 const metaK = key => 'sm-town-cloud:' + key;

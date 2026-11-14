@@ -68,7 +68,7 @@ import { createLook, SKYF as SKYF9 } from './town_look.js?v=9';
 import { REGN, REG_KEYS, regName, createRegion, kidHoods } from './town_region.js?v=1';
 import { createKidLook } from './town_kidlook.js?v=8';
 import { createPbox } from './town_pbox.js?v=12';
-import { classCode, cloudCall, cloudPull, cloudSync } from './town_cloud.js?v=6';
+import { classCode, cloudCall, cloudPull, cloudSync } from './town_cloud.js?v=7';
 import { dexBook, dexLine, dexStamp, DEX_HINT } from './town_dex.js?v=26'; import { bundleBook, bundlePut, inSeason, ALL_STAMP } from './town_bundle.js?v=3'; import { STARS as SKYSTARS, SKY_OF, drawSky } from './town_sky.js?v=1'; import { CROPS, seedsOf, plotState, farmGrow, plantSpots, FARM_MAX } from './town_farm.js?v=3'; import { FISH } from './town_fish.js?v=2';
 const KALIAS = { market: 'shop', museum: 'public', aquarium: 'public', hut: 'shop', pension: 'house', aquadom: 'public', kidscafe: 'shop', clinic: 'hospital', terminal: 'public', mart: 'shop', store: 'shop' };
 const NATK = { canal: { ko: '농수로', en: 'Irrigation Canal' }, hill: { ko: '산', en: 'Hill' }, water: { ko: '물', en: 'Water' }, forest: { ko: '숲', en: 'Forest' }, rice: { ko: '논', en: 'Rice Field' }, farm: { ko: '밭', en: 'Farm' }, orchard: { ko: '과수원', en: 'Orchard' }, terrace: { ko: '계단식 밭', en: 'Terraced Field' }, sea: { ko: '바다', en: 'Sea' }, grass: { ko: '풀밭', en: 'Meadow' }, park: { ko: '공원', en: 'Park' }, sand: { ko: '모래밭', en: 'Sand' } };
@@ -5479,7 +5479,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
 
   const tchOff = () => { try { sessionStorage.removeItem('sm.t'); } catch (e) {   } hudRefresh(); };
 
-  let TEA9 = null, TEA9P = null, TEA9W = 0, TEA9R = 0, TEA9U = 0; const teaLoad = () => TEA9P || (TEA9P = import('./town_teach.js?v=16' + (TEA9R ? '&r=' + TEA9R : '')).then(m => { if (dead) return null; if (!TEA9) TEA9 = m.createTeach({ GAME, id, key: SAVEK9, en: () => LANG === 'en', esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), say: (t, s9, lv) => say(t, s9, lv), pin: () => teacherPin((m9, t9) => say(m9, t9 || 2.5)), tchOn: () => tchOn(), tchOff: () => tchOff(),
+  let TEA9 = null, TEA9P = null, TEA9W = 0, TEA9R = 0, TEA9U = 0; const teaLoad = () => TEA9P || (TEA9P = import('./town_teach.js?v=17' + (TEA9R ? '&r=' + TEA9R : '')).then(m => { if (dead) return null; if (!TEA9) TEA9 = m.createTeach({ GAME, id, key: SAVEK9, en: () => LANG === 'en', esc: t => esc(t), openP: (h, w, k) => openP(h, w, k), closeP: () => closeP(), say: (t, s9, lv) => say(t, s9, lv), pin: () => teacherPin((m9, t9) => say(m9, t9 || 2.5)), tchOn: () => tchOn(), tchOff: () => tchOff(),
     cls: () => CLS9 || classCode(), chapters: back => qst().tlist(back), due: () => !!qst().due(), dueSkip: () => qst().dueSkip(), wx: () => openWx(), rec: () => REC.view() }); return TEA9; }).catch(e => { TEA9P = null; TEA9R++; console.warn('[선생님 칸] 불러오기', e); return null; }));
   const teaDo = (k, ...a) => { if (TEA9) return TEA9[k](...a); if (TEA9W) return; TEA9W = 1; const p0 = panel; teaLoad().then(T => { TEA9W = 0; if (!T && !dead) say(TEA9U++ ? '불러오지 못했어요. 새로고침해 주세요' : '불러오지 못했어요 — 한 번 더 눌러 주세요', 3); if (T && !dead && panel === p0) T[k](...a); }); };
   const TEAL = { open: () => teaDo('open'), home: () => teaDo('home'), board: s9 => teaDo('board', s9), lock: () => teaDo('lock') };
