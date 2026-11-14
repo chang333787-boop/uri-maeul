@@ -155,7 +155,7 @@ export function createDisc(A) {
   function rumor() { if (!A.on()) return null; const r = rumorRow(0); if (!r) return null; const q = rumorOf(r); if (!q) return null; const card = r.card ? [r.ic + ' ' + r.card[0], r.ic + ' ' + r.card[1]] : null; const d9 = D(), rl = d9.rl || (d9.rl = {}); rl[r.id] = day(); for (const k of Object.keys(rl)) if (rl[k] < day() - 3) delete rl[k]; mark(); return { id: r.id, ko: q.ko, en: q.en, at: q.at, card }; }
   function heard(id, t, at) { const d9 = D(), h = d9.h.filter(q => q && q.id !== id); h.push({ d: day(), id, t, at: at ? [+(+at[0]).toFixed(1), +(+at[1]).toFixed(1)] : null }); d9.h = h.slice(-8); mark(); }
 
-  let PC = null, PCT = 0, woke = 0, t0 = performance.now(), lastPs = 0, V9 = null, css = null;
+  let PC = null, PCT = 0, woke = 0, t0 = performance.now(), lastPs = 0, V9 = null, css = null, pcRe = { d: 0, n: 0 };
   const CSS = `.twn-pc{position:fixed;right:12px;top:min(330px,calc(100vh - 300px));z-index:31;width:min(286px,72vw);box-sizing:border-box;background:#fffaf0;color:#2b2420;border:3px solid #2b2420;border-radius:12px;box-shadow:0 4px 0 #2b2420;padding:8px 10px 10px;font:600 14px/1.45 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;cursor:pointer}
 .twn-pc .pc-h{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:13px;color:#7a5a2a}.twn-pc .pc-x{border:0;background:none;font:800 18px/1 system-ui;color:#2b2420;cursor:pointer;min-width:36px;min-height:32px}
 .twn-pc canvas{display:block;width:100%;height:auto;border-radius:6px;margin:4px 0 6px}.twn-pc b{display:block;font-size:16px}.twn-pc .pc-go{margin-top:6px;min-height:40px;width:100%;border:3px solid #2b2420;border-radius:10px;background:#ffd23f;color:#2b2420;font:800 15px system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;box-shadow:0 3px 0 #2b2420;cursor:pointer}.twn-pc .pc-go:active{transform:translateY(2px)}
@@ -184,9 +184,9 @@ body.small .twn-pc{top:auto;bottom:150px;width:min(250px,64vw);padding:6px 8px 8
       else if (t.id === 'only' && P9.o5) { const o = P9.o5; let ok = false; if (o.row) ok = vOf(DISC_BY[o.row], s9) > o.b; else { const O9 = ONLY.find(q => q.id === o.id); if (O9 && O9.v) { try { ok = (+O9.v(s9) || 0) > o.b; } catch (e) { ok = false; } } else if (o.at && me) ok = Math.hypot(o.at[0] - me.x, o.at[1] - me.z) < 10; } if (ok) A.tev(t.ev); } } }
     { const N = s9.news; if (N && N.d === d && Array.isArray(N.rum)) for (const q of N.rum) if (q && /^disc:/.test(q.k) && q.said === d && !q.dh) { q.dh = 1; const id = q.k.slice(5), r = DISC_BY[id]; heard(id, r && r.rum ? r.rum : [q.t, q.t], q.at); } }
     if (PC && performance.now() - PCT > 22000) pcOff();
-    if (PC && A.busy()) pcOff();
+    if (PC && A.busy()) { const fresh = performance.now() - PCT < 9000; pcOff(); if (fresh) { if (pcRe.d !== d) pcRe = { d, n: 0 }; if (pcRe.n < 2) { pcRe.n++; d9.pc = 0; mark(); woke = performance.now(); } } }
     const now = performance.now();
-    if (woke && d9.pc !== d && d >= 2 && !PC && !A.busy() && now - woke > 6000 && !document.querySelector('.twn-dlg')) { woke = 0; postcard(false); }
+    if (woke && d9.pc !== d && d >= 2 && !PC && !A.busy() && !(A.soon && A.soon()) && now - woke > 6000 && !document.querySelector('.twn-dlg')) { woke = 0; if (A.quiet && A.quiet()) { d9.pc = d; mark(); } else postcard(false); }
     if (d9.ps[0] !== d) d9.ps = [d, 0];
     if (d9.ps[1] < 2 && now - t0 > 40000 && now - lastPs > 75000 && !A.busy() && !A.bubbleBusy() && me) { const r = rumorRow(1 + d9.ps[1]); const q = r ? rumorOf(r) : null; if (q) { const g9 = A.ped(me.x, me.z, 9); if (g9) { g9.gest = 3.4; A.bubble({ x: g9.x, y: me.y, z: g9.z, sc: g9.sc || 1 }, en() ? q.en : q.ko); lastPs = now; d9.ps = [d, d9.ps[1] + 1]; heard(r.id, [q.ko, q.en], q.at); } } } }
 

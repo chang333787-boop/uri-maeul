@@ -20,6 +20,7 @@ const jo = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); 
 const hex6 = c => '#' + ((c >>> 0) & 0xffffff).toString(16).padStart(6, '0');
 const CSS = `
 .twn-p[data-k=I] .bx{width:min(1040px,96vw)!important}.twn-p.b3-re .bx{animation:none}
+.twn-p[data-k=I]{align-items:flex-start}.twn-p[data-k=I] .bx{margin-top:max(5vh,calc(50vh - 360px));max-height:calc(95vh - max(5vh,calc(50vh - 360px)))}    
 .twn-p[data-k=I] .nb-tabs{margin-bottom:8px;align-items:center}.twn-p .b3-nbl{flex:none;align-self:center;font:900 12px system-ui,sans-serif;color:var(--mut);margin-right:2px;white-space:nowrap}
 .b3-main{display:grid;grid-template-columns:208px minmax(0,1fr);gap:16px;align-items:start}.b3-me{display:flex;flex-direction:column;gap:10px;min-width:0}
 .b3-doll{position:relative;width:208px;height:277px;box-sizing:border-box;border:3px solid var(--ink);border-radius:14px;background:#e8f1e6;box-shadow:inset 0 -40px 0 #d3e4cc;overflow:hidden}

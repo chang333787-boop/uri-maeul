@@ -460,7 +460,7 @@ export function createCellKit(A) {
         case 'ant': if (I.d < 20) { antAt(I); fl = true; } break;
         case 'moth': mothAt(I); fl = true; break;
         case 'ice': if (I.st === 'run' || I.st === 'melted') { iceAt(I); fl = true; if (I.st === 'run' && I.t >= 24) { I.st = 'melted'; ST().ic[I.n] = S().day; A.GAME.mark(); if (I.d < 40) toast(tx(TX.ice.done), 5.5); reward('ice'); } } break;
-        case 'cross': if (I.d < 10) crossTick(I, el); else if (I.ox != null) { I.ox = null; I.mv = 0; } break;
+        case 'cross': if (I.rt != null) redOff(I, el); if (I.d < 10) crossTick(I, el); else if (I.ox != null) { I.ox = null; I.mv = 0; } break;
         case 'cat': if (I.peek > 0) I.peek = Math.max(0, I.peek - el); catAt(I); fl = true; break;
         case 'cricket': singTick(I, el); break;
         case 'frog': singTick(I, el); singAt(I); fl = true; break;
@@ -478,8 +478,10 @@ export function createCellKit(A) {
     const st = A.sigSt(s9, ax); if (ax !== I.ax) { if (I.ax != null) I.wait = 0; I.ax = ax; I.prev = st; }
     if (near && st === 2 && !road) I.wait += el; else if (st !== 0 && !near) I.wait = 0;
     if (st === 0 && I.prev !== 0 && I.wait > 1.5) { I.wait = 0; if (map.tone) for (let k = 0; k < 3; k++) { map.tone(1047, k * 0.42, 0.12, 'sine', 0.06); map.tone(1319, k * 0.42 + 0.14, 0.12, 'sine', 0.06); } toast(tx(TX.cross.ok), 3.6); if (c.n.crossD !== day) { c.n.crossD = day; reward('cross', 'explore'); } }
-    if (st === 2 && road && I.mv && Math.hypot(me.x - sp.x, me.z - sp.z) < 9 && c.n.redD !== day) {     c.n.redD = day; A.GAME.mark(); toast(tx(TX.cross.red), 2.6); }
+    if (st === 2 && road && I.mv && Math.hypot(me.x - sp.x, me.z - sp.z) < 9 && c.n.redD !== day) {     c.n.redD = day; A.GAME.mark(); toast(tx(TX.cross.red), 2.6); I.rt = 0; I.rax = ax; }
     I.prev = st; }
+
+  function redOff(I, el) { I.rt += el; const g = A.sigSt(I.sp.s9, I.rax) === 0; if (!g && I.rt < 6) return; I.rt = null; if (!g) return; const e = document.getElementById('toast'); if (e && e.style.display !== 'none' && e.textContent === tx(TX.cross.red)) e.style.display = 'none'; }
 
   function clear() { clearInst(); on = false; }
   function dispose() { clear(); if (SHM) { if (SHM.m.parent) SHM.m.parent.remove(SHM.m); SHM.m.dispose(); SHM.geo.dispose(); SHM.mat.dispose(); SHM.tex.dispose(); SHM = null; } }
