@@ -21,7 +21,7 @@ export function walls(G, S, i, r) { const W2 = G.W / 2 - 0.15 - r, D2 = G.D / 2 
   for (let k = 0; k < G.nc; k++) { const qa = S.A[i] - G.cow[k * 2], qb = S.B[i] - G.cow[k * 2 + 1], d = Math.hypot(qa, qb), R = 0.9 + r; if (d < R && d > 1e-4) { S.A[i] = G.cow[k * 2] + qa / d * R; S.B[i] = G.cow[k * 2 + 1] + qb / d * R; } } }
 
 const T9 = new Float32Array(2);
-function via(G, a, b, ta, tb, inMe) { T9[0] = ta; T9[1] = tb; const inT = inPen(G, ta, tb); if (inT === inMe) return; const gc = (G.ga0 + G.ga1) / 2;
+function via(G, a, b, ta, tb, inMe) { T9[0] = ta; T9[1] = tb; const inT = inPen(G, ta, tb); if (inT === !!inMe) return;     const gc = (G.ga0 + G.ga1) / 2;
   if (!inMe) { const oa = gc, ob = G.pb1 + 1.3; if (Math.hypot(a - oa, b - ob) < 1.6 || (b < G.pb1 + 0.6 && a > G.ga0 && a < G.ga1)) { T9[0] = gc; T9[1] = G.pb1 - 2.0; } else { T9[0] = oa; T9[1] = ob; } }
   else { T9[0] = gc; T9[1] = G.pb1 + 1.5; } }
 
@@ -60,7 +60,7 @@ export function dogStep(G, S, D, P, dt) { if (P.run && D.heel) { D.runT += dt; i
   const W2 = G.W / 2 - 0.5, D2 = G.D / 2 - 0.5; D.a = Math.max(-W2, Math.min(W2, D.a)); D.b = Math.max(-D2, Math.min(D2, D.b)); }
 export const makeDog = () => ({ a: 0, b: 0, ta: 0, tb: 0, tq: 0, h: 0, v: 0, heel: 0, runT: 0, dash: 0, mk: 0 });
 
-const SAVE0 = () => ({ v: 1, lv: 1, good: 0, n: 0, pen: 0, rib: 0, best: 0 });
+const SAVE0 = () => ({ v: 1, lv: 1, good: 0, n: 0, pen: 0, rib: 0, best: 0, how: 0 });
 const TXT = {
   ask: [['양 {n}마리를 저 우리에 넣어 줄래요?', 'Can you get the {n} sheep into that pen?'], ['우리 개가 아직 어려서 양을 흩뜨려요. 휘파람으로 옆에 불러 주세요.', 'Our young dog scatters the sheep. Whistle to call it to your side.'], ['새끼 양은 엄마 양만 따라가요.', 'Lambs only follow their mother.'], ['숫양은 고집이 세요. 서두르면 버텨요.', 'The ram is stubborn. Rush it and it stands its ground.']],
   rain: ['비가 와서 양들이 처마 밑에 모였어요. ', 'The rain sent the sheep under the eaves. '], dusk: ['해가 지니 양들도 우리로 가고 싶어 해요. ', 'At sunset the sheep want to go in too. '],
@@ -68,6 +68,12 @@ const TXT = {
   whK: [' (H = 휘파람)', ' (H = whistle)'], whT: [' (휘파람 단추)', ' (whistle button)'],
   out: ['🐑 우리 밖으로 나와요. 그래야 문을 닫아요', '🐑 Step out of the pen so the gate can close'],
   tip0: ['천천히 걸어서 양 뒤로 가면 양이 앞으로 가요', 'Walk slowly behind the sheep and they move ahead'], left: ['10초 남았어요', '10 seconds left'],
+
+  howT: ['🐑 양몰이 하는 법', '🐑 How to herd sheep'], how1: ['양 뒤에서 천천히 걸어요. 양이 앞으로 가요.', 'Walk slowly behind the sheep. They move ahead.'], how2: ['흰 화살표가 있는 우리 문으로 몰아요.', 'Steer them to the pen gate with the white arrow.'], how3: ['뛰면 양이 놀라 흩어져요.', 'If you run, the sheep get scared and scatter.'], howGo: ['시작해요', 'Start'],
+  pPen: ['우리', 'pen'], pGt: ['우리 문', 'gate'], pSh: ['양', 'sheep'], pMe: ['나', 'me'],
+  mRun: ['뛰면 양이 놀라요. 걸어요', 'Running scares the sheep. Walk'], mOut: ['양이 나갔어요. 천천히 다시 몰아요', 'A sheep got out. Herd it back slowly'],
+  mL: ['남은 양은 왼쪽에 있어요', 'The other sheep are to your left'], mR: ['남은 양은 오른쪽에 있어요', 'The other sheep are to your right'], mB: ['남은 양은 뒤쪽에 있어요', 'The other sheep are behind you'],
+  mL0: ['양은 왼쪽에 있어요', 'The sheep are to your left'], mR0: ['양은 오른쪽에 있어요', 'The sheep are to your right'], mB0: ['양은 뒤쪽에 있어요', 'The sheep are behind you'],
   ok: ['양 {n}마리가 다 들어갔어요({t}초). ', 'All {n} sheep are in ({t}s). '], fail: ['시간이 다 됐어요. 양 {k}마리가 들어갔어요. ', 'Time is up. {k} sheep got in. '], quit: ['양몰이는 다음에 해요. 양들은 제자리로 돌아가요.', 'Herding later, then. The sheep walk back.'],
   nRun: ['다음엔 뛰지 말고 걸어서 밀어 봐요.', 'Next time, walk instead of running.'], nDog: ['다음엔 처음부터 개를 옆에 불러 두어요.', 'Next time, call the dog to your side first.'], nLamb: ['다음엔 엄마 양을 먼저 몰아 봐요. 새끼가 따라와요.', 'Next time, move the mother first. The lambs follow.'],
   nRam: ['다음엔 숫양 앞에서 잠깐 기다려 봐요.', 'Next time, wait a moment in front of the ram.'], nGat: ['다음엔 떨어진 양부터 무리로 모아 봐요.', 'Next time, gather the strays into the flock first.'], nLead: ['다음엔 앞장선 양을 먼저 문으로 밀어 봐요.', 'Next time, push the leading sheep to the gate first.'], rib: ['문에 리본을 달았어요.', 'A ribbon goes on the gate.'],
@@ -89,7 +95,7 @@ export function createHerd(o) {
 
   function reg(HP) { HP.c = Math.cos(HP.ry); HP.s = Math.sin(HP.ry); const pn = penOf(HP.W, HP.D); HP.pen = pn; HP.sh = HP.an.filter(q => q.k === 'sheep'); HP.cw = HP.an.filter(q => q.k === 'cow');
     HP.G = { W: HP.W, D: HP.D, pa0: pn.pa0, pa1: pn.pa1, pb1: pn.pb1, ga0: pn.ga0, ga1: pn.ga1, phi: 0, barn: [HP.bl[0], HP.bl[1], 6.65, 3.65], hay: new Float32Array(8), nh: Math.min(4, HP.hay.length), cow: new Float32Array(8), nc: 0, dusk: false };
-    HP.hay.slice(0, 4).forEach((q, i) => { HP.G.hay[i * 2] = q[0]; HP.G.hay[i * 2 + 1] = q[1]; }); HP.F = makeFlock(Math.min(7, HP.sh.length)); HP.Dg = makeDog(); HP.dogM = null; HP.PM = null; HP.gH = null; HP.phi = 0; HP.phT = 0; HP.dirty = true; HP.ring = null; HP.amb = 'home'; HP.shutAfter = false;
+    HP.hay.slice(0, 4).forEach((q, i) => { HP.G.hay[i * 2] = q[0]; HP.G.hay[i * 2 + 1] = q[1]; }); HP.F = makeFlock(Math.min(7, HP.sh.length)); HP.Dg = makeDog(); HP.dogM = null; HP.PM = null; HP.gH = null; HP.phi = 0; HP.phT = 0; HP.dirty = true; HP.ring = null; HP.mk = false; HP.mkY = null; HP.mkDy = 0; HP.amb = 'home'; HP.shutAfter = false;
     for (const an of HP.an) { an.home = [an.a, an.b, an.h]; an.pt = new Float32Array(6); an.pn = 0; an.pi = 0; an.v = 0; an.th = an.h; an.y = 0; an.yT = 0; an.yq = 0; an.md = 0; an.walk = false; an.need = false; an.mh = null; an.mi = -1; an.h9 = null; an.sc = an.s; }
     PS.push(HP); }
 
@@ -126,15 +132,27 @@ export function createHerd(o) {
     const wo = 0x8a6440, ra = 0xc8a070, wd = -0.1; bx(0.08, 0.6, wd, 0.12, 1.1, 0.12, wo); bx(L - 0.08, 0.6, wd, 0.1, 1.06, 0.1, wo); bx(L / 2, 0.58, wd, 0.08, 1.0, 0.08, wo); for (const y of [0.36, 0.66, 0.96]) bx(L / 2, y, wd, L - 0.12, 0.08, 0.07, ra);
     const ng = P.length / 3; bx(L / 2, 1.06, wd - 0.07, 0.14, 0.14, 0.1, 0xd83a3a); bx(L / 2 - 0.17, 1.08, wd - 0.07, 0.2, 0.13, 0.05, 0xe85a50); bx(L / 2 + 0.17, 1.08, wd - 0.07, 0.2, 0.13, 0.05, 0xe85a50); bx(L / 2 - 0.06, 0.88, wd - 0.07, 0.05, 0.3, 0.03, 0xd83a3a); bx(L / 2 + 0.06, 0.88, wd - 0.07, 0.05, 0.3, 0.03, 0xd83a3a);
     const nr = P.length / 3, rc = col(0xf2c230); for (let k = 0; k < 16; k++) { const a0 = k / 16 * 6.2832, a1 = (k + 1) / 16 * 6.2832, R0 = 0.5, R1 = 0.75; for (const [r, a] of [[R0, a0], [R1, a0], [R1, a1], [R0, a0], [R1, a1], [R0, a1]]) { P.push(Math.sin(a) * r, 0, Math.cos(a) * r); N.push(0, 1, 0); C.push(rc[0], rc[1], rc[2]); } }
-    return { P: new Float32Array(P), N: new Float32Array(N), C: new Float32Array(C), ng, nr, nt: P.length / 3 }; }
+
+    const nt = P.length / 3, WH = [1, 1, 1], BL = [0.18, 0.44, 0.82], MK = 20, ringQ = (R0, R1, c) => { for (let k = 0; k < MK; k++) { const a0 = k / MK * 6.2832, a1 = (k + 1) / MK * 6.2832; for (const [r, a] of [[R0, a0], [R1, a0], [R1, a1], [R0, a0], [R1, a1], [R0, a1]]) { P.push(Math.sin(a) * r, 0, Math.cos(a) * r); N.push(0, 1, 0); C.push(c[0], c[1], c[2]); } } };
+    ringQ(0.85, 1.22, WH); ringQ(1.22, 1.4, BL);
+    const na = P.length / 3, tri = (p0, p1, p2, c) => { for (const q of [p0, p1, p2]) { P.push(q[0], q[1], q[2]); N.push(0, 1, 0); C.push(c[0], c[1], c[2]); } };
+    { const y0 = 1.9, y1 = 3.3, y2 = 3.55, r = 0.9, cn = k => [Math.sin(k * 1.5708 + 0.7854) * r, Math.cos(k * 1.5708 + 0.7854) * r];
+      for (let k = 0; k < 4; k++) { const q0 = cn(k), q1 = cn(k + 1), T = [0, y0, 0], L0 = [q0[0], y1, q0[1]], L1 = [q1[0], y1, q1[1]], U0 = [q0[0], y2, q0[1]], U1 = [q1[0], y2, q1[1]]; tri(T, L1, L0, WH); tri(L0, U1, U0, BL); tri(L0, L1, U1, BL); }
+      const c0 = cn(0), c1 = cn(1), c2 = cn(2), c3 = cn(3); tri([c0[0], y2, c0[1]], [c1[0], y2, c1[1]], [c2[0], y2, c2[1]], BL); tri([c0[0], y2, c0[1]], [c2[0], y2, c2[1]], [c3[0], y2, c3[1]], BL); }
+    return { P: new Float32Array(P), N: new Float32Array(N), C: new Float32Array(C), ng, nr, nt, na, nm: P.length / 3 }; }
   let TM = null;
-  function props(HP) { const G = HP.G, L = G.ga1 - G.ga0; if (!TM || TM.L !== L) { TM = tmpl(L); TM.L = L; } const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.BufferAttribute(new Float32Array(TM.nt * 3), 3)); g.setAttribute('normal', new T3.BufferAttribute(new Float32Array(TM.nt * 3), 3)); g.setAttribute('color', new T3.BufferAttribute(TM.C.slice(), 3));
+  function props(HP) { const G = HP.G, L = G.ga1 - G.ga0; if (!TM || TM.L !== L) { TM = tmpl(L); TM.L = L; } const g = new T3.BufferGeometry(); g.setAttribute('position', new T3.BufferAttribute(new Float32Array(TM.nm * 3), 3)); g.setAttribute('normal', new T3.BufferAttribute(new Float32Array(TM.nm * 3), 3)); g.setAttribute('color', new T3.BufferAttribute(TM.C.slice(), 3));
     HP.gy = o.ty(LX(HP, (G.ga0 + G.ga1) / 2, G.pb1), LZ(HP, (G.ga0 + G.ga1) / 2, G.pb1)); g.boundingSphere = new T3.Sphere(new T3.Vector3(HP.x, HP.gy, HP.z), Math.hypot(HP.W, HP.D) / 2 + 6); const m = new T3.Mesh(g, o.matV()); m.matrixAutoUpdate = false; m.userData.fx = 1; root.add(m); HP.PM = m; HP.dirty = true; propW(HP); }
   function propW(HP) { if (!HP.PM || !HP.dirty) return; HP.dirty = false; const G = HP.G, ph = HP.phi, cf = Math.cos(ph), sf = Math.sin(ph), PA = HP.PM.geometry.attributes.position.array, NA = HP.PM.geometry.attributes.normal.array, rib = SV().rib === o.S().day, hx = LX(HP, G.ga0, G.pb1), hz = LZ(HP, G.ga0, G.pb1);
     for (let v = 0; v < TM.nr; v++) { const i = v * 3; if (v >= TM.ng && !rib) { PA[i] = hx; PA[i + 1] = HP.gy - 2; PA[i + 2] = hz; NA[i] = 0; NA[i + 1] = 1; NA[i + 2] = 0; continue; } const u = TM.P[i], y = TM.P[i + 1], w = TM.P[i + 2], a = G.ga0 + u * cf - w * sf, b = G.pb1 + u * sf + w * cf;
       PA[i] = LX(HP, a, b); PA[i + 1] = HP.gy + y; PA[i + 2] = LZ(HP, a, b); const nu = TM.N[i], nw = TM.N[i + 2], na = nu * cf - nw * sf, nb = nu * sf + nw * cf; NA[i] = na * HP.c + nb * HP.s; NA[i + 1] = TM.N[i + 1]; NA[i + 2] = -na * HP.s + nb * HP.c; }
     const rg = HP.ring; for (let v = TM.nr; v < TM.nt; v++) { const i = v * 3; if (!rg) { PA[i] = hx; PA[i + 1] = HP.gy - 2; PA[i + 2] = hz; } else { PA[i] = rg[0] + TM.P[i]; PA[i + 1] = rg[2]; PA[i + 2] = rg[1] + TM.P[i + 2]; } NA[i] = 0; NA[i + 1] = 1; NA[i + 2] = 0; }
+    { const mk = HP.mk && HP.mkY, ma = (G.ga0 + G.ga1) / 2, mb = G.pb1 + MKB; for (let v = TM.nt; v < TM.nm; v++) { const i = v * 3; if (!mk) { PA[i] = hx; PA[i + 1] = HP.gy - 2; PA[i + 2] = hz; NA[i] = 0; NA[i + 1] = 1; NA[i + 2] = 0; continue; }
+        const a = ma + TM.P[i], b = mb + TM.P[i + 2], nu = TM.N[i], nw = TM.N[i + 2]; PA[i] = LX(HP, a, b); PA[i + 1] = v < TM.na ? HP.mkY[v - TM.nt] : HP.gy + TM.P[i + 1] + HP.mkDy; PA[i + 2] = LZ(HP, a, b); NA[i] = nu * HP.c + nw * HP.s; NA[i + 1] = TM.N[i + 1]; NA[i + 2] = -nu * HP.s + nw * HP.c; } }
     HP.PM.geometry.attributes.position.needsUpdate = true; HP.PM.geometry.attributes.normal.needsUpdate = true; }
+
+  const MKB = 0.5;
+  function markSet(HP, on) { if (!HP.PM || !TM || !!HP.mk === !!on) return; if (on && !HP.mkY) { const G = HP.G, ma = (G.ga0 + G.ga1) / 2, mb = G.pb1 + MKB; HP.mkY = new Float32Array(TM.na - TM.nt); for (let v = TM.nt; v < TM.na; v++) { const i = v * 3, a = ma + TM.P[i], b = mb + TM.P[i + 2]; HP.mkY[v - TM.nt] = o.ty(LX(HP, a, b), LZ(HP, a, b)) + 0.12; } } HP.mk = !!on; HP.mkDy = 0; HP.dirty = true; }
 
   function gateCol(HP) { const G = HP.G, shut = HP.phi < 0.05; if (shut && !HP.gH) { const gc = (G.ga0 + G.ga1) / 2, x = LX(HP, gc, G.pb1 + 0.1), z = LZ(HP, gc, G.pb1 + 0.1); HP.gH = o.colAdd(o.lowNc(o.col90(x, z, (G.ga1 - G.ga0) / 2, 0.12, HP.ry, HP.gy - 1, HP.gy + 1.15))); } else if (!shut && HP.gH) { HP.gH.remove(); HP.gH = null; } }
   function gateTo(HP, open) { HP.phT = open ? Math.PI : 0; if (open && HP.gH) { HP.gH.remove(); HP.gH = null; } }
@@ -143,11 +161,44 @@ export function createHerd(o) {
   function dogMesh(HP) { if (HP.dogM || !root || !o.anm) return; const h = o.anm.mesh('dog', 1); if (!h) return; h.m.frustumCulled = false; h.m.matrixAutoUpdate = false; h.m.userData.fx = 1; root.add(h.m); HP.dogM = h; const D = HP.Dg; D.a = D.ta = HP.wk[0] + 1.4; D.b = D.tb = HP.wk[1] + 1.0; D.h = 0.6; D.v = 0; D.y = D.yT = o.ty(LX(HP, D.a, D.b), LZ(HP, D.a, D.b)); D.yq = 0; dogPut(HP, 0); h.mode(0, 2); }
   function dogPut(HP, dt) { const D = HP.Dg, h = HP.dogM; if (!h) return; const x = LX(HP, D.a, D.b), z = LZ(HP, D.a, D.b); if ((D.yq -= dt) <= 0) { D.yq = 0.2; D.yT = o.ty(x, z); } D.y += (D.yT - D.y) * (dt > 0 ? Math.min(1, dt * 8) : 1); Q4.setFromAxisAngle(UP, D.h + HP.ry); M4.compose(V3.set(x, D.y, z), Q4, S3.set(1.15, 1.15, 1.15)); h.m.setMatrixAt(0, M4); h.m.instanceMatrix.needsUpdate = true; }
 
+  const HOWN = 2, PMIN = 0.2, PMAX = 0.24, MSGK = [null, 'mRun', 'mOut', 'mL', 'mR', 'mB']; let HOWP = null;
+  function howPic(c, W, Hh, en) { const INK = '#2b2420', RED = '#e0453a', WO = '#8a6440', BLU = '#2f70d1'; c.fillStyle = '#f3e2c2'; c.fillRect(0, 0, W, Hh); c.lineCap = 'round'; c.lineJoin = 'round'; c.font = '800 13px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.strokeStyle = WO; c.lineWidth = 4; c.beginPath(); c.moveTo(92, 66); c.lineTo(92, 40); c.lineTo(14, 40); c.lineTo(14, 130); c.lineTo(92, 130); c.lineTo(92, 104); c.stroke(); c.fillStyle = WO; for (const [x, y] of [[92, 66], [92, 104], [92, 40], [14, 40], [14, 130], [92, 130]]) c.fillRect(x - 4, y - 4, 8, 8);
+    c.fillStyle = INK; c.fillText(tx('pPen', en), 53, 86);
+    c.lineWidth = 7; c.strokeStyle = BLU; c.beginPath(); c.ellipse(105, 86, 11, 6, 0, 0, 6.2832); c.stroke(); c.lineWidth = 3.5; c.strokeStyle = '#fff'; c.beginPath(); c.ellipse(105, 86, 11, 6, 0, 0, 6.2832); c.stroke();
+    c.beginPath(); c.moveTo(95, 50); c.lineTo(115, 50); c.lineTo(105, 71); c.closePath(); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 2.5; c.strokeStyle = BLU; c.stroke(); c.fillStyle = INK; c.fillText(tx('pGt', en), 108, 24);
+    for (const [x, y] of [[168, 74], [197, 92], [166, 108]]) { c.strokeStyle = INK; c.lineWidth = 2; c.beginPath(); c.moveTo(x - 6, y + 7); c.lineTo(x - 6, y + 14); c.moveTo(x + 6, y + 7); c.lineTo(x + 6, y + 14); c.stroke(); c.beginPath(); c.ellipse(x, y, 13, 9, 0, 0, 6.2832); c.fillStyle = '#fff'; c.fill(); c.stroke(); c.beginPath(); c.ellipse(x - 13, y - 2, 5, 6, 0, 0, 6.2832); c.fillStyle = '#4a4038'; c.fill(); }
+    c.fillStyle = INK; c.fillText(tx('pSh', en), 182, 142);
+    c.strokeStyle = INK; c.lineWidth = 2; c.beginPath(); c.moveTo(258, 108); c.lineTo(258, 121); c.moveTo(266, 108); c.lineTo(266, 121); c.stroke(); c.fillStyle = '#3f7fd0'; c.beginPath(); c.rect(253, 88, 18, 21); c.fill(); c.stroke(); c.beginPath(); c.arc(262, 79, 8.5, 0, 6.2832); c.fillStyle = '#f2c9a0'; c.fill(); c.stroke(); c.fillStyle = INK; c.fillText(tx('pMe', en), 262, 142);
+    const arr = (x0, y0, x1, y1) => { const a = Math.atan2(y1 - y0, x1 - x0); c.strokeStyle = RED; c.fillStyle = RED; c.lineWidth = 3; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke(); c.beginPath(); c.moveTo(x1, y1); c.lineTo(x1 - Math.cos(a - 0.45) * 11, y1 - Math.sin(a - 0.45) * 11); c.lineTo(x1 - Math.cos(a + 0.45) * 11, y1 - Math.sin(a + 0.45) * 11); c.closePath(); c.fill(); };
+    arr(246, 96, 219, 94); arr(146, 92, 124, 88); }
+  function howOpen(w) { const en = o.en(), h = '<h3>' + tx('howT', en) + '</h3><canvas class="hd-pic" style="display:block;margin:6px auto;border:3px solid #2b2420;border-radius:12px;background:#f3e2c2;max-width:calc(100% - 6px);height:auto"></canvas><div style="font-size:17px;font-weight:800;line-height:1.45">' + tx('how1', en) + '<br>' + tx('how2', en) + '</div><div class="sm" style="margin-top:4px;font-size:15px">' + tx('how3', en) + '</div><div class="row"><button data-a="go">' + tx('howGo', en) + '</button></div>';
+    const P = o.openP(h); if (!P) return false; HOWP = P; const cv = P.querySelector('.hd-pic'); if (cv && cv.getContext) { const W = 300, Hh = 170, d = Math.min(2, window.devicePixelRatio || 1); cv.width = W * d; cv.height = Hh * d; cv.style.width = W + 'px'; const c2 = cv.getContext('2d'); if (c2) { c2.setTransform(d, 0, 0, d, 0, 0); howPic(c2, W, Hh, en); } }
+    P.addEventListener('click', ev => { const b = ev.target.closest && ev.target.closest('button[data-a="go"]'); if (!b) return; const sv = SV(); sv.how = (sv.how | 0) + 1; o.mark(); HOWP = null; o.closeP(); start(w, null, true); }); return true; }
+
+  const RA = [0, 0, 0], RB = [0, 0, 0], RO = { minH: 1.5 }, w360 = d => d - Math.round(d / 360) * 360, CAMD = 6.3;
+  function camEst(me, hd, p) { const r = hd / 57.29578, bx = -Math.sin(r), bz = Math.cos(r), cp = Math.cos(p), D = 6.5; let dc = D, ds = D; RA[0] = me.x; RA[1] = me.y + 1.45; RA[2] = me.z;
+    for (let k = -1; k <= 1; k++) { RB[0] = me.x + bx * cp * D + bz * 0.5 * k; RB[1] = RA[1] + Math.sin(p) * D; RB[2] = me.z + bz * cp * D - bx * 0.5 * k; const t = map.q.ray(RA, RB, RO); if (t != null) { if (k) ds = Math.min(ds, t * D); else dc = t * D; } } return Math.min(dc, ds + 0.6); }
+  const LK = { s: 0, bal: 0 };
+  function lookScore(HP, me, c, p) { const d0 = camEst(me, c, p); LK.s = -1; LK.bal = 9; if (d0 < 5) return -1; const F = HP.F, G = HP.G, d = Math.min(CAMD, d0), r = c / 57.29578, sh = Math.sin(r), ch = Math.cos(r), cp = Math.cos(p), sp = Math.sin(p), cx = me.x - sh * cp * d, cz = me.z + ch * cp * d, up = sp * (0.95 + sp * d), cam = map.camera, tH = Math.tan(cam.fov * 0.0087266) * cam.aspect;
+    let nS = 0, xs = 0, xg = 9; for (let i = 0; i <= F.n; i++) { let a, b2; if (i < F.n) { if (inPen(G, F.A[i], F.B[i], 0.3)) continue; a = F.A[i]; b2 = F.B[i]; } else { a = (G.ga0 + G.ga1) / 2; b2 = G.pb1 + MKB; } const vx = LX(HP, a, b2) - cx, vz = LZ(HP, a, b2) - cz, dep = (vx * sh - vz * ch) * cp + up; if (dep < 1) continue; const xn = (vx * ch + vz * sh) / (dep * tH); if (Math.abs(xn) > 0.9) continue; if (i < F.n) { nS++; xs += xn; } else xg = xn; }
+    LK.s = nS + (xg < 9 ? F.n + 1 : 0); LK.bal = xg < 9 && nS ? Math.abs(xg + xs / nS) : 9; return LK.s; }
+  function lookPick(HP, me, cur) { const F = HP.F, G = HP.G, p = map.player.pitch; let ca = 0, cb = 0, cn = 0; for (let i = 0; i < F.n; i++) if (!inPen(G, F.A[i], F.B[i], 0.3)) { ca += F.A[i]; cb += F.B[i]; cn++; } if (!cn) return null; ca /= cn; cb /= cn;
+    const hd = (a, b2) => Math.atan2(LX(HP, a, b2) - me.x, -(LZ(HP, a, b2) - me.z)) * 57.29578, hF = hd(ca, cb), sep = w360(hd((G.ga0 + G.ga1) / 2, G.pb1 + MKB) - hF), sg = sep < 0 ? -1 : 1, s0 = lookScore(HP, me, cur, p); let best = null, bs = s0, bb = 9;
+    for (let d = -42; d <= Math.abs(sep) + 42; d += 6) { const c = hF + sg * d, sc = lookScore(HP, me, c, p); if (sc > bs || (sc === bs && best != null && LK.bal < bb - 0.02)) { bs = sc; bb = LK.bal; best = c; } }
+    return best; }
+
+  function seeTick(HP) { if (H.t < 2 || H.dh) { H.offT = 0; return; } const F = HP.F, G = HP.G, P = H.P, cam = map.camera, e = cam.matrixWorldInverse.elements, th = Math.tan(cam.fov * 0.0087266) * cam.aspect * 0.94; let bi = -1, bd = 1e9;
+    for (let i = 0; i < F.n; i++) { if (inPen(G, F.A[i], F.B[i], 0.3)) continue; const x = LX(HP, F.A[i], F.B[i]), z = LZ(HP, F.A[i], F.B[i]), y = HP.sh[i].y + 0.5, vz = e[2] * x + e[6] * y + e[10] * z + e[14]; if (vz < -0.5 && Math.abs(e[0] * x + e[4] * y + e[8] * z + e[12]) < -vz * th) { bi = -1; bd = -1; break; } const d = Math.hypot(F.A[i] - P.a, F.B[i] - P.b); if (d < bd) { bd = d; bi = i; } }
+    if (bi < 0) { H.offT = 0; if (bd < 0 && (H.onT += 0.25) >= 0.5) H.mOff = 0; else if (bd >= 0) H.mOff = 0; return; } H.onT = 0; if ((H.offT += 0.25) < 1.2) return;
+    const x = LX(HP, F.A[bi], F.B[bi]), z = LZ(HP, F.A[bi], F.B[bi]), y = HP.sh[bi].y + 0.5, vx = e[0] * x + e[4] * y + e[8] * z + e[12], vz = e[2] * x + e[6] * y + e[10] * z + e[14]; H.mOff = vz > 0 && Math.abs(vx) < vz ? 3 : vx < 0 ? 1 : 2; }
+
   const near = (x, z) => { let best = null, bd = 60; for (const HP of PS) { if (!HP.sh.length || !HP.PM) continue; const d = Math.hypot(x - HP.x, z - HP.z) - Math.hypot(HP.W, HP.D) / 2; if (d < bd) { bd = d; best = HP; } } return best; };
   const can = w => !!(w && near(w.x, w.z));
-  function start(w, force) { if (H) return true;     const HP = near(w.x, w.z), bz = force ? '' : o.busy(); if (!HP || bz) { LW = 'no:' + (bz || 'far'); return false; } const en = o.en(), sv = SV(), st = !!o.stWork(w), pr = !st && o.limit(w), F = HP.F, n = F.n;
+  function start(w, force, seen) { if (H) return true;     const HP = near(w.x, w.z), bz = force ? '' : o.busy(); if (!HP || bz) { LW = 'no:' + (bz || 'far'); return false; } const en = o.en(), sv = SV(), st = !!o.stWork(w), pr = !st && o.limit(w), F = HP.F, n = F.n;
     const lv = force && force.lv ? force.lv : st ? 1 : sv.lv, cond = force && force.cond != null ? force.cond : st || sv.n < 3 ? '' : HP.amb === 'eave' ? 'rain' : o.phase() === 'sunset' ? 'dusk' : '';
     if (HP.amb === 'pen' && !force) { if (st) { release(HP); o.bubble(w, tx('rel', en)); } else o.bubble(w, tx('rest', en)); return true; }
+    if (!force && !seen && o.openP && !sv.best && (sv.how | 0) < HOWN && howOpen(w)) return true;
     if (HP.amb === 'pen') sv.pen = 0;
     if (force && force.cond === 'rain') { eaveSpots(HP, true); HP.amb = 'eave'; } else if (force) { for (const an of HP.sh) { if (an.walk || HP.amb !== 'home') { an.a = an.home[0]; an.b = an.home[1]; an.h = an.home[2]; snap(HP, an); } } HP.amb = 'home'; }
     kinds(HP); if (lv < 3) { F.KD.fill(0); F.MO.fill(-1); } else if (lv < 4) for (let i = 0; i < n; i++) if (F.KD[i] === 2) F.KD[i] = 0;
@@ -155,13 +206,16 @@ export function createHerd(o) {
     HP.cw.forEach((an, i) => { const q = cowSpot(HP, i); walkTo(HP, an, q[0], q[1], Math.PI / 2, 1.3); }); HP.G.dusk = cond === 'dusk'; gateTo(HP, true); HP.shutAfter = false;
     const D = HP.Dg, dog = lv >= 2 && !st; if (dog) { dogMesh(HP); D.heel = 0; D.tq = 1.5; D.dash = 0; D.runT = 0; D.ta = D.a; D.tb = D.b; }
     const me = map.player.pos(); W2L(HP, me.x, me.z, L9);
-    H = { HP, w, lv, cond, st, pr, dog, t: 0, done: false, end: 0, settle: 0, k: -1, gk: -1, left: false, sp: 0, run: false, runN: 0, runC: 0, runHit: false, whN: 0, whT: -9, p0: map.player.pitch, pT: Math.min(0.78, map.player.pitch + 0.24), P: { a: L9[0], b: L9[1], run: false, dog: dog ? 1 : 0, da: D.a, db: D.b, heel: 0, h: 0 } };
+    H = { HP, w, lv, cond, st, pr, dog, t: 0, done: false, end: 0, settle: 0, k: -1, gk: -1, left: false, sp: 0, run: false, runN: 0, runC: 0, runHit: false, whN: 0, whT: -9, kc: -1, msg: 0, mRun: -9, mOutT: -99, mOutK: 0, mOff: 0, offT: 0, onT: 0, vq: 0, p0: map.player.pitch, pT: Math.max(PMIN, Math.min(PMAX, map.player.pitch)), P: { a: L9[0], b: L9[1], run: false, dog: dog ? 1 : 0, da: D.a, db: D.b, heel: 0, h: 0 } };
     map.player.freeze(false); o.bubble(w, (cond ? tx(cond, en) : '') + tx(TXT.ask[Math.min(3, lv - 1)], en, { n })); if (sv.n === 0) setTimeout(() => { if (H && !H.done && H.t < 12) o.toast(tx('tip0', o.en()), 4); }, 2600);
-    if (dog && o.touch()) whBtn(true); goalSay(); if (o.saw) o.saw(); if (o.hot) o.hot(); o.sfx('go');
+    markSet(HP, true); if (dog && o.touch()) whBtn(true); goalSay(); if (o.saw) o.saw(); if (o.hot) o.hot(); o.sfx('go');
     H.h0 = map.player.get().h; H.dh = 0; H.tq = 0;
     return true; }
-  function goalSay() { if (!H) return; const en = o.en(), F = H.HP.F; let k = 0; for (let i = 0; i < F.n; i++) if (inPen(H.HP.G, F.A[i], F.B[i], 0.3)) k++; const ins = k === F.n && inPen(H.HP.G, H.P.a, H.P.b, -0.3), key = k * 2 + (ins ? 1 : 0);
-    if (key === H.gk) return; if (k > H.k && H.k >= 0) o.tone(300 + k * 45, 0, 0.22, 'triangle', 0.1, 240 + k * 45); H.k = Math.max(H.k, k); H.gk = key; o.goal(ins ? tx('out', en) : tx('goal', en, { k, n: F.n }) + (H.dog ? tx(o.touch() ? 'whT' : 'whK', en) : '')); }
+  function goalSay() { if (!H) return; const en = o.en(), F = H.HP.F; let k = 0; for (let i = 0; i < F.n; i++) if (inPen(H.HP.G, F.A[i], F.B[i], 0.3)) k++; const ins = k === F.n && inPen(H.HP.G, H.P.a, H.P.b, -0.3);
+    if (k < H.kc) { if (!(H.t < H.mOutT + 7)) H.mOutK = H.kc; H.mOutT = H.t; } H.kc = k;
+    const msg = ins ? 0 : H.t < H.mRun ? 1 : k < H.mOutK && H.t > H.mOutT + 0.7 && H.t < H.mOutT + 7 ? 2 : H.mOff ? 2 + H.mOff : 0, key = (k * 2 + (ins ? 1 : 0)) * 8 + msg;
+    if (key === H.gk) return; if (k > H.k && H.k >= 0) o.tone(300 + k * 45, 0, 0.22, 'triangle', 0.1, 240 + k * 45); H.k = Math.max(H.k, k); H.gk = key; H.msg = msg;
+    o.goal(ins ? tx('out', en) : (msg ? '🐑 ' + k + '/' + F.n : tx('goal', en, { k, n: F.n })) + (msg ? ' · ' + tx(MSGK[msg] + (msg > 2 && !k ? '0' : ''), en) : H.dog ? tx(o.touch() ? 'whT' : 'whK', en) : '')); }
   function whistle() { if (!H || !H.dog || H.done) return false; const D = H.HP.Dg; o.tone(1500, 0, 0.12, 'sine', 0.16, 2100); o.tone(2100, 0.15, 0.2, 'sine', 0.16, 1500); D.heel = 1; D.runT = 0; H.whN++; H.whT = H.t; return true; }
   function whBtn(on) { if (on) { if (wb9) return; const j = document.getElementById('tJump'), R = j && j.getBoundingClientRect(); wb9 = document.createElement('button'); wb9.className = 'tbtn'; wb9.innerHTML = '<i>📣</i><span>' + (o.en() ? 'whistle' : '휘파람') + '</span>'; wb9.style.cssText = 'display:flex;' + (R && R.width ? 'left:' + R.left + 'px;top:' + R.top + 'px;width:' + R.width + 'px;height:' + R.height + 'px;' : 'right:24px;bottom:150px;width:72px;height:72px;');
       wb9.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); whistle(); }); document.body.appendChild(wb9); if (j) { jb9 = j; j.style.visibility = 'hidden'; } } else { if (wb9) { wb9.remove(); wb9 = null; } if (jb9) { jb9.style.visibility = ''; jb9 = null; } } }
@@ -179,11 +233,11 @@ export function createHerd(o) {
     if (win && okF == null) { gateTo(HP, false); H.settle = 2.2; } else { H.settle = 0; home(HP); }
     const w = H.w; if (up) setTimeout(() => { if (!HP.PM) return; o.bubble(w, tx(TXT.up[up - 2], o.en())); o.banner(tx(TXT.upB[up - 2], o.en()), 3.2); if (up === 2) dogMesh(HP); if (!H || H.HP !== HP) kinds(HP); }, 2400);
     if (H.dog) { const D = HP.Dg; D.heel = 0; D.ta = HP.wk[0] + 1.4; D.tb = HP.wk[1] + 1.0; }
-    whBtn(false); o.goal(null); if (o.hot) setTimeout(() => o.hot(), 0); }
+    markSet(HP, false); whBtn(false); o.goal(null); if (o.hot) setTimeout(() => o.hot(), 0); }
 
   function home(HP) { const F = HP.F, wet = o.wx() === 'rain' || o.wx() === 'snow'; for (let i = 0; i < F.n; i++) { const an = HP.sh[i]; an.a = F.A[i]; an.b = F.B[i]; an.h = F.HD[i]; } if (wet) { eaveSpots(HP, false); HP.amb = 'eave'; } else { for (const an of HP.sh) walkTo(HP, an, an.home[0], an.home[1], an.home[2], 1.0 + Math.random() * 0.2); HP.amb = 'home'; }
     for (const an of HP.cw) walkTo(HP, an, an.home[0], an.home[1], an.home[2], 1.0); gateTo(HP, true); HP.shutAfter = false; HP.G.dusk = false; const D = HP.Dg; D.heel = 0; D.ta = HP.wk[0] + 1.4; D.tb = HP.wk[1] + 1.0; }
-  function stop(why) { if (!H) return; if (!H.done) LW = why + '@' + H.t.toFixed(1); const HP = H.HP, en = o.en(); if (why === 'reset') { whBtn(false); o.goal(null); H = null; return; }
+  function stop(why) { if (!H) return; if (!H.done) LW = why + '@' + H.t.toFixed(1); const HP = H.HP, en = o.en(); markSet(HP, false); if (why === 'reset') { whBtn(false); o.goal(null); H = null; return; }
     if (!H.done) { H.done = true; if (why === 'quit' || why === 'away') o.toast(tx('quit', en), 3); home(HP); whBtn(false); o.goal(null); if (o.hot) setTimeout(() => o.hot(), 0); } else if (H.settle > 0) settle(HP); camBack(true); H = null; }
   function settle(HP) { const F = HP.F; for (let i = 0; i < F.n; i++) { const an = HP.sh[i]; an.a = F.A[i]; an.b = F.B[i]; an.h = F.HD[i]; snap(HP, an); } HP.amb = 'pen'; for (const an of HP.cw) walkTo(HP, an, an.home[0], an.home[1], an.home[2], 1.0); if (H) H.settle = 0; }
   function camBack(now) { if (!H) return; const p = map.player.pitch; if (Math.abs(p - H.pT) < 0.12 || !now) map.player.setPitch(now ? H.p0 : p + (H.p0 - p) * 0.08); }
@@ -196,15 +250,17 @@ export function createHerd(o) {
       H.end += dt; camBack(false); if (H.end > 1.2) { camBack(true); H = null; } return; }
     if (paused) return; const HP = H.HP, F = HP.F, G = HP.G, P = H.P, me = map.player.pos(); H.t += dt;
     if (H.t < 1.6) { const p = map.player.pitch; map.player.setPitch(p + (H.pT - p) * Math.min(1, dt * 2.5)); }
-    if (!H.tq && H.t >= 3.3) { H.tq = 1; const cp = map.player.get(); let d0 = cp.h - H.h0; d0 -= Math.round(d0 / 360) * 360; if (Math.abs(d0) < 5 && H.sp < 0.4 && !map.player.input) { let ca = 0, cb = 0; for (let i = 0; i < F.n; i++) { ca += F.A[i]; cb += F.B[i]; } ca /= F.n || 1; cb /= F.n || 1; let dh = Math.atan2(LX(HP, ca, cb) - me.x, -(LZ(HP, ca, cb) - me.z)) * 57.29578 - cp.h; dh -= Math.round(dh / 360) * 360; if (Math.abs(dh) > 25) { H.dh = dh; H.h0 = cp.h; H.tt = H.t; } } }
-    if (H.dh) { if (map.player.input) H.dh = 0; else { const u = Math.min(1, (H.t - H.tt) / 1.2), e9 = u * u * (3 - 2 * u); map.player.face(H.h0 + H.dh * e9); if (u >= 1) H.dh = 0; } }
+    if (!H.tq && H.t >= 3.3) { H.tq = 1; const cp = map.player.get(); let d0 = cp.h - H.h0; d0 -= Math.round(d0 / 360) * 360; if (Math.abs(d0) < 5 && H.sp < 0.4 && !map.player.input) { const c9 = lookPick(HP, me, cp.h); if (c9 != null) { const dh = w360(c9 - cp.h); if (Math.abs(dh) > 8) { H.dh = dh; H.h0 = cp.h; H.tt = H.t; H.td = Math.max(1.2, Math.min(2.2, Math.abs(dh) / 75)); } } } }
+    if (H.dh) { if (map.player.input) H.dh = 0; else { const u = Math.min(1, (H.t - H.tt) / (H.td || 1.2)), e9 = u * u * (3 - 2 * u); map.player.face(H.h0 + H.dh * e9); if (u >= 1) H.dh = 0; } }
     W2L(HP, me.x, me.z, L9); const mv = Math.hypot(L9[0] - P.a, L9[1] - P.b); if (mv > 3) { stop('tp'); return; } H.sp += (mv / Math.max(dt, 1e-3) - H.sp) * Math.min(1, dt * 8); if (mv > 0.01) P.h = Math.atan2(L9[0] - P.a, L9[1] - P.b); P.a = L9[0]; P.b = L9[1];
-    const run = H.sp > 5.2; P.run = run; if (run && !H.run) H.runC = 0; H.run = run; if (run) { H.runC += dt; if (H.runC > 0.25 && !H.runHit) { for (let i = 0; i < F.n; i++) if (Math.hypot(F.A[i] - P.a, F.B[i] - P.b) < HK.R0 * HK.RUN && !inPen(G, F.A[i], F.B[i])) { H.runN++; H.runHit = true; break; } } } else H.runHit = false;
+    const run = H.sp > 5.2; P.run = run; if (run && !H.run) H.runC = 0; H.run = run; if (run) { H.runC += dt; if (H.runC > 0.25 && !H.runHit) { for (let i = 0; i < F.n; i++) if (Math.hypot(F.A[i] - P.a, F.B[i] - P.b) < HK.R0 * HK.RUN && !inPen(G, F.A[i], F.B[i])) { H.runN++; H.runHit = true; break; } } if (H.runHit) H.mRun = H.t + 3; } else H.runHit = false;
     if (Math.abs(P.a) > G.W / 2 + 14 || Math.abs(P.b) > G.D / 2 + 14) { stop('away'); return; }
     G.nc = 0; for (let i = 0; i < HP.cw.length && i < 4; i++) { G.cow[i * 2] = HP.cw[i].a; G.cow[i * 2 + 1] = HP.cw[i].b; G.nc++; } for (const an of HP.cw) if (an.walk) walkStep(HP, an, dt);
     if (H.dog) { const D = HP.Dg; dogStep(G, F, D, P, dt); P.da = D.a; P.db = D.b; P.heel = D.heel; const sh9 = D.mk || (D.heel && H.t - H.whT < 1.4); if (sh9) { const x = LX(HP, D.ta, D.tb), z = LZ(HP, D.ta, D.tb); if (!HP.ring || Math.hypot(HP.ring[0] - x, HP.ring[1] - z) > 0.4) { if (!HP.ring) HP.ring = new Float32Array(3); HP.ring[0] = x; HP.ring[1] = z; HP.ring[2] = o.ty(x, z) + 0.07; HP.dirty = true; } D.mk = 0; } else if (HP.ring && D.heel) { HP.ring = null; HP.dirty = true; }     if (HP.dogM) HP.dogM.mode(0, D.v > 0.3 ? 1 : 2); dogPut(HP, dt); }
     herdStep(G, F, P, dt);
     for (let i = 0; i < F.n; i++) { const an = HP.sh[i]; an.a = F.A[i]; an.b = F.B[i]; an.h = F.HD[i]; mode(an, Math.hypot(F.VA[i], F.VB[i]) > 0.25 ? 1 : 0); put(HP, an, dt); }
+    if ((H.vq -= dt) <= 0) { H.vq = 0.25; seeTick(HP); }
+    if (HP.mk && HP.mkY) { const dy = HP.mkDy = 0.18 * Math.sin(H.t * 3.2), PA = HP.PM.geometry.attributes.position.array; for (let v = TM.na; v < TM.nm; v++) PA[v * 3 + 1] = HP.gy + TM.P[v * 3 + 1] + dy; HP.PM.geometry.attributes.position.needsUpdate = true; }
     goalSay(); if (!H.st && H.t > 50 && !H.left) { H.left = true; o.toast('⏳ ' + tx('left', o.en()), 2.4); }
     let all = true; for (let i = 0; i < F.n; i++) if (!inPen(G, F.A[i], F.B[i], 0.3)) { all = false; break; }
     if (all && !inPen(G, P.a, P.b, -0.3)) finish(true); else if (!H.st && H.t >= 60) finish(false); }
@@ -218,11 +274,11 @@ export function createHerd(o) {
 
   function info() { const HP = H ? H.HP : PS.find(q => q.sh.length && q.PM); if (!HP) return null; const F = HP.F, G = HP.G, me = map.player.pos(), on = !!H && !H.done; W2L(HP, me.x, me.z, L9); const sh = [];
     for (let i = 0; i < HP.sh.length; i++) { const an = HP.sh[i], a = i < F.n && on ? F.A[i] : an.a, b = i < F.n && on ? F.B[i] : an.b, x = LX(HP, a, b), z = LZ(HP, a, b); sh.push({ a: +a.toFixed(2), b: +b.toFixed(2), x: +x.toFixed(2), z: +z.toFixed(2), in: inPen(G, a, b, 0.3), road: !!(o.onRoad && o.onRoad(x, z)), kd: i < F.n ? F.KD[i] : 0, walk: an.walk, col: !!an.h9 }); }
-    return { on, why: LW, done: !!(H && H.done), lv: H ? H.lv : SV().lv, cond: H ? H.cond : '', st: H ? H.st : false, pr: H ? H.pr : false, t: H ? +H.t.toFixed(1) : 0, sv: { ...SV() }, amb: HP.amb, phi: +HP.phi.toFixed(2), gate: !!HP.gH, me: [+L9[0].toFixed(2), +L9[1].toFixed(2)], sp: H ? +H.sp.toFixed(2) : 0, runN: H ? H.runN : 0,
+    return { on, why: LW, done: !!(H && H.done), lv: H ? H.lv : SV().lv, cond: H ? H.cond : '', st: H ? H.st : false, pr: H ? H.pr : false, t: H ? +H.t.toFixed(1) : 0, sv: { ...SV() }, amb: HP.amb, phi: +HP.phi.toFixed(2), gate: !!HP.gH, me: [+L9[0].toFixed(2), +L9[1].toFixed(2)], sp: H ? +H.sp.toFixed(2) : 0, runN: H ? H.runN : 0, how: !!(HOWP && HOWP.isConnected), mk: !!HP.mk, msg: H ? H.msg | 0 : 0, mkw: [+LX(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2), +(HP.gy + 2.6).toFixed(2), +LZ(HP, (G.ga0 + G.ga1) / 2, G.pb1 + MKB).toFixed(2)],
       dog: HP.dogM ? { a: +HP.Dg.a.toFixed(2), b: +HP.Dg.b.toFixed(2), heel: HP.Dg.heel, dash: HP.Dg.dash } : null, G: { W: G.W, D: G.D, pa0: G.pa0, pa1: G.pa1, pb1: G.pb1, ga0: G.ga0, ga1: G.ga1 }, c: HP.c, s: HP.s, x: HP.x, z: HP.z, ry: HP.ry, wk: [+LX(HP, HP.wk[0], HP.wk[1]).toFixed(2), +LZ(HP, HP.wk[0], HP.wk[1]).toFixed(2)], cows: HP.cw.map(an => [+an.a.toFixed(1), +an.b.toFixed(1), an.walk]), sh }; }
 
   function anNear(x, z, r) { if (H) return null; let best = null, bd = r; for (const HP of PS) for (const an of HP.an) { if (an.walk || !an.mh) continue; const ax = LX(HP, an.a, an.b), az = LZ(HP, an.a, an.b), d = Math.hypot(ax - x, az - z); if (d < bd) { bd = d; best = { HP, an, x: ax, z: az, y: an.y, k: an.k, d }; } } return best; }
   function anFace(q, x, z, away, md) { if (!q || H || q.an.walk) return; const HP = q.HP, an = q.an, w = Math.atan2(x - q.x, z - q.z) + (away ? Math.PI : 0); an.h = w - HP.ry; put(HP, an, 0); mode(an, md == null ? 2 : md); }
   const anCalm = q => { if (q && !H && !q.an.walk) mode(q.an, 0); };
-  return { anNear, anFace, anCalm, reg, built, reset, can, start, stop, finishNow: ok => { if (H && !H.done) finish(ok > 0, ok); }, tick, sec, key, info, whistle, get on() { return !!H && !H.done; }, get busy() { return !!H; }, get pr() { return !!(H && H.pr); }, dispose() { reset(); whBtn(false); } };
+  return { anNear, anFace, anCalm, reg, built, reset, can, start, stop, finishNow: ok => { if (H && !H.done) finish(ok > 0, ok); }, poke: (i, a, b) => { if (H && !H.done && i >= 0 && i < H.HP.F.n) { H.HP.F.A[i] = a; H.HP.F.B[i] = b; } },     tick, sec, key, info, whistle, get on() { return !!H && !H.done; }, get busy() { return !!H; }, get pr() { return !!(H && H.pr); }, dispose() { reset(); whBtn(false); } };
 }

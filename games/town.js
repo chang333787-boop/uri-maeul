@@ -31,7 +31,7 @@ import { createFriends } from './town_friends.js?v=2';
 import { SET, CB, setHTML, bindSet, speak, hush, setSet } from '../js/settings.js?v=8'; import { takePhoto, fillAlbum, listPhotos, PHOTO_MAX, photoCss } from '../js/photo.js?v=7';
 import { BUGS, bugAt, drawBug } from './town_bugs.js?v=2';
 import { photoHtml, hasPhoto } from './town_photos.js?v=5';
-import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=5';
+import { createAnimals } from './town_anim.js?v=2'; import { createHerd, penOf } from './town_herd.js?v=6';
 import { makeWorkerMesh } from './town_worker.js?v=9'; import { createRhy } from './town_rhy.js?v=1';
 import { createSim, makeFrontView, makeFlags, makeUmbrellas, wetChain } from './town_sim.js?v=2';
 import { createShow, showFor } from './town_show.js?v=3'; import { createShowFind, SF_HRS } from './town_showfind.js?v=5'; import { createOutcrop } from './town_outcrop.js?v=6';
@@ -4186,6 +4186,7 @@ body.small .twn-dlg .face{width:56px;height:56px;font-size:32px}body.small .twn-
   const HERD = createHerd({ T3, map, anm: ANM, ty: (x, z) => ty(x, z), onRoad: (x, z) => onRoad(x, z, 0.3), en: () => LANG === 'en', S: () => GAME.S, mark: () => GAME.mark(), wx: () => WX9, phase: () => GAME.phase, toast: (t, s9) => map.hud.toast(t, s9), banner: (t, s9) => map.hud.banner(t, s9), goal: t => { HERDL = t; taskShow(); },
     sfx: k => map.sfx && map.sfx(k), tone: (...a) => map.tone && map.tone(...a), bubble: (w, t) => { if (w) bubbleAt({ x: w.x, y: w.g, z: w.z, sc: 1 }, t); }, colAdd: b => map.collider.add(b), col90: (...a) => col90(...a), lowNc: c => lowNc(c), touch: () => !!TCH9, saw: () => QZ.saw('w:pasture'), hot: () => seaLabels(),
     matV: () => MAT.herd || (MAT.herd = (() => { const m9 = new T3.MeshLambertMaterial({ vertexColors: true }); MATS.push(m9); return m9; })()),
+    openP: h9 => openP(h9, false, 'herd'), closeP: () => closeP(),
     busy: () => PLAY ? 'play' : RHY.busy ? 'rhy' : panel ? 'panel' : DLG ? 'dlg' : BOAT.on ? 'boat' : SKR.mode ? 'ski' : LIE ? 'lie' : topH ? 'top' : INB ? 'in' : SLEEP9 ? 'sleep' : JOBS.active ? 'job' : BUSR ? 'bus' : SUBX ? 'sub' : RF && RF.on ? 'rf' : '', stWork: w => !!stWork('pasture', '🥛', w.x, w.z), limit: w => GAME.uses(herdWk(w)) >= perk(GAME.S, 'work', 'plays', 3),
     reward: (w, ok, c9) => herdReward(w, ok, c9) });
   function herdReward(w, ok, c9) { const en = LANG === 'en'; if (c9.pr) return '';
