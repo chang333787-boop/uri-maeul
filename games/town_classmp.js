@@ -1,6 +1,6 @@
 import { mpTicket } from './town_cloud.js?v=10';
 export function createClassMP({ THREE, scene, map, say, en, quiet }) {
-  const OFF = !!window.SM_PROMO || new URLSearchParams(location.search).get('mp') === 'off';
+  const OFF = true || new URLSearchParams(location.search).get('mp') === 'off';
   const P = { x: 0, y: 0, z: 0, h: 0 }; let N = null, M = null, t = 0, said = false, goneTk = '', lx = 0, lz = 0, eT = -1e9;
   if (!OFF) import('../js/net.js?v=19').then(m => { M = m; }).catch(() => {   });
   const lab = u => (en() ? 'No. ' + u : u + '번');
