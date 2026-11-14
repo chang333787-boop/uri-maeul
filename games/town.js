@@ -27,7 +27,7 @@ import { createTrack } from './town_track.js?v=9';
 import { createLineQ, readSec, infoOf } from './town_read.js?v=4';
 import { createGo } from './town_go.js?v=5';
 import { createMap2, LAY as MLAY, rankPlaces, tierMax, createPlacer, placeLabels, drawArrow, meBoxes, createHeading, MAP2_CSS, ME_RED } from './town_map2.js?v=3';
-import { createFriends } from './town_friends.js?v=1';
+import { createFriends } from './town_friends.js?v=2';
 import { SET, CB, setHTML, bindSet, speak, hush, setSet } from '../js/settings.js?v=8'; import { takePhoto, fillAlbum, listPhotos, PHOTO_MAX, photoCss } from '../js/photo.js?v=7';
 import { BUGS, bugAt, drawBug } from './town_bugs.js?v=2';
 import { photoHtml, hasPhoto } from './town_photos.js?v=5';
